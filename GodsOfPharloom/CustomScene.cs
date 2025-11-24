@@ -1,4 +1,8 @@
+using System.Diagnostics.Eventing.Reader;
+using System.Runtime.CompilerServices;
+using Gods_Of_Pharloom;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 
@@ -35,7 +39,8 @@ public class CustomScene
 {
     public string sceneName {get; private set;}
     private List<TransitionGateInfo> TransitionGates = new List<TransitionGateInfo>();
-    public Action CustomTask;
+    public Action AfterSceneActivated;
+    public bool isSceneActive {get; set;} = false;
 
     public CustomScene(string sceneName)
     {
@@ -88,8 +93,78 @@ public class CustomScene
         SceneManager.MoveGameObjectToScene(gm, SceneManager.GetSceneByName(sceneName));
     }
 
-    public void Init()
+    public System.Collections.IEnumerator GetObjectFromSilkScene(string[] path, string sceneName, Action<GameObject> func)
     {
+        string scenePath = "Scenes/" + sceneName;
+        var op = Addressables.LoadSceneAsync(scenePath, LoadSceneMode.Additive, activateOnLoad: false);
+        GodsOfPharloomMod.Log.LogInfo("000000000000000000");
+        yield return op;
+        GodsOfPharloomMod.Log.LogInfo("000000000000000000.1");
+        var handle = op.Result;
+        var wait = handle.ActivateAsync();
+        yield return wait;
+        var scene = handle.Scene;
+        GodsOfPharloomMod.Log.LogInfo("111111111111111111");
+        GodsOfPharloomMod.Log.LogInfo(scene.name);
+        var objects = scene.GetRootGameObjects();
+        var obj = GetObjectByPath(ref objects, path);
+        GodsOfPharloomMod.Log.LogInfo("222222222222222222");
+        // obj.SetActive(false);
+        // GodsOfPharloomMod.Log.LogInfo("333333333333333333");
+        // SceneManager.MoveGameObjectToScene(obj, SceneManager.GetSceneByName(this.sceneName));
+        // func(obj);
+        Addressables.UnloadSceneAsync(handle, true);
+    }
+
+    public static GameObject GetObjectByPath(ref GameObject[] rootObjects, string[] path)
+    {
+        int j = 0;
+        Transform parent = null;
+
+        foreach(var obj in rootObjects)
+        {
+            obj.SetActive(false);
+            if(obj.name == path[j])
+            {
+                parent = obj.transform;
+            }
+        }
+
+        if(j == path.Length - 1 && parent != null)
+        {
+            return parent.gameObject;
+        }
+
+        j++;
+        int i = 0;
+        for(; i < parent.childCount; i++)
+        {
+            var child = parent.GetChild(i);
+            if(child.gameObject.name == path[j])
+            {
+                if(j == path.Length - 1)
+                {
+                    return child.gameObject;
+                }
+                parent = child;
+                i = 0;
+                j++;
+            }
+        }
+        return null;
+    }
+
+    public void Activate()
+    {
+        var scene = SceneManager.GetSceneByName(sceneName);
+        var rootObjects = scene.GetRootGameObjects();
+        foreach(var obj in rootObjects)
+        {
+            if (obj.name.StartsWith("CameraLock")){
+                var area = obj.AddComponent<CameraLockArea>();
+                var collider = obj.GetComponent<BoxCollider2D>();
+            }
+        }
         foreach(var item in TransitionGates)
         {
             CreateGate(item);
@@ -104,5 +179,6 @@ public class CustomScene
         // var csm = sm.AddComponent<CustomSceneManager>();
         // csm.scenePools = new SceneObjectPool[0];
         // sm.AddComponent<PlayerDataTestResponse>();
+        AfterSceneActivated?.Invoke();
     }
 }

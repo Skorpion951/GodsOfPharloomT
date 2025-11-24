@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using System.Reflection;
@@ -68,7 +69,13 @@ namespace Gods_Of_Pharloom
             keyboard = Keyboard.current;
             if (keyboard.nKey.wasPressedThisFrame)
             {
-                SceneManager.LoadSceneAsync("Belltown", LoadSceneMode.Additive);
+                SceneData.instance.PersistentBools.SetValue(new PersistentItemData<bool>
+                {
+                    SceneName = "GG_Moss_Mother",
+                    ID = "Battle Scene",
+                    Value = false
+                });
+                PlayerData.instance.defeatedMossMother = false;
             }
         }
 
@@ -76,6 +83,10 @@ namespace Gods_Of_Pharloom
         {
             if(to.name == "Belltown")
             {
+                foreach(var item in AssetBundle.GetAllLoadedAssetBundles().ToArray())
+                {
+                    Log.LogInfo(item.name);
+                }
                 var allObjects = to.GetRootGameObjects();
                 TransitionPoint tp1;
 
@@ -117,10 +128,46 @@ namespace Gods_Of_Pharloom
             var GG_Pharloom_Atrium = new CustomScene("GG_Pharloom_Atrium");
             GG_Pharloom_Atrium.Add("door1", new Vector3(79.68f, 73.9f, 0), new TransitionPointInfo("Belltown", "door1", isADoor: true));
             GG_Pharloom_Atrium.Add("door2", new Vector3(57.5f, 54f, 0), new TransitionPointInfo("GG_Moss_Mother", "door1", isADoor: true));
+            GG_Pharloom_Atrium.AfterSceneActivated += () => GG_Pharloom_Atrium.isSceneActive = true;
             customScenes.Add(GG_Pharloom_Atrium);
 
             var GG_Moss_Mother = new CustomScene("GG_Moss_Mother");
             GG_Moss_Mother.Add("door1", new Vector3(51.03f, 18.07f, 0), new TransitionPointInfo("GG_Pharloom_Atrium", "door1", isADoor: true));
+            GG_Moss_Mother.AfterSceneActivated += () =>
+            {
+                var mossMotherBossInfo = BossesInfo.bossObjectsPath[BossesInfo.BossName.MossMother];
+
+                static System.Collections.IEnumerator DoWork(CustomScene item)
+                {
+                    string scenePath = "Scenes/" + BossesInfo.bossesSceneName[BossesInfo.BossName.MossMother];
+                    var op = Addressables.LoadSceneAsync(scenePath, LoadSceneMode.Additive, activateOnLoad: true, priority: 100);
+                    yield return op;
+                    PlayerData.instance.defeatedMossMother = false;
+                    SceneData.instance.PersistentBools.SetValue(new PersistentItemData<bool>
+                    {
+                        SceneName = item.sceneName,
+                        ID = "Battle Scene",
+                        Value = false
+                    });
+                    var handle = op.Result;
+                    var scene = handle.Scene;
+                    var objects = scene.GetRootGameObjects();
+                    var obj = CustomScene.GetObjectByPath(ref objects, BossesInfo.bossObjectsPath[BossesInfo.BossName.MossMother][0]);
+                    obj = obj.transform.GetChild(0).GetChild(0).gameObject;
+                    var pos = obj.transform.position;
+                    obj.transform.SetParent(null);
+                    obj.SetActive(true);
+                    SceneManager.MoveGameObjectToScene(obj, SceneManager.GetSceneByName(item.sceneName));
+                    obj.transform.position = pos;
+                    var _tempOps = typeof(SceneLoad).GetField("_tempOps", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+                    SceneAdditiveLoadConditional.Unload(scene, ((List<UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>>)
+                (_tempOps.GetValue(null))));
+                    var unloadOp = Addressables.UnloadSceneAsync(handle, true);
+                    item.isSceneActive = true;
+                }
+
+                StartCoroutine(DoWork(GG_Moss_Mother));
+            };
             customScenes.Add(GG_Moss_Mother);
         }
     }
