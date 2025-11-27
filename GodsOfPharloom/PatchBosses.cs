@@ -14,31 +14,29 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(PlayMakerFSM), "Awake")]
         private static void PlayMakerPatch_Postfix(PlayMakerFSM __instance)
         {
-            Log.LogInfo(__instance.gameObject.name);
             var orig = __instance?.gameObject;
             if(orig == null) return;
 
-            int index1 = -1;
-            int index2 = -1;
-            bool found = false;
-            for(int i = 0; i < BossesInfo.bossesGameObjName.Length; i++)
+            int index1 = 0;
+            for(; index1 < PatchedFsm.patchedFsms.Length; index1++)
             {
-                for(int j = 0; j < BossesInfo.bossesGameObjName[i].Length; j++)
-                {
-                    if(orig.name.Equals(BossesInfo.bossesGameObjName[i][j]) &&
-                        String.Equals(__instance.FsmName, BossesInfo.bossesFsmName[i][j]))
-                    {
-                        found = true;
-                        index1 = i;
-                        index2 = j;
-                        break;
-                    }
-                }
-                if(found) break;
+                if(String.Equals(__instance.gameObject.scene.name, PatchedFsm.patchedFsms[index1].sceneName, StringComparison.OrdinalIgnoreCase)) break;
+                if(index1 == PatchedFsm.patchedFsms.Length - 1) return;
             }
-            if(!found) return;
-            
-            (BossesInfo.bossesPatchedFsm[index1][index2])(__instance);
+            Log.LogInfo(__instance.gameObject.name);
+
+
+            var patchedFsm = PatchedFsm.patchedFsms[index1];
+
+            foreach(var item in patchedFsm.fsms)
+            {
+                if(orig.name.Equals(item.objName) && String.Equals(__instance.FsmName, item.fsmName))
+                {
+                    Log.LogInfo(__instance.FsmName + "YAAAAAAAAAAAAAAAAAY");
+                    item.method(__instance);
+                    return;
+                }
+            }
         }
     }
 }

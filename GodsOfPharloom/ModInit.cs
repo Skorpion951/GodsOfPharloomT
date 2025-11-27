@@ -135,11 +135,11 @@ namespace Gods_Of_Pharloom
             GG_Moss_Mother.Add("door1", new Vector3(51.03f, 18.07f, 0), new TransitionPointInfo("GG_Pharloom_Atrium", "door1", isADoor: true));
             GG_Moss_Mother.AfterSceneActivated += () =>
             {
-                var mossMotherBossInfo = BossesInfo.bossObjectsPath[BossesInfo.BossName.MossMother];
+                var mossMotherBossInfo = PatchedFsm.bossObjectsPath[PatchedFsm.BossName.MossMother];
 
                 static System.Collections.IEnumerator DoWork(CustomScene item)
                 {
-                    string scenePath = "Scenes/" + BossesInfo.bossesSceneName[(int)BossesInfo.BossName.MossMother];
+                    string scenePath = "Scenes/" + PatchedFsm.bossesSceneName[(int)PatchedFsm.BossName.MossMother];
                     var op = Addressables.LoadSceneAsync(scenePath, LoadSceneMode.Additive, activateOnLoad: true, priority: 100);
                     yield return op;
                     PlayerData.instance.defeatedMossMother = false;
@@ -152,7 +152,7 @@ namespace Gods_Of_Pharloom
                     var handle = op.Result;
                     var scene = handle.Scene;
                     var objects = scene.GetRootGameObjects();
-                    var obj = CustomScene.GetObjectByPath(ref objects, BossesInfo.bossObjectsPath[BossesInfo.BossName.MossMother][0]);
+                    var obj = CustomScene.GetObjectByPath(ref objects, PatchedFsm.bossObjectsPath[PatchedFsm.BossName.MossMother][0]);
                     obj = obj.transform.GetChild(0).GetChild(0).gameObject;
                     var pos = obj.transform.position;
                     obj.transform.SetParent(null);
