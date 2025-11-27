@@ -1,3 +1,4 @@
+using System.Resources;
 using Gods_Of_Pharloom;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
@@ -45,6 +46,16 @@ public class PatchedFsm
         new PatchedFsm("Bone_East_08", new FsmPatch[]
         {
             new FsmPatch("Boss Scene", "Control", PatchFsm_FourthChorus_Awake)
+        }),
+        new PatchedFsm("Coral_11", new FsmPatch[]
+        {
+            new FsmPatch("Driller A", "Control", PatchFsm_GreatConchfliesDriller),
+            new FsmPatch("Driller B", "Control", PatchFsm_GreatConchfliesDriller),
+            new FsmPatch("Boss Scene", "Control", PatchFsm_GreatConchfliesBattleScene)
+        }),
+        new PatchedFsm("Bone_East_12", new FsmPatch[]
+        {
+            new FsmPatch("Lace Boss1", "Control", PatchFsm_Lace1)
         }),
 
     };
@@ -161,6 +172,12 @@ public class PatchedFsm
 
     };
 
+    public static void SetTransitionToState(FsmState state, FsmState to, int transitionIndex)
+    {
+        state.Transitions[transitionIndex].ToState = to.Name;
+        state.Transitions[transitionIndex].ToFsmState = to;
+    }
+
     public static bool PatchFsm_MossMother(PlayMakerFSM PMfsm)
     {
         var fsm = PMfsm.Fsm;
@@ -213,14 +230,14 @@ public class PatchedFsm
         var roarNoClamp = fsm.GetState("Roar No Clamp");
         var meet = fsm.GetState("Meet?");
 
-        ((Wait)(roarNoClamp.Actions[11])).time = 0.01f;
-        ((Wait)(roarClamp.Actions[11])).time = 0.01f;
+        ((Wait)(roarNoClamp.Actions[11])).time = 0.1f;
+        ((Wait)(roarClamp.Actions[11])).time = 0.1f;
 
-        init.Transitions[0].ToState = roarNoClamp.Name;
-        init.Transitions[0].ToFsmState = roarNoClamp;
+        init.Transitions[0].ToState = remeetRoar.Name;
+        init.Transitions[0].ToFsmState = remeetRoar;
 
-        // remeetRoar.Transitions[0].ToState = roarNoClamp.Name;
-        // remeetRoar.Transitions[0].ToFsmState = roarNoClamp;
+        remeetRoar.Transitions[0].ToState = roarNoClamp.Name;
+        remeetRoar.Transitions[0].ToFsmState = roarNoClamp;
 
         return true;
     }
@@ -233,6 +250,73 @@ public class PatchedFsm
 
         ((Wait)(remeet1.Actions[7])).time = 0f;
         ((Wait)(remeet2.Actions[2])).time = 0f;
+
+        return true;
+    }
+    public static bool PatchFsm_GreatConchfliesBattleScene(PlayMakerFSM PMfsm)
+    {
+        var fsm = PMfsm.Fsm;
+
+        var arenaStart = fsm.GetState("Arena Start");
+        var startPauseS = fsm.GetState("Start Pause S");
+        var state = fsm.GetState("State");
+        var restartReady = fsm.GetState("Restart Ready");
+
+
+        ((Wait)(startPauseS.Actions[0])).time = 0f;
+
+        arenaStart.Transitions[1].ToState = startPauseS.Name;
+        arenaStart.Transitions[1].ToFsmState = startPauseS;
+
+        state.Transitions[1].ToState = restartReady.Name;
+        state.Transitions[1].ToFsmState = restartReady;
+
+        // restartReady.Transitions[0].ToState = startPauseS.Name;
+        // restartReady.Transitions[0].ToFsmState = startPauseS;
+
+        return true;
+    }
+    public static bool PatchFsm_GreatConchfliesDriller(PlayMakerFSM PMfsm)
+    {
+        var fsm = PMfsm.Fsm;
+
+        var dormant = fsm.GetState("Dormant");
+        var introR1 = fsm.GetState("Intro R 1");
+        var introG1 = fsm.GetState("Intro G 1");
+        var introR2 = fsm.GetState("Intro R 2");
+        var introG2 = fsm.GetState("Intro G 2");
+        var introR3 = fsm.GetState("Intro R 3");
+        var introG3 = fsm.GetState("Intro G 3");
+
+        var roarG = fsm.GetState("Roar G");
+        var roarR = fsm.GetState("Roar R");
+
+        // ((Wait)(introR1.Actions[1])).time = ((Wait)(introR1.Actions[1])).time.Value / 2;
+        // ((Wait)(introG1.Actions[3])).time = ((Wait)(introG1.Actions[3])).time.Value / 2;
+        ((Wait)(introR2.Actions[1])).time = 0.1f;//((Wait)(introR2.Actions[1])).time.Value / 2;
+        ((Wait)(introG2.Actions[1])).time = 0.1f;//((Wait)(introG2.Actions[1])).time.Value / 2;
+        ((Wait)(introR3.Actions[2])).time = 0;//((Wait)(introR3.Actions[2])).time.Value / 2;
+        ((Wait)(introG3.Actions[4])).time = 0;//((Wait)(introG3.Actions[4])).time.Value / 2;
+
+        ((AnimatePositionTo)(introG2.Actions[0])).time = 0.1f;
+        ((AnimatePositionTo)(introR2.Actions[0])).time = 0.1f;
+
+        ((Wait)(roarR.Actions[0])).time = 0.1f;
+        ((Wait)(roarG.Actions[1])).time = 0.1f;
+
+        SetTransitionToState(dormant, introG2, 0);
+        SetTransitionToState(dormant, introR2, 1);
+
+        return true;
+    }
+    public static bool PatchFsm_Lace1(PlayMakerFSM PMfsm)
+    {
+        var fsm = PMfsm.Fsm;
+
+        var enctountred = fsm.GetState("Encountered?");
+        var refight = fsm.GetState("Refight");
+
+        SetTransitionToState(enctountred, refight, 0);
 
         return true;
     }
