@@ -130,45 +130,6 @@ namespace Gods_Of_Pharloom
             GG_Pharloom_Atrium.Add("door2", new Vector3(57.5f, 54f, 0), new TransitionPointInfo("GG_Moss_Mother", "door1", isADoor: true));
             GG_Pharloom_Atrium.AfterSceneActivated += () => {GG_Pharloom_Atrium.isSceneActive = true;};
             customScenes.Add(GG_Pharloom_Atrium);
-
-            var GG_Moss_Mother = new CustomScene("GG_Moss_Mother");
-            GG_Moss_Mother.Add("door1", new Vector3(51.03f, 18.07f, 0), new TransitionPointInfo("GG_Pharloom_Atrium", "door1", isADoor: true));
-            GG_Moss_Mother.AfterSceneActivated += () =>
-            {
-                var mossMotherBossInfo = PatchedFsm.bossObjectsPath[PatchedFsm.BossName.MossMother];
-
-                static System.Collections.IEnumerator DoWork(CustomScene item)
-                {
-                    string scenePath = "Scenes/" + PatchedFsm.bossesSceneName[(int)PatchedFsm.BossName.MossMother];
-                    var op = Addressables.LoadSceneAsync(scenePath, LoadSceneMode.Additive, activateOnLoad: true, priority: 100);
-                    yield return op;
-                    PlayerData.instance.defeatedMossMother = false;
-                    SceneData.instance.PersistentBools.SetValue(new PersistentItemData<bool>
-                    {
-                        SceneName = item.sceneName,
-                        ID = "Battle Scene",
-                        Value = false
-                    });
-                    var handle = op.Result;
-                    var scene = handle.Scene;
-                    var objects = scene.GetRootGameObjects();
-                    var obj = CustomScene.GetObjectByPath(ref objects, PatchedFsm.bossObjectsPath[PatchedFsm.BossName.MossMother][0]);
-                    obj = obj.transform.GetChild(0).GetChild(0).gameObject;
-                    var pos = obj.transform.position;
-                    obj.transform.SetParent(null);
-                    obj.SetActive(true);
-                    SceneManager.MoveGameObjectToScene(obj, SceneManager.GetSceneByName(item.sceneName));
-                    obj.transform.position = pos;
-                    var _tempOps = typeof(SceneLoad).GetField("_tempOps", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
-                    SceneAdditiveLoadConditional.Unload(scene, ((List<UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>>)
-                    (_tempOps.GetValue(null))));
-                    var unloadOp = Addressables.UnloadSceneAsync(handle, true);
-                    item.isSceneActive = true;
-                }
-
-                StartCoroutine(DoWork(GG_Moss_Mother));
-            };
-            customScenes.Add(GG_Moss_Mother);
         }
     }
 }
