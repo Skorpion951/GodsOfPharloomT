@@ -36,9 +36,21 @@ namespace Gods_Of_Pharloom
 
             Func<MethodInfo, object[], object> InvokeMethod = (method, obj) => method.Invoke(__instance, obj);
 
-            SceneManager.LoadSceneAsync(scene.sceneName, LoadSceneMode.Additive);
-            
             bool wasPreloaded = false;
+
+            if (!scene.isPreloading)
+            {
+                var op = SceneManager.LoadSceneAsync(scene.sceneName, LoadSceneMode.Additive);
+                yield return op;
+                scene.Activate();
+            }
+            while(!scene.isSceneActive)
+            {
+                yield return null;
+            }
+            scene.isSceneActive = false;
+            scene.isPreloading = false;
+
             InvokeMethod(RecordBeginTime, new object[] {SceneLoad.Phases.FetchBlocked});
             while (!__instance.IsFetchAllowed)
             {
@@ -141,10 +153,6 @@ namespace Gods_Of_Pharloom
             // }
             // yield return ((UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>)
             //         (operationHandle.GetValue(__instance))).Result.ActivateAsync(); //operationHandle.Result.ActivateAsync();
-
-            scene.Activate();/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            yield return new WaitUntil(() => scene.isSceneActive);
-            scene.isSceneActive = false;
 
             InvokeMethod(RecordEndTime, new object[] {SceneLoad.Phases.Activation}); //RecordEndTime(SceneLoad.Phases.Activation);
             

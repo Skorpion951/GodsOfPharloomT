@@ -43,8 +43,8 @@ namespace Gods_Of_Pharloom
         }
         private void Awake()
         {
-            InitCustomScenes();
             Harmony.CreateAndPatchAll(typeof(GodsOfPharloomMod), null);
+            InitCustomScenes();
             // Plugin startup logic
             Logger.LogInfo($"Plugin is loaded!");
             SceneManager.activeSceneChanged += OnSceneChanged;
@@ -128,7 +128,7 @@ namespace Gods_Of_Pharloom
             var GG_Pharloom_Atrium = new CustomScene("GG_Pharloom_Atrium");
             GG_Pharloom_Atrium.Add("door1", new Vector3(79.68f, 73.9f, 0), new TransitionPointInfo("Belltown", "door1", isADoor: true));
             GG_Pharloom_Atrium.Add("door2", new Vector3(57.5f, 54f, 0), new TransitionPointInfo("GG_Moss_Mother", "door1", isADoor: true));
-            GG_Pharloom_Atrium.AfterSceneActivated += () => GG_Pharloom_Atrium.isSceneActive = true;
+            GG_Pharloom_Atrium.AfterSceneActivated += () => {GG_Pharloom_Atrium.isSceneActive = true;};
             customScenes.Add(GG_Pharloom_Atrium);
 
             var GG_Moss_Mother = new CustomScene("GG_Moss_Mother");
@@ -139,7 +139,7 @@ namespace Gods_Of_Pharloom
 
                 static System.Collections.IEnumerator DoWork(CustomScene item)
                 {
-                    string scenePath = "Scenes/" + BossesInfo.bossesSceneName[BossesInfo.BossName.MossMother];
+                    string scenePath = "Scenes/" + BossesInfo.bossesSceneName[(int)BossesInfo.BossName.MossMother];
                     var op = Addressables.LoadSceneAsync(scenePath, LoadSceneMode.Additive, activateOnLoad: true, priority: 100);
                     yield return op;
                     PlayerData.instance.defeatedMossMother = false;
@@ -161,7 +161,7 @@ namespace Gods_Of_Pharloom
                     obj.transform.position = pos;
                     var _tempOps = typeof(SceneLoad).GetField("_tempOps", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
                     SceneAdditiveLoadConditional.Unload(scene, ((List<UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>>)
-                (_tempOps.GetValue(null))));
+                    (_tempOps.GetValue(null))));
                     var unloadOp = Addressables.UnloadSceneAsync(handle, true);
                     item.isSceneActive = true;
                 }
