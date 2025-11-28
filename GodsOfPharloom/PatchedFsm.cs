@@ -6,12 +6,41 @@ using UnityEngine;
 
 public class PatchedFsm
 {
+    private class CustomLogicFsm : FsmStateAction
+    {
+        public Action<Fsm> action;
+        public Fsm fsm;
+        public override void OnEnter()
+        {
+            action?.Invoke(fsm);
+            Finish();
+        }
+        public CustomLogicFsm(Fsm fsm)
+        {
+            this.fsm = fsm;
+        }
+    }
+    private class CustomWaitConditionFsm : FsmStateAction
+    {
+        public Action<Fsm, CustomWaitConditionFsm> action;
+        public bool condition = false;
+        public Fsm fsm;
+        public override void OnUpdate()
+        {
+            action?.Invoke(fsm, this);
+            if(condition) Finish();
+        }
+        public CustomWaitConditionFsm(Fsm fsm)
+        {
+            this.fsm = fsm;
+        }
+    }
     public class FsmPatch
     {
         public string objName;
         public string fsmName;
-        public Func<PlayMakerFSM, bool> method;
-        public FsmPatch(string objName, string fsmName, Func<PlayMakerFSM, bool> method)
+        public Func<Fsm, bool> method;
+        public FsmPatch(string objName, string fsmName, Func<Fsm, bool> method)
         {
             this.objName = objName;
             this.fsmName = fsmName;
@@ -56,6 +85,24 @@ public class PatchedFsm
         new PatchedFsm("Bone_East_12", new FsmPatch[]
         {
             new FsmPatch("Lace Boss1", "Control", PatchFsm_Lace1)
+        }),
+        new PatchedFsm("Coral_Judge_Arena", new FsmPatch[]
+        {
+            new FsmPatch("Last Judge", "Control", PatchFsm_LastJudge),
+            new FsmPatch("Boss Scene", "Control", PatchFsm_LastJudgeBattleScene)
+        }),
+        new PatchedFsm("Greymoor_08_boss", new FsmPatch[]
+        {
+            new FsmPatch("Vampire Gnat", "Control", PatchFsm_Moorwing)
+        }),
+        new PatchedFsm("Organ_01", new FsmPatch[]
+        {
+            new FsmPatch("Phantom", "Control", PatchFsm_Phantom),
+            new FsmPatch("Boss Scene", "Control", PatchFsm_PhantomBossScene)
+        }),
+        new PatchedFsm("Ant_19", new FsmPatch[]
+        {
+            new FsmPatch("Bone Flyer Giant", "Control", PatchFsm_SavageBeastfly1),
         }),
 
     };
@@ -116,7 +163,7 @@ public class PatchedFsm
         "Coral_11", //GreatConchflies
         "Bone_East_12", //Lace1
         "Coral_Judge_Arena", //LastJudge
-        "Greymoor_08", //Moorwing
+        "Greymoor_08_boss", //Moorwing
         "Organ_01", //Phantom
         "Ant_19", //SavageBeastfly1
         "Shellwood_18", //SisterSplinter
@@ -177,10 +224,15 @@ public class PatchedFsm
         state.Transitions[transitionIndex].ToState = to.Name;
         state.Transitions[transitionIndex].ToFsmState = to;
     }
-
-    public static bool PatchFsm_MossMother(PlayMakerFSM PMfsm)
+    public static T[] InsertInArray<T>(T[] array, T elem, int index)
     {
-        var fsm = PMfsm.Fsm;
+        var list = array.ToList();
+        list.Insert(index, elem);
+        return list.ToArray();
+    }
+
+    public static bool PatchFsm_MossMother(Fsm fsm)
+    {
 
         var initState = fsm.GetState("Init");
         var dormantState = fsm.GetState("Dormant");
@@ -204,9 +256,8 @@ public class PatchedFsm
 
         return true;
     }
-    public static bool PatchFsm_BellBeast(PlayMakerFSM PMfsm)
+    public static bool PatchFsm_BellBeast(Fsm fsm)
     {
-        var fsm = PMfsm.Fsm;
 
         var submergedInit = fsm.GetState("Submerged Init");
         var emergeAnticC = fsm.GetState("Emerge Antic C");
@@ -219,9 +270,8 @@ public class PatchedFsm
 
         return true;
     }
-    public static bool PatchFsm_FourthChorus(PlayMakerFSM PMfsm)
+    public static bool PatchFsm_FourthChorus(Fsm fsm)
     {
-        var fsm = PMfsm.Fsm;
 
         var init = fsm.GetState("Init");
         var meetRoar1 = fsm.GetState("Meet Roar 1");
@@ -241,9 +291,8 @@ public class PatchedFsm
 
         return true;
     }
-    public static bool PatchFsm_FourthChorus_Awake(PlayMakerFSM PMfsm)
+    public static bool PatchFsm_FourthChorus_Awake(Fsm fsm)
     {
-        var fsm = PMfsm.Fsm;
 
         var remeet1 = fsm.GetState("Remeet 1");
         var remeet2 = fsm.GetState("Remeet 2");
@@ -253,9 +302,8 @@ public class PatchedFsm
 
         return true;
     }
-    public static bool PatchFsm_GreatConchfliesBattleScene(PlayMakerFSM PMfsm)
+    public static bool PatchFsm_GreatConchfliesBattleScene(Fsm fsm)
     {
-        var fsm = PMfsm.Fsm;
 
         var arenaStart = fsm.GetState("Arena Start");
         var startPauseS = fsm.GetState("Start Pause S");
@@ -276,9 +324,8 @@ public class PatchedFsm
 
         return true;
     }
-    public static bool PatchFsm_GreatConchfliesDriller(PlayMakerFSM PMfsm)
+    public static bool PatchFsm_GreatConchfliesDriller(Fsm fsm)
     {
-        var fsm = PMfsm.Fsm;
 
         var dormant = fsm.GetState("Dormant");
         var introR1 = fsm.GetState("Intro R 1");
@@ -309,14 +356,120 @@ public class PatchedFsm
 
         return true;
     }
-    public static bool PatchFsm_Lace1(PlayMakerFSM PMfsm)
+    public static bool PatchFsm_Lace1(Fsm fsm)
     {
-        var fsm = PMfsm.Fsm;
 
         var enctountred = fsm.GetState("Encountered?");
         var refight = fsm.GetState("Refight");
 
         SetTransitionToState(enctountred, refight, 0);
+
+        return true;
+    }
+    public static bool PatchFsm_LastJudge(Fsm fsm)
+    {
+        var introRoar = fsm.GetState("Intro Roar");
+        var introFallAnticQ = fsm.GetState("Intro Fall Antic Q");
+
+        ((Wait)(introRoar.Actions[1])).time = 0.1f;
+        ((Wait)(introFallAnticQ.Actions[4])).time = 0f;
+
+        return true;
+    }
+    public static bool PatchFsm_LastJudgeBattleScene(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var encountered = fsm.GetState("Encountered");
+
+        SetTransitionToState(init, encountered, 0);
+
+        return true;
+    }
+    public static bool PatchFsm_Moorwing(Fsm fsm)
+    {
+        var roar = fsm.GetState("Roar");
+        var quickRoar = fsm.GetState("Quick Roar");
+
+        ((Wait)(roar.Actions[2])).time = 0.1f;
+        ((Wait)(quickRoar.Actions[0])).time = 0.1f;
+
+        return true;
+    }
+    public static bool PatchFsm_Phantom(Fsm fsm)
+    {
+
+        return true;
+    }
+    public static bool PatchFsm_PhantomBossScene(Fsm fsm)
+    {
+        var BGFog = fsm.GetState("BG Fog");
+        var FGAntic = fsm.GetState("FG Antic");
+        var init = fsm.GetState("Init");
+        var enter = fsm.GetState("Enter");
+        var FGColumn = fsm.GetState("FG Column");
+        var organNote = fsm.GetState("Organ Note");
+
+        ((Wait)(BGFog.Actions[0])).time = 0.1f;
+        ((Wait)(enter.Actions[3])).time = 0f;
+        ((Wait)(FGColumn.Actions[5])).time = 0.1f;
+        ((Wait)(organNote.Actions[3])).time = 0.1f;
+
+        var customAction = new CustomLogicFsm(fsm);
+        customAction.action += (Fsm fsm) =>
+        {
+            var init = fsm.GetState("Init");
+
+            var fogColumnAnticAction = (FindNamedChild)(init.Actions[6]);
+            var fogColumnFG = (FindChild)(init.Actions[5]);
+            var fogColumnBG = (FindChild)(init.Actions[4]);
+            var fogDamagerAction = (FindNamedChild)(init.Actions[7]);
+            var phantomBoss = (FindChild)(init.Actions[0]);
+
+            var fogColumnAnticGO = fogColumnAnticAction.storeResult.Value;
+            var fogColumnBGGO = fogColumnBG.storeResult.Value;
+            var fogDamagerGO = fogDamagerAction.storeResult.Value;
+            var fogColumnFGGO = fogColumnFG.storeResult.Value;
+            var phantomBossGO = phantomBoss.storeResult.Value;
+
+            int xPos = 15;
+
+            if(HeroController.instance.transform.position.x > fogColumnBGGO.transform.position.x) return;
+
+            fogDamagerGO.transform.position = new Vector3(fogDamagerGO.transform.position.x + xPos, fogDamagerGO.transform.position.y, fogDamagerGO.transform.position.z);
+            fogColumnAnticGO.transform.position = new Vector3(fogColumnAnticGO.transform.position.x + xPos, fogColumnAnticGO.transform.position.y, fogColumnAnticGO.transform.position.z);
+            fogColumnFGGO.transform.position = new Vector3(fogColumnFGGO.transform.position.x + xPos, fogColumnFGGO.transform.position.y, fogColumnFGGO.transform.position.z);
+            phantomBossGO.transform.position = new Vector3(phantomBossGO.transform.position.x + xPos, phantomBossGO.transform.position.y, phantomBossGO.transform.position.z);
+        };
+
+        var list = BGFog.Actions.ToList();
+        list.Insert(list.Count - 1, customAction);
+        BGFog.Actions = list.ToArray();
+
+        return true;
+    }
+    public static bool PatchFsm_SavageBeastfly1(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var choice = fsm.GetState("Choice");
+        var idlyFlyAudio = fsm.GetState("Idly Fly Audio?");
+        var rematch = fsm.GetState("Rematch?");
+
+        var customAction = new CustomLogicFsm(fsm);
+        customAction.action += (Fsm fsm) =>
+        {
+            var init = fsm.GetState("Init");
+            var choice = fsm.GetState("Choice");
+            var idlyFlyAudio = fsm.GetState("Idly Fly Audio?");
+
+            var arenaRange = ((FindNamedChild)(init.Actions[6])).storeResult.Value;
+            if(arenaRange == null) GodsOfPharloomMod.Log.LogInfo("WEEEEEEEEEEEEEEEEEEEEEEELLLLL");
+            GodsOfPharloomMod.Log.LogInfo(arenaRange.name + "YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+        };
+
+        rematch.Actions = InsertInArray(rematch.Actions, customAction, 0);
+        
+        SetTransitionToState(choice, choice, 3);
+        SetTransitionToState(choice, choice, 7);
 
         return true;
     }

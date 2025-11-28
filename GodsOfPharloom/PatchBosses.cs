@@ -33,7 +33,7 @@ namespace Gods_Of_Pharloom
                 if(orig.name.Equals(item.objName) && String.Equals(__instance.FsmName, item.fsmName))
                 {
                     Log.LogInfo(__instance.FsmName + "YAAAAAAAAAAAAAAAAAY");
-                    item.method(__instance);
+                    item.method(__instance.Fsm);
                     return;
                 }
             }
