@@ -1,11 +1,19 @@
 using System.Resources;
+using GlobalEnums;
 using Gods_Of_Pharloom;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
+using Steamworks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using System.Reflection;
+using UnityEngine.Events;
+using HarmonyLib;
 
 public class PatchedFsm
 {
+    public static Func<object, MethodInfo, object[], object> InvokeMethod = (instance, method, obj) => method.Invoke(instance, obj);
+    public static MethodInfo activateChildOnTrigger = AccessTools.Method(typeof(ActivateChildrenOnContact), "OnTriggerEnter2D");
     private class CustomLogicFsm : FsmStateAction
     {
         public Action<Fsm> action;
@@ -33,6 +41,16 @@ public class PatchedFsm
         public CustomWaitConditionFsm(Fsm fsm)
         {
             this.fsm = fsm;
+        }
+    }
+    private class CustomTrigger : MonoBehaviour
+    {
+        public Action<Fsm> action;
+        public Fsm fsm;
+        private void OnTriggerEnter2D(Collider2D collider)
+        {
+            action?.Invoke(fsm);
+            Destroy(this.gameObject);
         }
     }
     public class FsmPatch
@@ -103,6 +121,13 @@ public class PatchedFsm
         new PatchedFsm("Ant_19", new FsmPatch[]
         {
             new FsmPatch("Bone Flyer Giant", "Control", PatchFsm_SavageBeastfly1),
+        }),
+        new PatchedFsm("Shellwood_18", new FsmPatch[]
+        {
+            new FsmPatch("Splinter Queen", "Control", PatchFsm_SisterSplinter),
+            new FsmPatch("Boss Scene", "Battle Control", PatchFsm_SisterSplinterBossScene),
+            new FsmPatch("Approaches", "Control", PatchFsm_SisterSplinterApproaches),
+            
         }),
 
     };
@@ -447,7 +472,7 @@ public class PatchedFsm
 
         return true;
     }
-    public static bool PatchFsm_SavageBeastfly1(Fsm fsm)
+    public static bool PatchFsm_SavageBeastfly1(Fsm fsm)//skip
     {
         var init = fsm.GetState("Init");
         var choice = fsm.GetState("Choice");
@@ -471,6 +496,94 @@ public class PatchedFsm
         SetTransitionToState(choice, choice, 3);
         SetTransitionToState(choice, choice, 7);
 
+        return true;
+    }
+    public static bool PatchFsm_SisterSplinter(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var introShake = fsm.GetState("Intro Shake");
+        var emergeAntic = fsm.GetState("Emerge Antic");
+        var roar4 = fsm.GetState("Roar 4");
+
+        ((Wait)(introShake.Actions[1])).time = 0f;
+        ((Wait)(emergeAntic.Actions[1])).time = 0f;
+        ((Wait)(roar4.Actions[4])).time = 0.1f;
+
+        return true;
+    }
+    public static bool PatchFsm_SisterSplinterBossScene(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var battleStart = fsm.GetState("Battle Start");
+
+        ((SendEventByName)(battleStart.Actions[2])).delay = 0f;
+
+        var customAction = new CustomLogicFsm(fsm);
+        customAction.action += (Fsm fsm) =>
+        {
+            var init = fsm.GetState("Init");
+
+            var battleStartRange = ((FindNamedChild)(init.Actions[2])).storeResult.Value;
+
+            var battleStartRangeCollider = battleStartRange.GetComponent<BoxCollider2D>();
+            battleStartRangeCollider.size = new Vector2(26.6f, battleStartRangeCollider.size.y);
+        };
+
+        init.Actions = InsertInArray(init.Actions, customAction, 3);
+
+        return true;
+    }
+    public static bool PatchFsm_SisterSplinterApproaches(Fsm fsm)
+    {
+        var pause = fsm.GetState("Pause");
+
+        var customAction = new CustomLogicFsm(fsm);
+        customAction.action += (Fsm fsm) => {
+            var customTrigger = new GameObject("TriggerForStartBoss");
+            SceneManager.MoveGameObjectToScene(customTrigger, SceneManager.GetSceneByName("Shellwood_18"));
+            customTrigger.transform.position = new Vector3(45f, 11f, 0);
+            customTrigger.layer = (int)PhysLayers.HERO_DETECTOR;
+
+            var customCollider = customTrigger.AddComponent<BoxCollider2D>();
+            var doWork = customTrigger.AddComponent<CustomTrigger>();
+
+            doWork.fsm = fsm;
+
+            customCollider.isTrigger = true;
+            customCollider.size = new Vector2(28.3f, 18);
+
+            doWork.action += (Fsm fsm) =>
+            {
+                var pause = fsm.GetState("Pause");
+
+                var approachR = ((FindNamedChild)(pause.Actions[0])).storeResult.Value;
+                var approachL = ((FindNamedChild)(pause.Actions[1])).storeResult.Value;
+
+
+                GodsOfPharloomMod.Log.LogInfo("O");
+                foreach(Transform child in approachR.transform)
+                {
+                    var go = child.gameObject;
+                    var collider = go.GetComponent<BoxCollider2D>();
+                    if(collider == null) continue;
+                    var activateChild = go.GetComponent<ActivateChildrenOnContact>();
+                    ((UnityEvent)(activateChild.GetType().GetField("onContact", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(activateChild))).Invoke();
+                    InvokeMethod(activateChild, activateChildOnTrigger, new object[]{null});
+                }
+                GodsOfPharloomMod.Log.LogInfo("W");
+                foreach(Transform child in approachL.transform)
+                {
+                    var go = child.gameObject;
+                    var collider = go.GetComponent<BoxCollider2D>();
+                    if(collider == null) continue;
+                    var activateChild = go.GetComponent<ActivateChildrenOnContact>();
+                    ((UnityEvent)(activateChild.GetType().GetField("onContact", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(activateChild))).Invoke();
+                    InvokeMethod(activateChild, activateChildOnTrigger, new object[]{null});
+                }
+            };
+        };
+
+        pause.Actions = InsertInArray(pause.Actions, customAction, pause.Actions.Length - 1);
         return true;
     }
 }

@@ -69,8 +69,8 @@ namespace Gods_Of_Pharloom
             keyboard = Keyboard.current;
             if (keyboard.nKey.wasPressedThisFrame)
             {
-                TransitionPoint.TransitionPoints[0].targetScene = "Ant_19";
-                TransitionPoint.TransitionPoints[0].entryPoint = "left1";
+                TransitionPoint.TransitionPoints[0].targetScene = "Shellwood_18";
+                TransitionPoint.TransitionPoints[0].entryPoint = "right1";
                 SceneData.instance.PersistentBools.SetValue(new PersistentItemData<bool>
                 {
                     SceneName = "GG_Moss_Mother",
