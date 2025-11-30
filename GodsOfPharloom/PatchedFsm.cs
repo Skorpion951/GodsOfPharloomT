@@ -130,6 +130,11 @@ public class PatchedFsm
             new FsmPatch("Approaches", "Control", PatchFsm_SisterSplinterApproaches),
             
         }),
+        new PatchedFsm("Bone_15", new FsmPatch[]
+        {
+            new FsmPatch("Skull King", "Behaviour", PatchFsm_SkullTyrant),
+            
+        }),
         new PatchedFsm("Belltown_Shrine", new FsmPatch[]
         {
             new FsmPatch("Spinner Boss", "Control", PatchFsm_Widow),
@@ -212,6 +217,7 @@ public class PatchedFsm
         "Organ_01", //Phantom
         "Ant_19", //SavageBeastfly1
         "Shellwood_18", //SisterSplinter
+        "Bone_15", //Skull Tyrant
         "Belltown_Shrine", //Widow
         "Slab_16b", //Broodmother
         "Cog_Dancers", //CogworkDancers
@@ -604,6 +610,22 @@ public class PatchedFsm
         pause.Actions = InsertInArray(pause.Actions, customAction, pause.Actions.Length - 1);
         return true;
     }
+    public static bool PatchFsm_SkullTyrant(Fsm fsm)
+    {
+        PlayerData.instance.skullKingAwake = true;
+        var init = fsm.GetState("Init");
+        var stateCheck = fsm.GetState("State Check");
+        var inRoof = fsm.GetState("In Roof");
+        var wakeRoar = fsm.GetState("Wake Roar");
+        var rewakePause = fsm.GetState("Rewake Pause");
+        var rewakeAntic = fsm.GetState("Rewake Antic");
+        
+        ((Wait)(wakeRoar.Actions[4])).time = 0.1f;
+        ((Wait)(rewakePause.Actions[1])).time = 0f;
+        ((Wait)(rewakeAntic.Actions[1])).time = 0.1f;
+
+        return true;
+    }
     public static bool PatchFsm_Widow(Fsm fsm)
     {
         PlayerData.instance.encounteredSpinner = true;
@@ -724,7 +746,6 @@ public class PatchedFsm
         ((Wait)(subRoar.Actions[2])).time = 0.1f;
         ((Wait)(deathSteam.Actions[2])).time = 0.4f;
         ((Wait)(windup.Actions[3])).time = 0.1f;
-        GodsOfPharloomMod.obj = ((Wait)(windup.Actions[3])).time.Value;
         ((Wait)(windupOB.Actions[3])).time = 0.1f;
         ((Wait)(OBPause.Actions[0])).time = 0f;
 

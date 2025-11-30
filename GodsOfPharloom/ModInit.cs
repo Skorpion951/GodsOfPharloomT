@@ -70,7 +70,7 @@ namespace Gods_Of_Pharloom
             keyboard = Keyboard.current;
             if (keyboard.nKey.wasPressedThisFrame)
             {
-                TransitionPoint.TransitionPoints[0].targetScene = "Cog_Dancers";
+                TransitionPoint.TransitionPoints[0].targetScene = "Bone_15";
                 TransitionPoint.TransitionPoints[0].entryPoint = "left1";
                 SceneData.instance.PersistentBools.SetValue(new PersistentItemData<bool>
                 {
