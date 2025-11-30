@@ -9,6 +9,7 @@ using UnityEngine.SceneManagement;
 using System.Reflection;
 using UnityEngine.Events;
 using HarmonyLib;
+using System.Drawing;
 
 public class PatchedFsm
 {
@@ -129,6 +130,25 @@ public class PatchedFsm
             new FsmPatch("Approaches", "Control", PatchFsm_SisterSplinterApproaches),
             
         }),
+        new PatchedFsm("Belltown_Shrine", new FsmPatch[]
+        {
+            new FsmPatch("Spinner Boss", "Control", PatchFsm_Widow),
+            new FsmPatch("Boss Scene", "Control", PatchFsm_WidowBossScene),
+        }),
+        new PatchedFsm("Slab_16b", new FsmPatch[]
+        {
+            new FsmPatch("Slab Fly Broodmother", "Control", PatchFsm_Broodmother),
+        }),
+        new PatchedFsm("Cog_Dancers", new FsmPatch[]
+        {
+            new FsmPatch("Boss Scene", "Sequence", PatchFsm_CogDancersBossScene),
+        }),
+        new PatchedFsm("Cog_Dancers_Boss", new FsmPatch[]
+        {
+            new FsmPatch("Dancer Control", "Control", PatchFsm_CogDancersDancerControl),
+            new FsmPatch("Dancer A", "Control", PatchFsm_CogDancersDancerAB),
+            new FsmPatch("Dancer B", "Control", PatchFsm_CogDancersDancerAB),
+        }),
 
     };
     public enum BossName
@@ -192,7 +212,7 @@ public class PatchedFsm
         "Organ_01", //Phantom
         "Ant_19", //SavageBeastfly1
         "Shellwood_18", //SisterSplinter
-        "Belltown_Shrine", //Window
+        "Belltown_Shrine", //Widow
         "Slab_16b", //Broodmother
         "Cog_Dancers", //CogworkDancers
         "Dust_Chef", //DisgracedChefLugoli
@@ -560,7 +580,6 @@ public class PatchedFsm
                 var approachL = ((FindNamedChild)(pause.Actions[1])).storeResult.Value;
 
 
-                GodsOfPharloomMod.Log.LogInfo("O");
                 foreach(Transform child in approachR.transform)
                 {
                     var go = child.gameObject;
@@ -570,7 +589,6 @@ public class PatchedFsm
                     ((UnityEvent)(activateChild.GetType().GetField("onContact", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(activateChild))).Invoke();
                     InvokeMethod(activateChild, activateChildOnTrigger, new object[]{null});
                 }
-                GodsOfPharloomMod.Log.LogInfo("W");
                 foreach(Transform child in approachL.transform)
                 {
                     var go = child.gameObject;
@@ -584,6 +602,157 @@ public class PatchedFsm
         };
 
         pause.Actions = InsertInArray(pause.Actions, customAction, pause.Actions.Length - 1);
+        return true;
+    }
+    public static bool PatchFsm_Widow(Fsm fsm)
+    {
+        PlayerData.instance.encounteredSpinner = true;
+        var init = fsm.GetState("Init");
+        var introScream = fsm.GetState("Intro Scream");
+        var setRage = fsm.GetState("Set Rage");
+        var deathStaggerF = fsm.GetState("Death Stagger F");
+        var rageScream2 = fsm.GetState("Rage Scream 2");
+        var away = fsm.GetState("Away");
+
+        ((Wait)(introScream.Actions[3])).time = 0.1f;
+        ((Wait)(deathStaggerF.Actions[16])).time = 0.1f;
+        ((Wait)(rageScream2.Actions[1])).time = 0.1f;
+        ((Wait)(away.Actions[1])).time = 0.01f;
+        ((Wait)(setRage.Actions[3])).time = 0.5f;
+
+
+        return true;
+    }
+    public static bool PatchFsm_WidowBossScene(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var spinnerLook = fsm.GetState("Spinner Look");
+        var spinnerAway = fsm.GetState("Spinner Away");
+
+        ((Wait)(spinnerLook.Actions[2])).time = 0f;
+        ((Wait)(spinnerAway.Actions[0])).time = 0.01f;
+
+        return true;
+    }
+    public static bool PatchFsm_Broodmother(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var entryAntic = fsm.GetState("Entry Antic");
+        var roar = fsm.GetState("Roar");
+
+        ((Wait)(entryAntic.Actions[5])).time = 0.01f;
+        ((Wait)(roar.Actions[8])).time = 0.1f;
+
+        var customAction = new CustomLogicFsm(fsm);
+        customAction.action += (Fsm fsm) =>
+        {
+            var init = fsm.GetState("Init");
+
+            var battleScene = ((GetGrandParent)(init.Actions[0])).storeResult.Value;
+
+            var battleSceneComponent = battleScene.GetComponent<BattleScene>();
+            battleSceneComponent.battleStartPause = 0f;
+            battleSceneComponent.waves.RemoveRange(0, 3);
+
+            var wave04 = battleSceneComponent.waves[0];
+            wave04.startDelay = 0;
+        };
+
+        init.Actions = InsertInArray(init.Actions, customAction, init.Actions.Length - 1);
+
+        return true;
+    }
+    public static bool PatchFsm_CogDancersDancerControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var dormant = fsm.GetState("Dormant");
+        var gateClose = fsm.GetState("Gate Close");
+        var beatStartPause = fsm.GetState("Beat Start Pause");
+        var pendulumPrepare = fsm.GetState("Pendulum Prepare");
+        var beatStart = fsm.GetState("Beat Start");
+        var deathPause = fsm.GetState("Death Pause");
+        var returnDancers = fsm.GetState("Return Dancers");
+        var dancersStunned = fsm.GetState("Dancers Stunned");
+        var lightOpen = fsm.GetState("Light Open");
+
+        ((EaseFloat)(lightOpen.Actions[3])).time = 0.01f;
+
+        ((SendEventByName)(dormant.Actions[1])).delay = 0.01f;
+        ((Wait)(gateClose.Actions[2])).time = 0.01f;
+        ((WaitBool)(gateClose.Actions[3])).time = 0.01f;
+        ((Wait)(beatStartPause.Actions[4])).time = 0.01f;
+        ((Wait)(pendulumPrepare.Actions[3])).time = 0.01f;
+        ((Wait)(beatStart.Actions[1])).time = 0.01f;
+        ((WaitBool)(beatStart.Actions[2])).time = 0.01f;
+        ((Wait)(deathPause.Actions[2])).time = 0.01f;
+        ((Wait)(returnDancers.Actions[4])).time = 0.3f;
+        ((Wait)(dancersStunned.Actions[6])).time = 0.3f;
+
+        
+
+        return true;
+    }
+    public static bool PatchFsm_CogDancersDancerAB(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var doRoar = fsm.GetState("Do Roar");
+        var subRoar = fsm.GetState("Sub Roar");
+        var deathSteam = fsm.GetState("Death Steam");
+        var stunStagger = fsm.GetState("Stun Stagger");
+        var stunOutOfCombo = fsm.GetState("Stun Out of Combo");
+        var deathStagger = fsm.GetState("Death Stagger");
+        var windup = fsm.GetState("Windup");
+        var windupOB = fsm.GetState("Windup OB");
+        var OBPause = fsm.GetState("OB Pause");
+        var emerge = fsm.GetState("Emerge");
+        var rest = fsm.GetState("Rest");
+        var returnToRest = fsm.GetState("Return To Rest");
+        var return2 = fsm.GetState("Return 2");
+        var firstWindup = fsm.GetState("First Windup?");
+        var firstWindupOB = fsm.GetState("First Windup? OB");
+
+        ((IntCompare)(firstWindup.Actions[0])).integer2 = 1;
+        ((IntCompare)(firstWindupOB.Actions[0])).integer2 = 1;
+
+
+        ((AnimatePositionTo)(returnToRest.Actions[7])).speed = 10f;
+        ((AnimatePositionTo)(return2.Actions[0])).speed = 10f;
+        ((AnimatePositionTo)(emerge.Actions[11])).speed = 2f;
+
+        
+        ((Wait)(doRoar.Actions[3])).time = 0.1f;
+        ((Wait)(subRoar.Actions[2])).time = 0.1f;
+        ((Wait)(deathSteam.Actions[2])).time = 0.4f;
+        ((Wait)(windup.Actions[3])).time = 0.1f;
+        GodsOfPharloomMod.obj = ((Wait)(windup.Actions[3])).time.Value;
+        ((Wait)(windupOB.Actions[3])).time = 0.1f;
+        ((Wait)(OBPause.Actions[0])).time = 0f;
+
+        // ((Wait)(stunStagger.Actions.OfType<Wait>().FirstOrDefault())).time = 0.5f;
+
+        // ((stunStagger.Actions.OfType<SendEventByName>().FirstOrDefault(item => item.sendEvent.Value == "SURPRISE"))).delay = 0f;
+        // ((Wait)(stunOutOfCombo.Actions[5])).time = 0.1f;
+        // ((SendEventByName)(deathStagger.Actions[3])).delay = 0f;
+        // ((Wait)(deathStagger.Actions[18])).time = 0.1f;
+        // ((AudioPlayerOneShotSingle)(emerge.Actions[2])).delay = 0.1f;
+        // ((AudioPlayerOneShotSingle)(emerge.Actions[3])).delay = 0.1f;
+
+        // SetTransitionToState(rest, emerge, 0);
+        // SetTransitionToState(rest, emerge, 1);
+
+        return true;
+    }
+    public static bool PatchFsm_CogDancersBossScene(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var gatesClose = fsm.GetState("Gates Close");
+        var wait = fsm.GetState("Wait");
+        var rotationSequence = fsm.GetState("Rotation Sequence");
+        
+        ((Wait)(wait.Actions[4])).time = 0.1f;
+        ((Wait)(wait.Actions[7])).time = 0.1f;
+        ((Wait)(gatesClose.Actions[2])).time = 0.01f;
+
         return true;
     }
 }

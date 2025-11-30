@@ -11,6 +11,7 @@ namespace Gods_Of_Pharloom
     [BepInPlugin("bepinex.plugin.test", "Test", "0.0.0.1")]
     public partial class GodsOfPharloomMod : BaseUnityPlugin
     {
+        public static object obj;
         private static string[] assetBundleNames =
         {
             "gg_pharloom_atrium", "gg_moss_mother"
@@ -69,8 +70,8 @@ namespace Gods_Of_Pharloom
             keyboard = Keyboard.current;
             if (keyboard.nKey.wasPressedThisFrame)
             {
-                TransitionPoint.TransitionPoints[0].targetScene = "Shellwood_18";
-                TransitionPoint.TransitionPoints[0].entryPoint = "right1";
+                TransitionPoint.TransitionPoints[0].targetScene = "Cog_Dancers";
+                TransitionPoint.TransitionPoints[0].entryPoint = "left1";
                 SceneData.instance.PersistentBools.SetValue(new PersistentItemData<bool>
                 {
                     SceneName = "GG_Moss_Mother",
@@ -78,6 +79,10 @@ namespace Gods_Of_Pharloom
                     Value = false
                 });
                 PlayerData.instance.defeatedMossMother = false;
+            }
+            if (keyboard.mKey.wasPressedThisFrame)
+            {
+                Log.LogInfo((float)obj);
             }
         }
 
