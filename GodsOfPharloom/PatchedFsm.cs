@@ -31,26 +31,20 @@ public class PatchedFsm
     }
     private class CustomWaitConditionFsm : FsmStateAction
     {
-        public Action<Fsm, CustomWaitConditionFsm> action;
-        public bool condition = false;
-        public Fsm fsm;
-        public override void OnUpdate()
-        {
-            action?.Invoke(fsm, this);
-            if(condition) Finish();
-        }
-        public CustomWaitConditionFsm(Fsm fsm)
-        {
-            this.fsm = fsm;
-        }
     }
     private class CustomTrigger : MonoBehaviour
     {
-        public Action<Fsm> action;
+        public Action<Fsm, FsmStateAction> action;
+        public FsmStateAction fsmAction;
         public Fsm fsm;
+        private void OnTriggerStay2D(Collider2D collider)
+        {
+            action?.Invoke(fsm, fsmAction);
+            Destroy(this.gameObject);
+        }
         private void OnTriggerEnter2D(Collider2D collider)
         {
-            action?.Invoke(fsm);
+            action?.Invoke(fsm, fsmAction);
             Destroy(this.gameObject);
         }
     }
@@ -269,7 +263,7 @@ public class PatchedFsm
         new[] {"Control"},
 
     };
-
+    
     public static void SetTransitionToState(FsmState state, FsmState to, int transitionIndex)
     {
         state.Transitions[transitionIndex].ToState = to.Name;
@@ -280,6 +274,24 @@ public class PatchedFsm
         var list = array.ToList();
         list.Insert(index, elem);
         return list.ToArray();
+    }
+    public static T[] RemoveFromArray<T>(T[] array, int index)
+    {
+        var list = array.ToList();
+        list.RemoveAt(index);
+        return list.ToArray();
+    }
+    public static GameObject CreateTrigger(string sceneName)
+    {
+        var customTrigger = new GameObject("CustomTrigger");
+        SceneManager.MoveGameObjectToScene(customTrigger, SceneManager.GetSceneByName(sceneName));
+        customTrigger.layer = (int)PhysLayers.HERO_DETECTOR;
+
+        var customCollider = customTrigger.AddComponent<BoxCollider2D>();
+
+        customCollider.isTrigger = true;
+        customCollider.size = new Vector2(25, 18);
+        return customTrigger;
     }
 
     public static bool PatchFsm_MossMother(Fsm fsm)
@@ -504,23 +516,31 @@ public class PatchedFsm
         var choice = fsm.GetState("Choice");
         var idlyFlyAudio = fsm.GetState("Idly Fly Audio?");
         var rematch = fsm.GetState("Rematch?");
+        var introLook = fsm.GetState("Intro Look");
+        var introRoar = fsm.GetState("Intro Roar");
 
-        var customAction = new CustomLogicFsm(fsm);
-        customAction.action += (Fsm fsm) =>
+        var waitForCondition = new CustomWaitConditionFsm();
+
+        choice.Transitions = RemoveFromArray(choice.Transitions, 3);
+        rematch.Actions = InsertInArray(rematch.Actions, waitForCondition, 0);
+
+        ((WaitRandom)(introLook.Actions[5])).timeMin = 0f;
+        ((WaitRandom)(introLook.Actions[5])).timeMax = 0f;
+        ((Wait)(introRoar.Actions[0])).time = 0.1f;
+        
+        SetTransitionToState(rematch, introLook, 0);
+
+        var customTrigger = CreateTrigger("Ant_19");
+        var triggerPos = customTrigger.transform.position;
+        customTrigger.transform.position = new Vector3(43.45f, 39.28f, triggerPos.z);
+
+        var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
+        triggerComponent.fsmAction = waitForCondition;
+        triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
         {
-            var init = fsm.GetState("Init");
-            var choice = fsm.GetState("Choice");
-            var idlyFlyAudio = fsm.GetState("Idly Fly Audio?");
-
-            var arenaRange = ((FindNamedChild)(init.Actions[6])).storeResult.Value;
-            if(arenaRange == null) GodsOfPharloomMod.Log.LogInfo("WEEEEEEEEEEEEEEEEEEEEEEELLLLL");
-            GodsOfPharloomMod.Log.LogInfo(arenaRange.name + "YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+            fsmAction.Finish();
         };
 
-        rematch.Actions = InsertInArray(rematch.Actions, customAction, 0);
-        
-        SetTransitionToState(choice, choice, 3);
-        SetTransitionToState(choice, choice, 7);
 
         return true;
     }
@@ -578,7 +598,7 @@ public class PatchedFsm
             customCollider.isTrigger = true;
             customCollider.size = new Vector2(28.3f, 18);
 
-            doWork.action += (Fsm fsm) =>
+            doWork.action += (Fsm fsm, FsmStateAction fsmAction) =>
             {
                 var pause = fsm.GetState("Pause");
 

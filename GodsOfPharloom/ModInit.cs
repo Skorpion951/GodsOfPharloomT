@@ -70,7 +70,7 @@ namespace Gods_Of_Pharloom
             keyboard = Keyboard.current;
             if (keyboard.nKey.wasPressedThisFrame)
             {
-                TransitionPoint.TransitionPoints[0].targetScene = "Bone_15";
+                TransitionPoint.TransitionPoints[0].targetScene = "Ant_19";
                 TransitionPoint.TransitionPoints[0].entryPoint = "left1";
                 SceneData.instance.PersistentBools.SetValue(new PersistentItemData<bool>
                 {
@@ -88,6 +88,11 @@ namespace Gods_Of_Pharloom
 
         void OnSceneChanged(Scene from, Scene to)
         {
+            if(to.name == "Ant_17")
+            {
+                TransitionPoint.TransitionPoints[0].targetScene = "Ant_19";
+                TransitionPoint.TransitionPoints[0].entryPoint = "left1";
+            }
             if(to.name == "Belltown")
             {
                 foreach(var item in AssetBundle.GetAllLoadedAssetBundles().ToArray())
