@@ -153,6 +153,10 @@ public class PatchedFsm
             new FsmPatch("Roachkeeper Chef (1)", "Control", PatchFsm_DustChef),
             new FsmPatch("kitchen_gong", "Tink Hit Force", PatchFsm_DustChefKitchenGong),
         }),
+        new PatchedFsm("Belltown_08", new FsmPatch[]
+        {
+            new FsmPatch("Wisp Pyre Effigy", "Summon Control", PatchFsm_FatherOfFlame),
+        }),
 
     };
     public enum BossName
@@ -855,6 +859,28 @@ public class PatchedFsm
         var kitchenGong = fsm.GameObject;
         var kitchenString = kitchenGong.transform.parent.gameObject;
         kitchenString.SetActive(false);
+
+        return true;
+    }
+    public static bool PatchFsm_FatherOfFlame(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var setHp = fsm.GetState("Set HP");
+        var intro = fsm.GetState("Intro");
+        var brokenPause = fsm.GetState("Broken Pause");
+        var flareUp = fsm.GetState("Flare Up");
+        
+
+        ((Wait)(init.Actions[40])).time = 0.01f;
+        ((Wait)(setHp.Actions[9])).time = 0f;
+        ((Wait)(intro.Actions[3])).time = 0f;
+        ((Wait)(intro.Actions[6])).time = 0f;
+        ((Wait)(intro.Actions[17])).time = 0f;
+        ((Wait)(intro.Actions[20])).time = 0.1f;
+        ((Wait)(brokenPause.Actions[0])).time = 0.01f;
+        ((Wait)(brokenPause.Actions[3])).time = 0.01f;
+        ((Wait)(flareUp.Actions[11])).time = 0.5f;
+
 
         return true;
     }
