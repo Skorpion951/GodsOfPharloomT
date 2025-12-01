@@ -70,8 +70,7 @@ namespace Gods_Of_Pharloom
             keyboard = Keyboard.current;
             if (keyboard.nKey.wasPressedThisFrame)
             {
-                TransitionPoint.TransitionPoints[0].targetScene = "Ant_19";
-                TransitionPoint.TransitionPoints[0].entryPoint = "left1";
+                EventRegister.SendEvent("BATTLE LOCK");
                 SceneData.instance.PersistentBools.SetValue(new PersistentItemData<bool>
                 {
                     SceneName = "GG_Moss_Mother",
@@ -90,7 +89,7 @@ namespace Gods_Of_Pharloom
         {
             if(to.name == "Ant_17")
             {
-                TransitionPoint.TransitionPoints[0].targetScene = "Ant_19";
+                TransitionPoint.TransitionPoints[0].targetScene = "Dust_Chef";
                 TransitionPoint.TransitionPoints[0].entryPoint = "left1";
             }
             if(to.name == "Belltown")

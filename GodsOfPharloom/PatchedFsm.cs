@@ -148,6 +148,11 @@ public class PatchedFsm
             new FsmPatch("Dancer A", "Control", PatchFsm_CogDancersDancerAB),
             new FsmPatch("Dancer B", "Control", PatchFsm_CogDancersDancerAB),
         }),
+        new PatchedFsm("Dust_Chef", new FsmPatch[]
+        {
+            new FsmPatch("Roachkeeper Chef (1)", "Control", PatchFsm_DustChef),
+            new FsmPatch("kitchen_gong", "Tink Hit Force", PatchFsm_DustChefKitchenGong),
+        }),
 
     };
     public enum BossName
@@ -510,7 +515,7 @@ public class PatchedFsm
 
         return true;
     }
-    public static bool PatchFsm_SavageBeastfly1(Fsm fsm)//skip
+    public static bool PatchFsm_SavageBeastfly1(Fsm fsm)
     {
         var init = fsm.GetState("Init");
         var choice = fsm.GetState("Choice");
@@ -793,6 +798,63 @@ public class PatchedFsm
         ((Wait)(wait.Actions[4])).time = 0.1f;
         ((Wait)(wait.Actions[7])).time = 0.1f;
         ((Wait)(gatesClose.Actions[2])).time = 0.01f;
+
+        return true;
+    }
+    public static bool PatchFsm_DustChef(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var entryRoar = fsm.GetState("Entry Roar");
+        var entryAntic = fsm.GetState("Entry Antic");
+        
+        ((Wait)(entryRoar.Actions[5])).time = 0.1f;
+        ((Wait)(entryAntic.Actions[3])).time = 0.1f;
+        
+        var customAction = new CustomLogicFsm(fsm);
+        customAction.action += (Fsm fsm) =>
+        {
+            var init = fsm.GetState("Init");
+            var battleScene = ((GetGrandParent)(init.Actions[0])).storeResult.Value.GetComponent<BattleScene>();
+            battleScene.battleStartPause = 0f;
+
+            battleScene.battleStartEventRegister = "BATTLE LOCK";
+
+            battleScene.waves.RemoveAt(0);
+            battleScene.waves[0].startDelay = 0f;
+
+            var children = battleScene.gameObject.transform;
+            foreach(Transform child in children)
+            {
+                if(child.gameObject.name == "Wave 1") child.gameObject.SetActive(false);
+                if(child.gameObject.name == "Roachkeeper Chef Tiny (2)") child.gameObject.SetActive(false);
+            }
+            
+            //Create trigger for start battle
+            var customTrigger = CreateTrigger("Dust_Chef");
+            var triggerPos = customTrigger.transform.position;
+            customTrigger.transform.position = new Vector3(42.45f, 39.28f, triggerPos.z);
+
+            var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
+            triggerComponent.fsm = fsm;
+
+            triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
+            {
+                var init = fsm.GetState("Init");
+                var battleScene = ((GetGrandParent)(init.Actions[0])).storeResult.Value.GetComponent<BattleScene>();
+
+                battleScene.StartBattle();
+            };
+        };
+
+        init.Actions = InsertInArray(init.Actions, customAction, init.Actions.Length - 1);
+
+        return true;
+    }
+    public static bool PatchFsm_DustChefKitchenGong(Fsm fsm)
+    {
+        var kitchenGong = fsm.GameObject;
+        var kitchenString = kitchenGong.transform.parent.gameObject;
+        kitchenString.SetActive(false);
 
         return true;
     }
