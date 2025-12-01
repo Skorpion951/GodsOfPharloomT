@@ -157,6 +157,11 @@ public class PatchedFsm
         {
             new FsmPatch("Wisp Pyre Effigy", "Summon Control", PatchFsm_FatherOfFlame),
         }),
+        new PatchedFsm("Slab_10b", new FsmPatch[]
+        {
+            new FsmPatch("First Weaver", "Control", PatchFsm_FirstSinner),
+            new FsmPatch("Shrine First Weaver", "Inspection", PatchFsm_FirstSinnerInspection),
+        }),
 
     };
     public enum BossName
@@ -881,6 +886,65 @@ public class PatchedFsm
         ((Wait)(brokenPause.Actions[3])).time = 0.01f;
         ((Wait)(flareUp.Actions[11])).time = 0.5f;
 
+
+        return true;
+    }
+    public static bool PatchFsm_FirstSinner(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var dormant = fsm.GetState("Dormant");
+        var introWave = fsm.GetState("Intro Wave");
+        var introStand = fsm.GetState("Intro Stand");
+        var roar = fsm.GetState("Roar");
+
+        if(init == null) return false;
+
+        ((Wait)(introWave.Actions[7])).time = 0.01f;
+        ((Wait)(introStand.Actions[2])).time = 0.01f;
+        ((Wait)(roar.Actions[4])).time = 0.1f;
+
+        return true;
+    }
+    public static bool PatchFsm_FirstSinnerInspection(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var bindStart = fsm.GetState("Bind Start");
+        var blowStart = fsm.GetState("Blow Start");
+        var bind = fsm.GetState("Bind");
+        var breakOut = fsm.GetState("Break Out");
+        var introLand = fsm.GetState("Intro Land");
+
+        ((Wait)(breakOut.Actions[16])).time = 0.01f;
+
+        var waitEvent = new CustomWaitConditionFsm();
+
+        var customAction = new CustomLogicFsm(fsm);
+        customAction.action += (Fsm fsm) =>
+        {
+            var walkArea = ((FindChild)(init.Actions[13])).storeResult.Value;
+            walkArea.SetActive(false);
+
+            var customTrigger = CreateTrigger("Slab_10b");
+            var triggerPos = customTrigger.transform.position;
+            customTrigger.transform.position = new Vector3(48.7f, 11f, triggerPos.z);
+
+            var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
+            triggerComponent.fsm = fsm;
+
+            triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
+            {
+                waitEvent.Finish();
+            };
+        };
+        
+        init.Actions = InsertInArray(init.Actions, customAction, init.Actions.Length - 1);
+        init.Actions = InsertInArray(init.Actions, waitEvent, init.Actions.Length - 1);
+
+        breakOut.Actions = RemoveFromArray(breakOut.Actions, 12);
+
+        SetTransitionToState(init, breakOut, 1);
+
+        GameObject.DestroyImmediate(fsm.FsmComponent.gameObject.GetComponent<PlayMakerNPC>());
 
         return true;
     }
