@@ -169,6 +169,10 @@ public class PatchedFsm
             new FsmPatch("Dock Guard Slasher", "Control", PatchFsm_ForebrothersSignisAndGronSlasher),
             new FsmPatch("Dock Guard Thrower", "Control", PatchFsm_ForebrothersSignisAndGronThrower),
         }),
+        new PatchedFsm("Library_09", new FsmPatch[]
+        {
+            new FsmPatch("Garmond Fighter", "Control", PatchFsm_GarmondAndZaza),
+        }),
 
     };
     public enum BossName
@@ -1025,8 +1029,56 @@ public class PatchedFsm
     {
         var init = fsm.GetState("Init");
         
+
         
+
+        return true;
+    }
+    public static bool PatchFsm_GarmondAndZaza(Fsm fsm)
+    {
+        PlayerData.instance.garmondInLibrary = true;
+        var init = fsm.GetState("Init");
+        var roarAntic = fsm.GetState("Roar Antic");
+        var autoTarget = fsm.GetState("Auto Target?");
+        var appearRange = fsm.GetState("Appear Range");
+        var citNPC = fsm.GetState("Cit NPC");
+        var citadelRemeet = fsm.GetState("Citadel Remeet");
+        var enemyRoar = fsm.GetState("Enemy Roar");
+        var setup1 = fsm.GetState("Setup 1");
+        var setup2 = fsm.GetState("Setup 2");
+
+        ((Wait)(setup1.Actions[15])).time = 0.001f;
+        ((Wait)(setup2.Actions[3])).time = 0.001f;
+        ((Wait)(enemyRoar.Actions[3])).time = 0.1f;
         
+        var customInit = new CustomLogicFsm(fsm);
+        customInit.action += (Fsm fsm) =>
+        {
+            var citadelLibraryNPC = ((FindNamedChild)init.Actions[13]).storeResult.Value;
+            citadelLibraryNPC.SetActive(false);
+        };
+
+        var customAction = new CustomLogicFsm(fsm);
+        customAction.action += (Fsm fsm) =>
+        {
+            var pos = fsm.GameObject.transform.position;
+            fsm.GameObject.transform.position = new Vector3(80.4f, pos.y, pos.z);
+
+            var customTrigger = CreateTrigger("Library_09");
+            var triggerPos = customTrigger.transform.position;
+            customTrigger.transform.position = new Vector3(80.7f, 15f, triggerPos.z);
+
+            var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
+            triggerComponent.fsm = fsm;
+
+            triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
+            {
+                fsm.FsmComponent.SendEvent("BATTLE START");
+            };
+        };
+
+        citNPC.Actions = InsertInArray(citNPC.Actions, customAction, citNPC.Actions.Length - 1);
+        init.Actions = InsertInArray(init.Actions, customAction, init.Actions.Length - 1);
 
         return true;
     }
