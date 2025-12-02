@@ -173,6 +173,14 @@ public class PatchedFsm
         {
             new FsmPatch("Garmond Fighter", "Control", PatchFsm_GarmondAndZaza),
         }),
+        new PatchedFsm("Cradle_03", new FsmPatch[]
+        {
+            new FsmPatch("Silk Boss", "Control", PatchFsm_SilkBoss),
+            new FsmPatch("Intro Sequence", "First Challenge", PatchFsm_SilkBossIntroSequence),
+            new FsmPatch("Boss Title", "Title Control", PatchFsm_SilkBossTitleControl),
+            new FsmPatch("Silk Boss", "Phase Control", PatchFsm_SilkBossPhaseControl),
+            new FsmPatch("Challenge Region", "Challenge", PatchFsm_SilkBossChallengeControl),
+        }),
 
     };
     public enum BossName
@@ -1079,6 +1087,83 @@ public class PatchedFsm
 
         citNPC.Actions = InsertInArray(citNPC.Actions, customAction, citNPC.Actions.Length - 1);
         init.Actions = InsertInArray(init.Actions, customAction, init.Actions.Length - 1);
+
+        return true;
+    }
+    public static bool PatchFsm_SilkBoss(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var introUp = fsm.GetState("Intro Up");
+        var introRoar = fsm.GetState("Intro Roar");
+        var titleUp = fsm.GetState("Title Up");
+        var moveStop = fsm.GetState("Move Stop");
+        
+        ((Wait)(init.Actions[8])).time = 0f;
+        ((AnimatePositionBy)(introUp.Actions[7])).time = 0.1f;
+        ((Wait)(introUp.Actions[8])).time = 0.1f;
+        ((Wait)(introRoar.Actions[4])).time = 0.1f;
+        ((Wait)(titleUp.Actions[2])).time = 0.1f;
+        ((Wait)(moveStop.Actions[1])).time = 0f;
+        
+
+        return true;
+    }
+    public static bool PatchFsm_SilkBossIntroSequence(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var waitForBeatEnd = fsm.GetState("Wait For Beat End");
+        var burstAnim = fsm.GetState("Burst Anim");
+        var readyWait = fsm.GetState("Ready Wait");
+        var introShake = fsm.GetState("Intro Shake");
+        
+        ((Wait)(waitForBeatEnd.Actions[2])).time = 0.002f;
+        ((SendEventByName)(waitForBeatEnd.Actions[1])).delay = 0.001f;
+        ((Wait)(readyWait.Actions[1])).time = 0.1f;
+        ((WaitBool)(readyWait.Actions[2])).time = 0f;
+        ((Wait)(introShake.Actions[1])).time = 0.1f;
+
+        burstAnim.Actions = RemoveFromArray(burstAnim.Actions, 0);
+        burstAnim.Actions = RemoveFromArray(burstAnim.Actions, 0);
+        
+        return true;
+    }
+    public static bool PatchFsm_SilkBossTitleControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var titleUp = fsm.GetState("Title Up");
+        
+        ((Wait)(titleUp.Actions[1])).time = 0.1f;
+
+        return true;
+    }
+    public static bool PatchFsm_SilkBossPhaseControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var staggerPause = fsm.GetState("Stagger Pause");
+        var staggerFall = fsm.GetState("Stagger Fall");
+        var staggerHit = fsm.GetState("Stagger Hit");
+        
+        ((Wait)(staggerPause.Actions[1])).time = 0.1f;
+        // ((Wait)(staggerFall.Actions[4])).time = 0.1f;
+        ((Wait)(staggerHit.Actions[14])).time = 0f;
+        // ((AccelerateToY)(staggerFall.Actions[3])).targetSpeed = -90f;
+
+        return true;
+    }
+    public static bool PatchFsm_SilkBossChallengeControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var idle = fsm.GetState("Idle");
+        var hornetVoice = fsm.GetState("Hornet Voice");
+        var inRegion = fsm.GetState("In Region");
+
+        var customAction = new CustomLogicFsm(fsm);
+        customAction.action += (Fsm fsm) =>
+        {
+            fsm.FsmComponent.SendEvent("SPECIAL CHALLENGE");
+        };
+
+        inRegion.Actions = InsertInArray(inRegion.Actions, customAction, inRegion.Actions.Length - 1);
 
         return true;
     }
