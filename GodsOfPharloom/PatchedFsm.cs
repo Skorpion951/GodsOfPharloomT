@@ -161,6 +161,13 @@ public class PatchedFsm
         {
             new FsmPatch("First Weaver", "Control", PatchFsm_FirstSinner),
             new FsmPatch("Shrine First Weaver", "Inspection", PatchFsm_FirstSinnerInspection),
+            new FsmPatch("Boss Scene", "Outro", PatchFsm_FirstSinnerBossSceneOutro),
+        }),
+        new PatchedFsm("Dock_09", new FsmPatch[]
+        {
+            new FsmPatch("Boss Scene", "Control", PatchFsm_ForebrothersSignisAndGronBossScene),
+            new FsmPatch("Dock Guard Slasher", "Control", PatchFsm_ForebrothersSignisAndGronSlasher),
+            new FsmPatch("Dock Guard Thrower", "Control", PatchFsm_ForebrothersSignisAndGronThrower),
         }),
 
     };
@@ -896,12 +903,25 @@ public class PatchedFsm
         var introWave = fsm.GetState("Intro Wave");
         var introStand = fsm.GetState("Intro Stand");
         var roar = fsm.GetState("Roar");
+        var p2TelePause = fsm.GetState("P2 Tele Pause");
+        var p2Roar = fsm.GetState("P2 Roar");
 
         if(init == null) return false;
 
         ((Wait)(introWave.Actions[7])).time = 0.01f;
         ((Wait)(introStand.Actions[2])).time = 0.01f;
         ((Wait)(roar.Actions[4])).time = 0.1f;
+        ((Wait)(p2TelePause.Actions[1])).time = 0f;
+        ((Wait)(p2Roar.Actions[5])).time = 1f;
+
+        return true;
+    }
+    public static bool PatchFsm_FirstSinnerBossSceneOutro(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var pause = fsm.GetState("Pause");
+
+        ((Wait)(pause.Actions[0])).time = 0.01f;
 
         return true;
     }
@@ -945,6 +965,68 @@ public class PatchedFsm
         SetTransitionToState(init, breakOut, 1);
 
         GameObject.DestroyImmediate(fsm.FsmComponent.gameObject.GetComponent<PlayMakerNPC>());
+
+        return true;
+    }
+    public static bool PatchFsm_ForebrothersSignisAndGronBossScene(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+
+        var customAction = new CustomLogicFsm(fsm);
+        customAction.action += (Fsm fsm) =>
+        {
+            var introMinions = ((FindNamedChild)init.Actions[11]).storeResult.Value;
+            introMinions.SetActive(false);
+        };
+
+        init.Actions = InsertInArray(init.Actions, customAction, init.Actions.Length - 1);
+
+        return true;
+    }
+    public static bool PatchFsm_ForebrothersSignisAndGronSlasher(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var startRangeCheck = fsm.GetState("Start Range Check");
+        var roar = fsm.GetState("Roar");
+
+        var customAction = new CustomLogicFsm(fsm);
+        customAction.action += (Fsm fsm) =>
+        {
+            var gates = ((FindNamedChild)init.Actions[2]).storeResult.Value;
+            var gate2 = gates.transform.GetChild(1).gameObject;
+
+            if(HeroController.instance.transform.position.x < gate2.transform.position.x)
+            {
+                var pos = fsm.GameObject.transform.position;
+                fsm.GameObject.transform.position = new Vector3(41.5f, pos.y, pos.z);
+
+                var children = fsm.GameObject.transform;
+                foreach(Transform child in children)
+                {
+                    if(child.gameObject.name == "Start Range")
+                    {
+                        var childPos = child.gameObject.transform.position;
+                        child.gameObject.transform.position = new Vector3(18f, childPos.y, childPos.z);
+                        break;
+                    }
+                }
+            }
+        };
+
+        ((Wait)(roar.Actions[4])).time = 0.1f;
+
+        SetTransitionToState(init, startRangeCheck, 0);
+
+        init.Actions = InsertInArray(init.Actions, customAction, init.Actions.Length - 1);
+
+        return true;
+    }
+    public static bool PatchFsm_ForebrothersSignisAndGronThrower(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        
+        
+        
 
         return true;
     }
