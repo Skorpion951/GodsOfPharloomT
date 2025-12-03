@@ -189,6 +189,10 @@ public class PatchedFsm
         {
             new FsmPatch("door_cutsceneEndLaceTower", "Travel Control", PatchFsm_Lace2door_cutsceneEndLaceTower),
         }),
+        new PatchedFsm("Coral_27", new FsmPatch[]
+        {
+            new FsmPatch("Coral Conch Driller Giant Solo", "Control", PatchFsm_RagingConchfly),
+        }),
 
     };
     public enum BossName
@@ -1230,6 +1234,25 @@ public class PatchedFsm
 
         startCinematic.Actions = InsertInArray(startCinematic.Actions, customAction, startCinematic.Actions.Length);
 
+
+        return true;
+    }
+    public static bool PatchFsm_RagingConchfly(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var startPause = fsm.GetState("Start Pause");
+        var introL = fsm.GetState("Intro L");
+        var intro2 = fsm.GetState("Intro 2");
+        var roar = fsm.GetState("Roar");
+
+        ((Wait)(startPause.Actions[0])).time = 0f;
+        ((Wait)(introL.Actions[11])).time = 0.2f;
+        ((AnimatePositionBy)(intro2.Actions[4])).time = 0.01f;
+        ((AnimatePositionBy)(introL.Actions[9])).time = 0.01f;
+        ((Wait)(roar.Actions[1])).time = 0.1f;
+
+        var pos = fsm.GameObject.transform.position;
+        fsm.GameObject.transform.position = new Vector3(pos.x + 3, pos.y, pos.z);
 
         return true;
     }
