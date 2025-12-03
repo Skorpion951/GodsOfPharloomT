@@ -185,6 +185,10 @@ public class PatchedFsm
         {
             new FsmPatch("Swamp Shaman", "Control", PatchFsm_GroalTheGreat),
         }),
+        new PatchedFsm("Song_Tower_01", new FsmPatch[]
+        {
+            new FsmPatch("door_cutsceneEndLaceTower", "Travel Control", PatchFsm_Lace2door_cutsceneEndLaceTower),
+        }),
 
     };
     public enum BossName
@@ -1204,6 +1208,29 @@ public class PatchedFsm
         init.Actions = InsertInArray(init.Actions, customAction, init.Actions.Length - 1);
 
         SetTransitionToState(dormant, entryAntic, 0);
+        return true;
+    }
+    public static bool PatchFsm_Lace2door_cutsceneEndLaceTower(Fsm fsm)
+    {
+        PlayerData.instance.encounteredLaceTower = false;
+        var init = fsm.GetState("Init");
+        var liftArrive = fsm.GetState("Lift Arrive?");
+        var liftAlreadyHere = fsm.GetState("Lift Already Here");
+        var setHeroPos = fsm.GetState("Set Hero Pos");
+        var startCinematic = fsm.GetState("Start Cinematic");
+        var doorEntry = fsm.GetState("Door Entry");
+
+        startCinematic.Actions = RemoveFromArray(startCinematic.Actions, 0);
+
+        var customAction = new CustomLogicFsm(fsm);
+        customAction.action += (Fsm fsm) =>
+        {
+            fsm.FsmComponent.SendEvent("CINEMATIC END");
+        };
+
+        startCinematic.Actions = InsertInArray(startCinematic.Actions, customAction, startCinematic.Actions.Length);
+
+
         return true;
     }
 }

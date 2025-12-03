@@ -64,6 +64,14 @@ namespace Gods_Of_Pharloom
             Log.LogInfo("cleared OnPositionedAtHero");
             return false;
         }
+        public System.Collections.IEnumerator LoadScene()
+        {
+            string scenePath = "Scenes/Song_Tower_01";
+            var op = UnityEngine.AddressableAssets.Addressables.LoadSceneAsync(scenePath, UnityEngine.SceneManagement.LoadSceneMode.Additive, activateOnLoad: true);
+            GodsOfPharloomMod.Log.LogInfo("000000000000000000");
+            yield return op;
+            SceneManager.UnloadSceneAsync("Ant_17");
+        }
 
         void Update()
         {
@@ -81,7 +89,7 @@ namespace Gods_Of_Pharloom
             }
             if (keyboard.mKey.wasPressedThisFrame)
             {
-                Log.LogInfo((float)obj);
+                StartCoroutine(LoadScene());
             }
         }
 
@@ -89,8 +97,8 @@ namespace Gods_Of_Pharloom
         {
             if(to.name == "Ant_17")
             {
-                TransitionPoint.TransitionPoints[0].targetScene = "Shadow_18";
-                TransitionPoint.TransitionPoints[0].entryPoint = "right1";
+                TransitionPoint.TransitionPoints[0].targetScene = "Song_Tower_01";
+                TransitionPoint.TransitionPoints[0].entryPoint = "door_cutsceneEndLaceTower";
             }
             if(to.name == "Belltown")
             {
