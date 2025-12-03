@@ -181,6 +181,10 @@ public class PatchedFsm
             new FsmPatch("Silk Boss", "Phase Control", PatchFsm_SilkBossPhaseControl),
             new FsmPatch("Challenge Region", "Challenge", PatchFsm_SilkBossChallengeControl),
         }),
+        new PatchedFsm("Shadow_18", new FsmPatch[]
+        {
+            new FsmPatch("Swamp Shaman", "Control", PatchFsm_GroalTheGreat),
+        }),
 
     };
     public enum BossName
@@ -1115,15 +1119,20 @@ public class PatchedFsm
         var burstAnim = fsm.GetState("Burst Anim");
         var readyWait = fsm.GetState("Ready Wait");
         var introShake = fsm.GetState("Intro Shake");
+        var quickStart = fsm.GetState("Quick Start");
         
         ((Wait)(waitForBeatEnd.Actions[2])).time = 0.002f;
         ((SendEventByName)(waitForBeatEnd.Actions[1])).delay = 0.001f;
         ((Wait)(readyWait.Actions[1])).time = 0.1f;
-        ((WaitBool)(readyWait.Actions[2])).time = 0f;
         ((Wait)(introShake.Actions[1])).time = 0.1f;
+
+        // var pos = fsm.GameObject.transform.position;
+        // fsm.GameObject.transform.position = new Vector3(pos.x + 3, pos.y, pos.z);
 
         burstAnim.Actions = RemoveFromArray(burstAnim.Actions, 0);
         burstAnim.Actions = RemoveFromArray(burstAnim.Actions, 0);
+
+        SetTransitionToState(waitForBeatEnd, quickStart, 0);
         
         return true;
     }
@@ -1165,6 +1174,36 @@ public class PatchedFsm
 
         inRegion.Actions = InsertInArray(inRegion.Actions, customAction, inRegion.Actions.Length - 1);
 
+        return true;
+    }
+    public static bool PatchFsm_GroalTheGreat(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var fakeBattleEnd = fsm.GetState("Fake Battle End");
+        var entryAntic = fsm.GetState("Entry Antic");
+        var entryRoar = fsm.GetState("Entry Roar");
+        var dormant = fsm.GetState("Dormant");
+        
+        ((Wait)(entryRoar.Actions[2])).time = 0.1f;
+        ((Wait)(entryAntic.Actions[1])).time = 0.01f;
+
+        var customAction = new CustomLogicFsm(fsm);
+        customAction.action += (Fsm fsm) =>
+        {
+            if(PlayerData.instance.DefeatedSwampShaman) return;
+            var battleScene = ((GetGrandparent)init.Actions[5]).storeResult.Value;
+            var battleSceneComponent = battleScene.GetComponent<BattleScene>();
+            var collider = battleScene.GetComponent<BoxCollider2D>();
+
+            battleSceneComponent.battleStartPause = 0f;
+            battleSceneComponent.waves.RemoveRange(0, 5);
+
+            collider.size = new Vector2(29.5f, collider.size.y);
+        };
+
+        init.Actions = InsertInArray(init.Actions, customAction, init.Actions.Length - 1);
+
+        SetTransitionToState(dormant, entryAntic, 0);
         return true;
     }
 }
