@@ -11,6 +11,7 @@ using UnityEngine.Events;
 using HarmonyLib;
 using System.Drawing;
 using GenericVariableExtension;
+using InControl.NativeDeviceProfiles;
 
 public class PatchedFsm
 {
@@ -201,6 +202,11 @@ public class PatchedFsm
         new PatchedFsm("Hang_17b", new FsmPatch[]
         {
             new FsmPatch("Song Knight", "Control", PatchFsm_SecondSentielControl),
+        }),
+        new PatchedFsm("Greymoor_08_Mapper", new FsmPatch[]
+        {
+            new FsmPatch("Mapper Spar NPC", "Attack Enemies", PatchFsm_ShakraAttackEnemies),
+            new FsmPatch("Mapper Call Pole", "Control", PatchFsm_ShakraCallPole),
         }),
 
     };
@@ -1325,6 +1331,68 @@ public class PatchedFsm
 
         ((Wait)(encWake.Actions[3])).time = 0f;
         ((Wait)(becomeActive.Actions[2])).time = 0.01f;
+
+        return true;
+    }
+    public static bool PatchFsm_ShakraAttackEnemies(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var idle = fsm.GetState("Idle");
+        var reset = fsm.GetState("Reset");
+        var startAwayPause = fsm.GetState("Start Away Pause");
+        var callPause = fsm.GetState("Call Pause");
+        var startAway = fsm.GetState("Start Away");
+        var mapperEnter = fsm.GetState("Mapper Enter");
+        var battleCryStart = fsm.GetState("Battle Cry Start");
+        var battleCry1 = fsm.GetState("Battle Cry 1");
+        var setFightingHero = fsm.GetState("Set Fighting Hero");
+        var endBattle = fsm.GetState("End Battle");
+
+        var customActionEndState = new CustomLogicFsm(fsm);
+        customActionEndState.action += (Fsm fsm) =>
+        {
+            fsm.FsmComponent.SendEvent("FINISHED");
+        };
+
+        var customActionCreateTrigger = new CustomLogicFsm(fsm);
+        customActionCreateTrigger.action += (Fsm fsm) =>
+        {
+            var pos = fsm.GameObject.transform.position;
+
+            var customTrigger = CreateTrigger("Greymoor_08_Mapper");
+            var triggerPos = customTrigger.transform.position;
+            customTrigger.transform.position = new Vector3(pos.x, pos.y, pos.z);
+
+            var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
+            triggerComponent.fsm = fsm;
+
+            triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
+            {
+                fsm.FsmComponent.SendEvent("MAPPER CALL");
+            };
+        };
+
+        mapperEnter.Actions = InsertInArray(mapperEnter.Actions, customActionEndState, 1);
+        startAway.Actions = InsertInArray(startAway.Actions, customActionCreateTrigger, startAway.Actions.Length);
+
+        ((Wait)(init.Actions[38])).time = 0f;
+        ((Wait)(startAwayPause.Actions[0])).time = 0f;
+        ((Wait)(callPause.Actions[0])).time = 0f;
+
+        SetTransitionToState(startAway, mapperEnter, 0);
+        SetTransitionToState(mapperEnter, reset, 0);
+        SetTransitionToState(reset, setFightingHero, 0);
+        // SetTransitionToState(endBattle, startAwayPause, 0);
+        SetTransitionToState(battleCryStart, battleCry1, 1);
+
+        endBattle.Actions = new FsmStateAction[0];
+        endBattle.Transitions = new FsmTransition[0];
+
+        return true;
+    }
+    public static bool PatchFsm_ShakraCallPole(Fsm fsm)
+    {
+        fsm.GameObject.SetActive(false);
 
         return true;
     }
