@@ -198,6 +198,10 @@ public class PatchedFsm
         {
             new FsmPatch("Bone Flyer Giant", "Control", PatchFsm_SavageBeastfly2),
         }),
+        new PatchedFsm("Hang_17b", new FsmPatch[]
+        {
+            new FsmPatch("Song Knight", "Control", PatchFsm_SecondSentielControl),
+        }),
 
     };
     public enum BossName
@@ -1308,6 +1312,19 @@ public class PatchedFsm
         ((Wait)(rematchPause.Actions[2])).time = 0f;
         ((Wait)(entryAntic.Actions[6])).time = 0f;
         ((Wait)(rematchRoar.Actions[3])).time = 0.1f;
+
+        return true;
+    }
+    public static bool PatchFsm_SecondSentielControl(Fsm fsm)
+    {
+        PlayerData.instance.encounteredSongChevalierBoss = true;
+
+        var init = fsm.GetState("Init");
+        var encWake = fsm.GetState("Enc Wake");
+        var becomeActive = fsm.GetState("Become Active");
+
+        ((Wait)(encWake.Actions[3])).time = 0f;
+        ((Wait)(becomeActive.Actions[2])).time = 0.01f;
 
         return true;
     }
