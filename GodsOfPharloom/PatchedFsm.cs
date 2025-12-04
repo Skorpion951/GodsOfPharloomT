@@ -10,6 +10,7 @@ using System.Reflection;
 using UnityEngine.Events;
 using HarmonyLib;
 using System.Drawing;
+using GenericVariableExtension;
 
 public class PatchedFsm
 {
@@ -87,7 +88,7 @@ public class PatchedFsm
         }),
         new PatchedFsm("Bone_East_08", new FsmPatch[]
         {
-            new FsmPatch("Boss Scene", "Control", PatchFsm_FourthChorus_Awake)
+            new FsmPatch("Boss Scene", "Control", PatchFsm_FourthChorusBossScene)
         }),
         new PatchedFsm("Coral_11", new FsmPatch[]
         {
@@ -192,6 +193,10 @@ public class PatchedFsm
         new PatchedFsm("Coral_27", new FsmPatch[]
         {
             new FsmPatch("Coral Conch Driller Giant Solo", "Control", PatchFsm_RagingConchfly),
+        }),
+        new PatchedFsm("Bone_East_08_Boss_Beastfly", new FsmPatch[]
+        {
+            new FsmPatch("Bone Flyer Giant", "Control", PatchFsm_SavageBeastfly2),
         }),
 
     };
@@ -399,9 +404,30 @@ public class PatchedFsm
 
         return true;
     }
-    public static bool PatchFsm_FourthChorus_Awake(Fsm fsm)
+    public static bool PatchFsm_FourthChorusBossScene(Fsm fsm)
     {
+        if(GodsOfPharloomMod.currentBoss == BossName.SavageBeastfly2)
+        {
+            var init = fsm.GetState("Init");
 
+            var customAction = new CustomLogicFsm(fsm);
+            customAction.action += (Fsm fsm) =>
+            {
+                var go = fsm.GameObject;
+
+                var children = go.transform;
+
+                foreach(Transform child in children)
+                {
+                    if(child.name == "Lava Plats" ||
+                    child.name == "Pre Activation Floor" ||
+                    child.name == "Battle End Floor"
+                    ) child.gameObject.SetActive(false);
+                }
+            };
+
+            init.Actions = InsertInArray(init.Actions, customAction, 16);
+        }
         var remeet1 = fsm.GetState("Remeet 1");
         var remeet2 = fsm.GetState("Remeet 2");
 
@@ -1253,6 +1279,35 @@ public class PatchedFsm
 
         var pos = fsm.GameObject.transform.position;
         fsm.GameObject.transform.position = new Vector3(pos.x + 3, pos.y, pos.z);
+
+        return true;
+    }
+    public static bool PatchFsm_SavageBeastfly2(Fsm fsm)
+    {
+        PlayerData.instance.defeatedBoneFlyerGiant = true;
+        PlayerData.instance.visitedEnclave = true;
+
+        var go = fsm.GameObject;
+        var children = go.transform;
+        foreach(Transform child in children)
+        {
+            if(child.name == "Wake Range")
+            {
+                var pos = child.position;
+                child.position = new Vector3(77.5f, pos.y, pos.z);
+                break;
+            }
+        }
+
+        var init = fsm.GetState("Init");
+        var rematchPause = fsm.GetState("Rematch Pause");
+        var entryAntic = fsm.GetState("Entry Antic");
+        var rematchRoar = fsm.GetState("Rematch Roar");
+
+        ((Wait)(init.Actions[12])).time = 0f;
+        ((Wait)(rematchPause.Actions[2])).time = 0f;
+        ((Wait)(entryAntic.Actions[6])).time = 0f;
+        ((Wait)(rematchRoar.Actions[3])).time = 0.1f;
 
         return true;
     }

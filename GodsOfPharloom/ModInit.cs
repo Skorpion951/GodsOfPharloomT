@@ -66,11 +66,9 @@ namespace Gods_Of_Pharloom
         }
         public System.Collections.IEnumerator LoadScene()
         {
-            string scenePath = "Scenes/Song_Tower_01";
-            var op = UnityEngine.AddressableAssets.Addressables.LoadSceneAsync(scenePath, UnityEngine.SceneManagement.LoadSceneMode.Additive, activateOnLoad: true);
+            var op = UnityEngine.AddressableAssets.Addressables.LoadSceneAsync("Scenes/Bone_East_08_Boss_Beastfly", UnityEngine.SceneManagement.LoadSceneMode.Additive);
             GodsOfPharloomMod.Log.LogInfo("000000000000000000");
             yield return op;
-            SceneManager.UnloadSceneAsync("Ant_17");
         }
 
         void Update()
@@ -97,7 +95,7 @@ namespace Gods_Of_Pharloom
         {
             if(to.name == "Ant_17")
             {
-                TransitionPoint.TransitionPoints[0].targetScene = "Coral_27";
+                TransitionPoint.TransitionPoints[0].targetScene = "Bone_East_08";
                 TransitionPoint.TransitionPoints[0].entryPoint = "left1";
             }
             if(to.name == "Belltown")

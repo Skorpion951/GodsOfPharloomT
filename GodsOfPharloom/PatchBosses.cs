@@ -10,6 +10,8 @@ namespace Gods_Of_Pharloom
 {
     public partial class GodsOfPharloomMod : BaseUnityPlugin
     {
+        public static PatchedFsm.BossName currentBoss = PatchedFsm.BossName.SavageBeastfly2;
+
         [HarmonyPostfix]
         [HarmonyPatch(typeof(PlayMakerFSM), "Awake")]
         private static void PlayMakerPatch_Postfix(PlayMakerFSM __instance)
@@ -37,6 +39,25 @@ namespace Gods_Of_Pharloom
                     return;
                 }
             }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(SceneAdditiveLoadConditional), "OnEnable")]
+        private static void SceneAdditiveLoadPatch_Prefix(SceneAdditiveLoadConditional __instance)
+        {
+            if(currentBoss != PatchedFsm.BossName.SavageBeastfly2) return;
+            if(!__instance.gameObject.name.Contains("Beastfly")) return;
+
+            FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            FieldInfo tests = __instance.GetType().GetField("tests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            GodsOfPharloomMod.Log.LogInfo(questTests);
+            GodsOfPharloomMod.Log.LogInfo(tests);
+
+            var playerDataTest = new PlayerDataTest();
+
+            questTests.SetValue(__instance, new QuestTest[0]);
+            tests.SetValue(__instance, playerDataTest);
         }
     }
 }
