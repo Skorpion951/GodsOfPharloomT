@@ -217,6 +217,10 @@ public class PatchedFsm
         {
             new FsmPatch("Trobbio", "Control", PatchFsm_TrobbioControl),
         }),
+        new PatchedFsm("Coral_29", new FsmPatch[]
+        {
+            new FsmPatch("Zap Core Enemy", "Control", PatchFsm_VoltvyrmControl),
+        }),
 
     };
     public enum BossName
@@ -1466,6 +1470,19 @@ public class PatchedFsm
         SetTransitionToState(startPause, quickEntrance1, 0);
 
         startPause.Actions = RemoveFromArray(startPause.Actions, 0);
+
+        return true;
+    }
+    public static bool PatchFsm_VoltvyrmControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var introPause = fsm.GetState("Intro Pause");
+        var introAntic = fsm.GetState("Intro Antic");
+        var roar = fsm.GetState("Roar");
+
+        ((Wait)introPause.Actions[0]).time = 0f;
+        ((Wait)introAntic.Actions[1]).time = 0f;
+        ((Wait)roar.Actions[13]).time = 0.1f;
 
         return true;
     }
