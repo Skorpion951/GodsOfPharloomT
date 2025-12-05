@@ -225,6 +225,12 @@ public class PatchedFsm
         {
             new FsmPatch("Centipede Control", "Control", PatchFsm_BellEaterControl),
         }),
+        new PatchedFsm("Clover_10", new FsmPatch[]
+        {
+            new FsmPatch("Dancer A", "Control", PatchFsm_CloverDancersDancerAB),
+            new FsmPatch("Green Prince Boss NPC", "Dialogue", PatchFsm_CloverDancersGreenPrinceBossNPC),
+            new FsmPatch("Dancer Control", "Control", PatchFsm_CloverDancersDancerControl),
+        }),
 
     };
     public enum BossName
@@ -1512,6 +1518,51 @@ public class PatchedFsm
         };
 
         init.Actions = InsertInArray(init.Actions, customActionReplaceStartRage, init.Actions.Length - 1);
+
+        return true;
+    }
+    public static bool PatchFsm_CloverDancersGreenPrinceBossNPC(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var encountered = fsm.GetState("Encountered?");
+        var encounteredStart = fsm.GetState("Encountered Start");
+        
+
+        ((Wait)encounteredStart.Actions[2]).time = 0.01f;
+
+        SetTransitionToState(encountered, encounteredStart, 0);
+
+        return true;
+    }
+    public static bool PatchFsm_CloverDancersDancerControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var dormant = fsm.GetState("Dormant");
+        var gateClose = fsm.GetState("Gate Close");
+        var beatStartPause = fsm.GetState("Beat Start Pause");
+        var pendulumPrepare = fsm.GetState("Pendulum Prepare");
+        var beatStart = fsm.GetState("Beat Start");
+        var deathPause = fsm.GetState("Death Pause");
+        var returnDancers = fsm.GetState("Return Dancers");
+        var dancersStunned = fsm.GetState("Dancers Stunned");
+        
+        ((Wait)(returnDancers.Actions[4])).time = 0.3f;
+        ((Wait)(dancersStunned.Actions[6])).time = 0.3f;
+
+        return true;
+    }
+    public static bool PatchFsm_CloverDancersDancerAB(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var cloverRoar = fsm.GetState("Clover Roar");
+        var cloverSubRoar = fsm.GetState("Clover Sub Roar");
+        var cRoar = fsm.GetState("C Roar");
+        var cRoar2 = fsm.GetState("C Roar 2");
+
+        ((Wait)cloverRoar.Actions[0]).time = 0.1f;
+        ((Wait)cloverSubRoar.Actions[2]).time = 0.05f;
+        ((Wait)cRoar.Actions[2]).time = ((Wait)cRoar.Actions[2]).time.Value / 3f;
+        ((Wait)cRoar2.Actions[4]).time = ((Wait)cRoar2.Actions[4]).time.Value / 3f;
 
         return true;
     }
