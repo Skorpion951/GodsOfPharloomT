@@ -95,8 +95,8 @@ namespace Gods_Of_Pharloom
         {
             if(to.name == "Ant_17")
             {
-                TransitionPoint.TransitionPoints[0].targetScene = "Ward_02";
-                TransitionPoint.TransitionPoints[0].entryPoint = "bot1";
+                TransitionPoint.TransitionPoints[0].targetScene = "Library_13";
+                TransitionPoint.TransitionPoints[0].entryPoint = "left1";
             }
             if(to.name == "Belltown")
             {

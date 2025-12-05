@@ -213,6 +213,10 @@ public class PatchedFsm
             new FsmPatch("Boss Scene", "Control", PatchFsm_TheUnravelledBossScene),
             new FsmPatch("Conductor Boss", "Control", PatchFsm_TheUnravelledControl),
         }),
+        new PatchedFsm("Library_13", new FsmPatch[]
+        {
+            new FsmPatch("Trobbio", "Control", PatchFsm_TrobbioControl),
+        }),
 
     };
     public enum BossName
@@ -1441,6 +1445,27 @@ public class PatchedFsm
 
         ((Wait)introRoar.Actions[2]).time = 0.1f;
         ((Wait)teleAnticIntro.Actions[3]).time = 0f;
+
+        return true;
+    }
+    public static bool PatchFsm_TrobbioControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var state = fsm.GetState("State");
+        var waitRefight = fsm.GetState("Wait Refight");
+        var startPause = fsm.GetState("Start Pause");
+        var quickEntrance1 = fsm.GetState("Quick Entrance 1");
+        var quickEntrance2 = fsm.GetState("Quick Entrance 2");
+        var quickEntrance3 = fsm.GetState("Quick Entrance 3");
+
+        ((Wait)quickEntrance1.Actions[0]).time = 0f;
+        ((Wait)quickEntrance2.Actions[3]).time = 0.1f;
+        ((Wait)quickEntrance3.Actions[2]).time = 0.1f;
+
+        SetTransitionToState(state, waitRefight, 0);
+        SetTransitionToState(startPause, quickEntrance1, 0);
+
+        startPause.Actions = RemoveFromArray(startPause.Actions, 0);
 
         return true;
     }
