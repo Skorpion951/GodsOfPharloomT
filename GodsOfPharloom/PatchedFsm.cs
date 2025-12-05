@@ -242,6 +242,11 @@ public class PatchedFsm
             new FsmPatch("Coral King", "Control", PatchFsm_CrustKingKhanControl),
             new FsmPatch("Boss Scene", "Control", PatchFsm_CrustKingKhanBossSceneControl),
         }),
+        new PatchedFsm("Bone_East_18b", new FsmPatch[]
+        {
+            new FsmPatch("Bone Hunter Trapper", "Control", PatchFsm_GurrTheOutcastControl),
+            new FsmPatch("TrapBench", "Control", PatchFsm_GurrTheOutcastTrapBenchControl),
+        }),
 
     };
     public enum BossName
@@ -1673,7 +1678,55 @@ public class PatchedFsm
 
         init.Actions = InsertInArray(init.Actions, customActionDisableThrone, init.Actions.Length - 1);
 
-        SetTransitionToState(enter, preIntroRoar, 1);
+        SetTransitionToState(enter, throneRumble, 0);
+        SetTransitionToState(enter, throneRumble, 1);
+
+        return true;
+    }
+    public static bool PatchFsm_GurrTheOutcastControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var posChoice = fsm.GetState("Pos Choice");
+        var pos2 = fsm.GetState("Pos 2");
+        var ambushAntic = fsm.GetState("Ambush Antic");
+        var burstOut = fsm.GetState("Burst Out");
+        var introRoar = fsm.GetState("Intro Roar");
+        var hiding = fsm.GetState("Hiding");
+        
+        ((Wait)ambushAntic.Actions[2]).time = 0.01f;
+        ((Wait)introRoar.Actions[3]).time = 0.1f;
+
+        var customActionStartBattle = new CustomLogicFsm(fsm);
+        customActionStartBattle.action += (Fsm fsm) =>
+        {
+            var pos = fsm.GameObject.transform.position;
+
+            var customTrigger = CreateTrigger("Bone_East_18b");
+            var triggerPos = customTrigger.transform.position;
+            customTrigger.transform.position = new Vector3(pos.x - 10, pos.y - 5, pos.z);
+
+            var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
+            triggerComponent.fsm = fsm;
+
+            triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
+            {
+                PlayMakerFSM.BroadcastEvent("BG CLOSE");
+                fsm.FsmComponent.SendEvent("START");
+            };
+        };
+
+        hiding.Actions = InsertInArray(hiding.Actions, customActionStartBattle, 0);
+
+        init.Actions = RemoveFromArray(init.Actions, 4);
+
+        SetTransitionToState(posChoice, pos2, 0);
+        SetTransitionToState(posChoice, pos2, 2);
+
+        return true;
+    }
+    public static bool PatchFsm_GurrTheOutcastTrapBenchControl(Fsm fsm)
+    {
+        GameObject.Destroy(fsm.GameObject);
 
         return true;
     }
