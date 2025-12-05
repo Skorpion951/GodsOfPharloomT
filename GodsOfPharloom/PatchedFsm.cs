@@ -247,6 +247,10 @@ public class PatchedFsm
             new FsmPatch("Bone Hunter Trapper", "Control", PatchFsm_GurrTheOutcastControl),
             new FsmPatch("TrapBench", "Control", PatchFsm_GurrTheOutcastTrapBenchControl),
         }),
+        new PatchedFsm("Coral_33", new FsmPatch[]
+        {
+            new FsmPatch("Garmond Black Threaded Fighter", "Control", PatchFsm_LostGarmondControl),
+        }),
 
     };
     public enum BossName
@@ -1727,6 +1731,20 @@ public class PatchedFsm
     public static bool PatchFsm_GurrTheOutcastTrapBenchControl(Fsm fsm)
     {
         GameObject.Destroy(fsm.GameObject);
+
+        return true;
+    }
+    public static bool PatchFsm_LostGarmondControl(Fsm fsm)
+    {
+        var go = fsm.GameObject;
+        var pos = go.transform.position;
+        go.transform.position = new Vector3(pos.x + 12f, pos.y, pos.z);
+
+        var init = fsm.GetState("Init");
+        var introRoar = fsm.GetState("Intro Roar");
+        var sting = fsm.GetState("Sting");
+
+        ((Wait)sting.Actions[2]).time = 0.01f;
 
         return true;
     }

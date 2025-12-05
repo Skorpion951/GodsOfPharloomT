@@ -10,7 +10,7 @@ namespace Gods_Of_Pharloom
 {
     public partial class GodsOfPharloomMod : BaseUnityPlugin
     {
-        public static PatchedFsm.BossName currentBoss = PatchedFsm.BossName.Nyleth;
+        public static PatchedFsm.BossName currentBoss = PatchedFsm.BossName.LostGarmond;
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(PlayMakerFSM), "Awake")]
@@ -78,20 +78,26 @@ namespace Gods_Of_Pharloom
                 tests.SetValue(__instance, playerDataTest);
             }
         }
-        // [HarmonyPrefix]
-        // [HarmonyPatch(typeof(TestGameObjectActivator), "OnEnable")]
-        // private static void TestGameObjectActivatorPatch_Prefix(TestGameObjectActivator __instance)
-        // {
-        //     if(currentBoss == PatchedFsm.BossName.GurrTheOutcast && __instance.gameObject.name == "Boss Scene")
-        //     {
-        //         PlayerData.instance.defeatedBoneFlyerGiantGolemScene = false;
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(TestGameObjectActivator), "OnEnable")]
+        private static void TestGameObjectActivatorPatch_Prefix(TestGameObjectActivator __instance)
+        {
+            if(currentBoss == PatchedFsm.BossName.LostGarmond && __instance.gameObject.name == "Garmond Black Threaded Scene")
+            {
+                PlayerData.instance.garmondBlackThreadDefeated = false;
 
-        //         FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo tests = __instance.GetType().GetField("playerDataTest", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
-        //         var playerDataTest = new PlayerDataTest();
+                var playerDataTest = new PlayerDataTest();
 
-        //         questTests.SetValue(__instance, new QuestTest[0]);
-        //     }
-        // }
+                questTests.SetValue(__instance, new QuestTest[0]);
+                tests.SetValue(__instance, playerDataTest);
+            }
+            if(currentBoss == PatchedFsm.BossName.LostGarmond && __instance.gameObject.name == "Pre Garmond")
+            {
+                __instance.gameObject.SetActive(false);
+            }
+        }
     }
 }
