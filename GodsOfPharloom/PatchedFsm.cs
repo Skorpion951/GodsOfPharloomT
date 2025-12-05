@@ -237,6 +237,11 @@ public class PatchedFsm
             new FsmPatch("Battle Scene", "Revisit", PatchFsm_CrawfatherBattleScene),
             new FsmPatch("Battle Start", "Battle Start", PatchFsm_CrawfatherBattleStart),
         }),
+        new PatchedFsm("Memory_Coral_Tower", new FsmPatch[]
+        {
+            new FsmPatch("Coral King", "Control", PatchFsm_CrustKingKhanControl),
+            new FsmPatch("Boss Scene", "Control", PatchFsm_CrustKingKhanBossSceneControl),
+        }),
 
     };
     public enum BossName
@@ -1624,6 +1629,51 @@ public class PatchedFsm
         ((Wait)lightsUp.Actions[6]).time = 0.01f;
         ((Wait)crowdRoar.Actions[4]).time = 0f;
         ((Wait)crowdIdle.Actions[1]).time = 0.05f;
+
+        return true;
+    }
+    public static bool PatchFsm_CrustKingKhanControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var dormant = fsm.GetState("Dormant");
+        var startPos = fsm.GetState("Start Pos");
+        var introRoar = fsm.GetState("Intro Roar");
+        var refightPos = fsm.GetState("Refight Pos");
+        var refightAntic = fsm.GetState("Refight Antic");
+        var airRoar = fsm.GetState("Air Roar");
+
+        ((Wait)introRoar.Actions[8]).time = 0.1f;
+        ((Wait)airRoar.Actions[8]).time = 0.1f;
+
+        SetTransitionToState(dormant, startPos, 1);
+
+        return true;
+    }
+    public static bool PatchFsm_CrustKingKhanBossSceneControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var enter = fsm.GetState("Enter");
+        var preIntroRoar = fsm.GetState("Pre Intro Roar");
+        var encounteredPause = fsm.GetState("Encountered Pause");
+        var throneRumble = fsm.GetState("Throne Rumble");
+        var spearsUp = fsm.GetState("Spears Up");
+
+        ((Wait)enter.Actions[3]).time = 0.01f;
+        ((Wait)preIntroRoar.Actions[2]).time = 0.01f;
+        ((Wait)throneRumble.Actions[1]).time = 0.1f;
+        ((Wait)spearsUp.Actions[1]).time = 0.1f;
+        ((AudioPlayerOneShotSingle)throneRumble.Actions[3]).delay = 0f;
+
+        var customActionDisableThrone = new CustomLogicFsm(fsm);
+        customActionDisableThrone.action += (Fsm fsm) =>
+        {
+            var throne = ((FindNamedChild)init.Actions[3]).storeResult.Value;
+            throne.SetActive(false);
+        };
+
+        init.Actions = InsertInArray(init.Actions, customActionDisableThrone, init.Actions.Length - 1);
+
+        SetTransitionToState(enter, preIntroRoar, 1);
 
         return true;
     }
