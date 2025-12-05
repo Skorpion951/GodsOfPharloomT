@@ -231,6 +231,12 @@ public class PatchedFsm
             new FsmPatch("Green Prince Boss NPC", "Dialogue", PatchFsm_CloverDancersGreenPrinceBossNPC),
             new FsmPatch("Dancer Control", "Control", PatchFsm_CloverDancersDancerControl),
         }),
+        new PatchedFsm("Room_CrowCourt_02", new FsmPatch[]
+        {
+            new FsmPatch("Crawfather", "Control", PatchFsm_CrawfatherControl),
+            new FsmPatch("Battle Scene", "Revisit", PatchFsm_CrawfatherBattleScene),
+            new FsmPatch("Battle Start", "Battle Start", PatchFsm_CrawfatherBattleStart),
+        }),
 
     };
     public enum BossName
@@ -315,7 +321,7 @@ public class PatchedFsm
         "Coral_29", //Voltvyrm
         "Bellway_Centipede_Arena", //BellEater
         "Clover_10", //CloverDancers
-        "Room_CrowCourt", //Crawfather
+        "Room_CrowCourt_02", //Crawfather
         "Memory_Coral_Tower", //CrustKingKhann
         "Bone_East_18b", //GurrTheOutcast
         "Coral_33", //LostGarmond
@@ -1561,8 +1567,63 @@ public class PatchedFsm
 
         ((Wait)cloverRoar.Actions[0]).time = 0.1f;
         ((Wait)cloverSubRoar.Actions[2]).time = 0.05f;
-        ((Wait)cRoar.Actions[2]).time = ((Wait)cRoar.Actions[2]).time.Value / 3f;
-        ((Wait)cRoar2.Actions[4]).time = ((Wait)cRoar2.Actions[4]).time.Value / 3f;
+        ((Wait)cRoar.Actions[2]).time = ((Wait)cRoar.Actions[2]).time.Value / 5f;
+        ((Wait)cRoar2.Actions[4]).time = ((Wait)cRoar2.Actions[4]).time.Value / 5f;
+
+        return true;
+    }
+    public static bool PatchFsm_CrawfatherControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var emergeAnnounce = fsm.GetState("Emerge Announce");
+        var BGIdle = fsm.GetState("BG Idle");
+        var BGRoar = fsm.GetState("BG Roar");
+        var BGPeck1 = fsm.GetState("BG Peck 1");
+        var BGPeakEnd = fsm.GetState("BG Peck End");
+        var roar = fsm.GetState("Roar");
+
+        ((Wait)emergeAnnounce.Actions[2]).time = 0f;
+        ((Wait)roar.Actions[3]).time = 0.1f;
+
+        BGRoar.Transitions[0].FsmEvent.Name = "FINISHED";
+
+        SetTransitionToState(BGPeakEnd, emergeAnnounce, 0);
+
+        BGIdle.Transitions = RemoveFromArray(BGIdle.Transitions, 1);
+
+        return true;
+    }
+    public static bool PatchFsm_CrawfatherBattleScene(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        
+        var battleSceneObj = fsm.GameObject;
+        var battleSceneComponent = battleSceneObj.GetComponent<BattleScene>();
+
+        var waves = battleSceneComponent.waves;
+        var wave6 = waves[waves.Count - 1];
+
+        battleSceneComponent.waves = new List<BattleWave>{waves[waves.Count - 1]};
+        wave6.startDelay = 0f;
+
+        return true;
+    }
+    public static bool PatchFsm_CrawfatherBattleStart(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var enter = fsm.GetState("Enter");
+        var startWipeAudio = fsm.GetState("Start Wipe Audio");
+        var lightsUp = fsm.GetState("Lights Up");
+        var crowdRoar = fsm.GetState("Crowd Roar");
+        var crowdIdle = fsm.GetState("Crowd Idle");
+
+        ((Wait)enter.Actions[3]).time = 0.01f;
+        ((Wait)startWipeAudio.Actions[1]).time = 0.01f;
+        ((EaseSpriteColor)lightsUp.Actions[2]).time = 0.001f;
+        ((EaseFloat)lightsUp.Actions[4]).time = 0.001f;
+        ((Wait)lightsUp.Actions[6]).time = 0.01f;
+        ((Wait)crowdRoar.Actions[4]).time = 0f;
+        ((Wait)crowdIdle.Actions[1]).time = 0.05f;
 
         return true;
     }
