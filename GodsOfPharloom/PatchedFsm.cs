@@ -221,6 +221,10 @@ public class PatchedFsm
         {
             new FsmPatch("Zap Core Enemy", "Control", PatchFsm_VoltvyrmControl),
         }),
+        new PatchedFsm("Bellway_Centipede_Arena", new FsmPatch[]
+        {
+            new FsmPatch("Centipede Control", "Control", PatchFsm_BellEaterControl),
+        }),
 
     };
     public enum BossName
@@ -1483,6 +1487,31 @@ public class PatchedFsm
         ((Wait)introPause.Actions[0]).time = 0f;
         ((Wait)introAntic.Actions[1]).time = 0f;
         ((Wait)roar.Actions[13]).time = 0.1f;
+
+        return true;
+    }
+    public static bool PatchFsm_BellEaterControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var bodyRUp = fsm.GetState("Body R Up");
+        var introCam = fsm.GetState("Intro Cam");
+        var bodyLDown = fsm.GetState("Body L Down");
+        var introRoar = fsm.GetState("Intro Roar");
+
+        ((Wait)bodyRUp.Actions[11]).time = 0.01f;
+        ((Wait)introCam.Actions[0]).time = 0.01f;
+        ((Wait)bodyLDown.Actions[6]).time = 0.01f;
+        ((Wait)introRoar.Actions[3]).time = 0.1f;
+
+        var customActionReplaceStartRage = new CustomLogicFsm(fsm);
+        customActionReplaceStartRage.action += (Fsm fsm) =>
+        {
+            var startRange = ((FindNamedChild)init.Actions[8]).storeResult.Value;
+            var pos = startRange.transform.position;
+            startRange.transform.position = new Vector3(pos.x - 10f, pos.y, pos.z);
+        };
+
+        init.Actions = InsertInArray(init.Actions, customActionReplaceStartRage, init.Actions.Length - 1);
 
         return true;
     }
