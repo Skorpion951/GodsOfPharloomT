@@ -208,6 +208,11 @@ public class PatchedFsm
             new FsmPatch("Mapper Spar NPC", "Attack Enemies", PatchFsm_ShakraAttackEnemies),
             new FsmPatch("Mapper Call Pole", "Control", PatchFsm_ShakraCallPole),
         }),
+        new PatchedFsm("Ward_02_Boss", new FsmPatch[]
+        {
+            new FsmPatch("Boss Scene", "Control", PatchFsm_TheUnravelledBossScene),
+            new FsmPatch("Conductor Boss", "Control", PatchFsm_TheUnravelledControl),
+        }),
 
     };
     public enum BossName
@@ -287,7 +292,7 @@ public class PatchedFsm
         "Bone_East_08", //SavageBeastfly2
         "Hang_17b", //SecondSentiel
         "Greymoor_08", //Shakra
-        "Under_08", //TheUnravelled
+        "Ward_02_Boss", //TheUnravelled
         "Library_13", //Trobbio
         "Coral_29", //Voltvyrm
         "Bellway_Centipede_Arena", //BellEater
@@ -1393,6 +1398,49 @@ public class PatchedFsm
     public static bool PatchFsm_ShakraCallPole(Fsm fsm)
     {
         fsm.GameObject.SetActive(false);
+
+        return true;
+    }
+    public static bool PatchFsm_TheUnravelledBossScene(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var encounteredStart = fsm.GetState("Encountered Start");
+        var arenaStart = fsm.GetState("Arena Start");
+        var bossPhase1 = fsm.GetState("Boss Phase 1");
+        var spearSuckPause = fsm.GetState("Spear Suck Pause");
+        var suckSpears = fsm.GetState("Suck Spears");
+        var p3Shake2 = fsm.GetState("P3 Shake 2");
+        var posSuckSpearsPause = fsm.GetState("Pos Suck Spears Pause");
+        var p3Shake = fsm.GetState("P3 Shake");
+        var headpieceAntic = fsm.GetState("Headpiece Antic");
+        var headpiecePause = fsm.GetState("Headpiece Pause");
+        var headpieceSuck = fsm.GetState("Headpiece Suck");
+
+        ((Wait)arenaStart.Actions[4]).time = 0f;
+        ((Wait)encounteredStart.Actions[1]).time = 0f;
+        ((Wait)spearSuckPause.Actions[0]).time = 0f;
+        ((Wait)p3Shake2.Actions[2]).time = 0.1f;
+        ((Wait)suckSpears.Actions[1]).time = 0.1f;
+        ((Wait)posSuckSpearsPause.Actions[0]).time = 0.1f;
+        ((Wait)p3Shake.Actions[3]).time = 0.01f;
+        ((Wait)headpieceAntic.Actions[3]).time = 0.01f;
+        ((Wait)headpiecePause.Actions[0]).time = 0f;
+        ((Wait)headpieceSuck.Actions[0]).time = 0.01f;
+        ((Translate)headpieceSuck.Actions[3]).y = -1000f;
+
+        SetTransitionToState(arenaStart, encounteredStart, 0);
+        SetTransitionToState(encounteredStart, p3Shake, 0);
+
+        return true;
+    }
+    public static bool PatchFsm_TheUnravelledControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var introRoar = fsm.GetState("Intro Roar");
+        var teleAnticIntro = fsm.GetState("Tele Antic Intro");
+
+        ((Wait)introRoar.Actions[2]).time = 0.1f;
+        ((Wait)teleAnticIntro.Actions[3]).time = 0f;
 
         return true;
     }
