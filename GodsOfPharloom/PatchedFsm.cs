@@ -215,7 +215,9 @@ public class PatchedFsm
         }),
         new PatchedFsm("Library_13", new FsmPatch[]
         {
-            new FsmPatch("Trobbio", "Control", PatchFsm_TrobbioControl),
+            new FsmPatch("Trobbio", "Control", PatchFsm_TrobbioControl),///////////////////////////
+            new FsmPatch("Tormented Trobbio", "Control", PatchFsm_TormentedTrobbioControl),
+            new FsmPatch("Grand Stage Scene", "Control", PatchFsm_TormentedTrobbioGrandStageSceneControl),
         }),
         new PatchedFsm("Coral_29", new FsmPatch[]
         {
@@ -2013,6 +2015,43 @@ public class PatchedFsm
         ((Wait)challenge2.Actions[1]).time = 0;
 
         SetTransitionToState(idle, hornetVoice, 0);
+
+        return true;
+    }
+    public static bool PatchFsm_TormentedTrobbioControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var state = fsm.GetState("State");
+        var startPause = fsm.GetState("Start Pause");
+        var fogStart = fsm.GetState("Fog Start");
+        var drumFade = fsm.GetState("Drum Fade");
+        var trobbioRise = fsm.GetState("Trobbio Rise");
+        var riseEnd = fsm.GetState("Rise End");
+
+        ((ConvertBoolToFloat)trobbioRise.Actions[6]).falseValue = 0.3f;
+        ((ConvertBoolToFloat)trobbioRise.Actions[6]).trueValue = 0.3f;
+        ((ConvertBoolToFloat)fogStart.Actions[6]).falseValue = 0f;
+        ((ConvertBoolToFloat)fogStart.Actions[6]).trueValue = 0f;
+        ((FadeAudio)fogStart.Actions[1]).time = 0.2f;
+        ((ConvertBoolToFloat)riseEnd.Actions[1]).trueValue = 0f;
+        ((ConvertBoolToFloat)riseEnd.Actions[1]).falseValue = 0f;
+
+        startPause.Actions = RemoveFromArray(startPause.Actions, 0);
+        riseEnd.Actions = RemoveFromArray(riseEnd.Actions, 3);
+
+        SetTransitionToState(state, startPause, 0);
+
+        return true;
+    }
+    public static bool PatchFsm_TormentedTrobbioGrandStageSceneControl(Fsm fsm)
+    {
+        var act3 = fsm.GetState("Act 3");
+        var trobbioReady2 = fsm.GetState("Trobbio Ready 2");
+        var spawnTormentedItem = fsm.GetState("Spawn Tormented Item");
+        var endBattle = fsm.GetState("End Battle");
+        
+        SetTransitionToState(act3, trobbioReady2, 2);
+        SetTransitionToState(trobbioReady2, endBattle, 0);
 
         return true;
     }
