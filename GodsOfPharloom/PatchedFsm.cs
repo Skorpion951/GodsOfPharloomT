@@ -263,6 +263,10 @@ public class PatchedFsm
         {
             new FsmPatch("Boss Scene", "Control", PatchFsm_NylethBossSceneControl),
         }),
+        new PatchedFsm("Clover_19", new FsmPatch[]
+        {
+            new FsmPatch("Cloverstag White Boss", "Control", PatchFsm_PalestagControl),
+        }),
 
     };
     public enum BossName
@@ -1868,6 +1872,15 @@ public class PatchedFsm
         ((Wait)scream.Actions[9]).time = 0.1f;
         ((Wait)floorBreak.Actions[8]).time = 0.3f;
         ((Wait)roofUp.Actions[6]).time = 0f;
+
+        return true;
+    }
+    public static bool PatchFsm_PalestagControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var roar = fsm.GetState("Roar");
+
+        ((Wait)roar.Actions[11]).time = 0.1f;
 
         return true;
     }

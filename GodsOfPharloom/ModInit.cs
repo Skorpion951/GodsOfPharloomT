@@ -95,8 +95,8 @@ namespace Gods_Of_Pharloom
         {
             if(to.name == "Ant_17")
             {
-                TransitionPoint.TransitionPoints[0].targetScene = "Shellwood_11b_Memory";
-                TransitionPoint.TransitionPoints[0].entryPoint = "door_wakeInMemory";
+                TransitionPoint.TransitionPoints[0].targetScene = "Clover_19";
+                TransitionPoint.TransitionPoints[0].entryPoint = "top1";
             }
             if(to.name == "Belltown")
             {
