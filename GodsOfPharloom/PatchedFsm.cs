@@ -267,6 +267,12 @@ public class PatchedFsm
         {
             new FsmPatch("Cloverstag White Boss", "Control", PatchFsm_PalestagControl),
         }),
+        new PatchedFsm("Peak_07", new FsmPatch[]
+        {
+            new FsmPatch("Pinstress Boss", "Control", PatchFsm_PinstressBossControl),
+            new FsmPatch("Pinstress Control", "Control", PatchFsm_PinstressControl),
+            new FsmPatch("NPC", "NPC Control", PatchFsm_PinstressNPCControl),
+        }),
 
     };
     public enum BossName
@@ -1881,6 +1887,58 @@ public class PatchedFsm
         var roar = fsm.GetState("Roar");
 
         ((Wait)roar.Actions[11]).time = 0.1f;
+
+        return true;
+    }
+    public static bool PatchFsm_PinstressBossControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var roar = fsm.GetState("Roar");
+
+        ((Wait)roar.Actions[3]).time = 0.1f;
+
+        return true;
+    }
+    public static bool PatchFsm_PinstressControl(Fsm fsm)
+    {
+        var pause = fsm.GetState("Pause");
+        var check = fsm.GetState("Check");
+        var pinstress = fsm.GetState("Pinstress");
+
+        SetTransitionToState(check, pinstress, 1);
+
+        return true;
+    }
+    public static bool PatchFsm_PinstressNPCControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var snowSleep = fsm.GetState("Snow Sleep");
+        var wake3 = fsm.GetState("Wake 3");
+        var battleStart = fsm.GetState("Battle Start");
+
+        ((Wait)wake3.Actions[3]).time = 0;
+
+        var customActionCreateTriggerForStart = new CustomLogicFsm(fsm);
+        customActionCreateTriggerForStart.action += (Fsm fsm) =>
+        {
+            var pos = fsm.GameObject.transform.position;
+
+            var customTrigger = CreateTrigger("Peak_07");
+            var triggerPos = customTrigger.transform.position;
+            customTrigger.transform.position = new Vector3(pos.x, pos.y, pos.z);
+
+            var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
+            triggerComponent.fsm = fsm;
+
+            triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
+            {
+                fsm.FsmComponent.SendEvent("TEST");
+            };
+        };
+
+        snowSleep.Actions = InsertInArray(snowSleep.Actions, customActionCreateTriggerForStart, snowSleep.Actions.Length);
+
+        SetTransitionToState(wake3, battleStart, 0);
 
         return true;
     }
