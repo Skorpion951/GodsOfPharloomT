@@ -277,6 +277,10 @@ public class PatchedFsm
         {
             new FsmPatch("Blue Assistant", "Control", PatchFsm_PlasmifiedZango),
         }),
+        new PatchedFsm("Shellwood_22", new FsmPatch[]
+        {
+            new FsmPatch("Seth", "Control", PatchFsm_SethControl),
+        }),
 
     };
     public enum BossName
@@ -1962,6 +1966,20 @@ public class PatchedFsm
 
         var pos = fsm.GameObject.transform.position;
         fsm.GameObject.transform.position = new Vector3(pos.x + 10, pos.y, pos.z);
+
+        return true;
+    }
+    public static bool PatchFsm_SethControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var dormant = fsm.GetState("Dormant");
+        var wakeAntic = fsm.GetState("Wake Antic");
+        var roar = fsm.GetState("Roar");
+
+        ((Wait)roar.Actions[6]).time = 0.1f;
+
+        dormant.Transitions = RemoveFromArray(dormant.Transitions, 0);
+        dormant.Transitions = RemoveFromArray(dormant.Transitions, 0);
 
         return true;
     }
