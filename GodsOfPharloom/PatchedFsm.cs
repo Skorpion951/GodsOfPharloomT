@@ -251,6 +251,14 @@ public class PatchedFsm
         {
             new FsmPatch("Garmond Black Threaded Fighter", "Control", PatchFsm_LostGarmondControl),
         }),
+        new PatchedFsm("Abyss_Cocoon", new FsmPatch[]
+        {
+            new FsmPatch("Intro Control", "Control", PatchFsm_LostLaceIntroControl),
+            new FsmPatch("Boss Title", "Title Control", PatchFsm_LostLaceBossTitle),
+            new FsmPatch("Abyss_Cocoon_Silk", "Animate during lace death", PatchFsm_LostLaceGrandMother),
+            new FsmPatch("Lost Lace Boss", "Control", PatchFsm_LostLaceBossControl),
+            new FsmPatch("Lost Lace Boss", "Death Control", PatchFsm_LostLaceDeathControl),
+        }),
 
     };
     public enum BossName
@@ -1745,6 +1753,103 @@ public class PatchedFsm
         var sting = fsm.GetState("Sting");
 
         ((Wait)sting.Actions[2]).time = 0.01f;
+
+        return true;
+    }
+    public static bool PatchFsm_LostLaceIntroControl(Fsm fsm)
+    {
+        PlayerData.instance.EncounteredLostLace = true;
+
+        var init = fsm.GetState("Init");
+        var encountered = fsm.GetState("Encountered");
+        var laceRe_emerge = fsm.GetState("Lace Re-emerge");
+        var checkEncountered = fsm.GetState("Check Encountered");
+        var laceRoar = fsm.GetState("Lace Roar");
+        var silkScream = fsm.GetState("Silk Scream");
+        var titleUp = fsm.GetState("Title Up");
+
+        var laceAppearSpeed = 17;
+
+        ((Wait)laceRe_emerge.Actions[11]).time = ((Wait)laceRe_emerge.Actions[11]).time.Value / laceAppearSpeed;
+        ((Wait)laceRoar.Actions[4]).time = 0.1f;
+        // ((Wait)silkScream.Actions[1]).time = 0.01f;
+        ((Wait)titleUp.Actions[0]).time = 0.01f;
+
+        SetTransitionToState(laceRoar, titleUp, 0);
+
+        var customActionSpeedUpLaceAppearAnimation = new CustomLogicFsm(fsm);
+        customActionSpeedUpLaceAppearAnimation.action += (Fsm fsm) =>
+        {
+            var animationObj = ((FindNamedChild)init.Actions[5]).storeResult.Value;
+            var animationComponent = animationObj.GetComponent<Animator>();
+            animationComponent.speed = laceAppearSpeed;
+        };
+
+        init.Actions = InsertInArray(init.Actions, customActionSpeedUpLaceAppearAnimation, init.Actions.Length - 1);
+
+        return true;
+    }
+    public static bool PatchFsm_LostLaceBossTitle(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var titleUp = fsm.GetState("Title Up");
+
+        ((Wait)titleUp.Actions[1]).time = 0.5f;
+
+        return true;
+    }
+    public static bool PatchFsm_LostLaceGrandMother(Fsm fsm)
+    {
+        fsm.GameObject.SetActive(false);
+
+        return true;
+    }
+    public static bool PatchFsm_LostLaceBossControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var stop = fsm.GetState("Stop");
+        var midCocoonBreak = fsm.GetState("Mid Cocoon Break");
+        var lockEnd = fsm.GetState("Lock End");
+        var silkScream = fsm.GetState("Silk Scream");
+        var silkFall = fsm.GetState("Silk Fall");
+        var abyssWaveStartInit = fsm.GetState("Abyss Wave Start Init");
+        var setRoarPos = fsm.GetState("Set Roar Pos");
+        var wavePause = fsm.GetState("Wave Pause");
+        var anticWave = fsm.GetState("Antic Wave");
+        var p3Roar = fsm.GetState("P3 Roar");
+
+        var laceAppearSpeed = 9;
+
+        ((Wait)setRoarPos.Actions[5]).time = 0f;
+        ((Wait)wavePause.Actions[3]).time = 0f;
+        ((Wait)anticWave.Actions[5]).time = ((Wait)anticWave.Actions[5]).time.Value / laceAppearSpeed;
+        ((Wait)p3Roar.Actions[5]).time = 0.5f;
+
+        SetTransitionToState(stop, silkFall, 0);
+
+        var customActionSpeedUpAnimation = new CustomLogicFsm(fsm);
+        customActionSpeedUpAnimation.action += (Fsm fsm) =>
+        {
+            var animationObj = ((FindNamedChild)init.Actions[42]).storeResult.Value.transform.GetChild(0).gameObject;
+            var animationComponent = animationObj.GetComponent<Animator>();
+            animationComponent.speed = laceAppearSpeed;
+        };
+
+        init.Actions = InsertInArray(init.Actions, customActionSpeedUpAnimation, init.Actions.Length - 1);
+
+        silkFall.Actions = new FsmStateAction[]{silkFall.Actions[0]};
+
+        //remove silk mother scream
+        wavePause.Actions = RemoveFromArray(wavePause.Actions, 2);
+
+        return true;
+    }
+    public static bool PatchFsm_LostLaceDeathControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var midDeathSplash = fsm.GetState("Mid Death Splash");
+
+        ((Wait)midDeathSplash.Actions[8]).time = 0.2f;
 
         return true;
     }
