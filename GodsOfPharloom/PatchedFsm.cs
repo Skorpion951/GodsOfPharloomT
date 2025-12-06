@@ -273,6 +273,10 @@ public class PatchedFsm
             new FsmPatch("Pinstress Control", "Control", PatchFsm_PinstressControl),
             new FsmPatch("NPC", "NPC Control", PatchFsm_PinstressNPCControl),
         }),
+        new PatchedFsm("Crawl_10", new FsmPatch[]
+        {
+            new FsmPatch("Blue Assistant", "Control", PatchFsm_PlasmifiedZango),
+        }),
 
     };
     public enum BossName
@@ -1939,6 +1943,25 @@ public class PatchedFsm
         snowSleep.Actions = InsertInArray(snowSleep.Actions, customActionCreateTriggerForStart, snowSleep.Actions.Length);
 
         SetTransitionToState(wake3, battleStart, 0);
+
+        return true;
+    }
+    public static bool PatchFsm_PlasmifiedZango(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var roar = fsm.GetState("Roar");
+        var rest = fsm.GetState("Rest");
+        var walkSlow = fsm.GetState("Walk Slow");
+
+        ((Wait)roar.Actions[5]).time = 0.1f;
+
+        ((SetScale)rest.Actions[1]).x = 1;
+        ((WalkLeftRight)walkSlow.Actions[0]).startLeft = true;
+
+        SetTransitionToState(init, rest, 1);
+
+        var pos = fsm.GameObject.transform.position;
+        fsm.GameObject.transform.position = new Vector3(pos.x + 10, pos.y, pos.z);
 
         return true;
     }
