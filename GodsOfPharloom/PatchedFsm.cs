@@ -288,6 +288,11 @@ public class PatchedFsm
             new FsmPatch("Hunter Queen Boss", "Control", PatchFsm_SkarrsingerKarmelitaBossControl),
             new FsmPatch("Challenge Region", "Challenge", PatchFsm_SkarrsingerKarmelitaChallengeRegion),
         }),
+        new PatchedFsm("Coral_39", new FsmPatch[]
+        {
+            new FsmPatch("Coral Warrior Grey", "Control", PatchFsm_WatcherAtTheEdgeControl),
+            new FsmPatch("Coral Warrior Grey", "Battle Music", PatchFsm_WatcherAtTheEdgeBattleMusic),
+        }),
 
     };
     public enum BossName
@@ -2052,6 +2057,58 @@ public class PatchedFsm
         
         SetTransitionToState(act3, trobbioReady2, 2);
         SetTransitionToState(trobbioReady2, endBattle, 0);
+
+        return true;
+    }
+    public static bool PatchFsm_WatcherAtTheEdgeControl(Fsm fsm)
+    {
+        var pos = fsm.GameObject.transform.position;
+        fsm.GameObject.transform.position = new Vector3(pos.x + 10, pos.y, pos.z);
+
+
+        var init = fsm.GetState("Init");
+        var startState = fsm.GetState("Start State");
+        var sleep = fsm.GetState("Sleep");
+        var wakeAntic = fsm.GetState("Wake Antic");
+        var wakeRoar1 = fsm.GetState("Wake Roar 1");
+        var wakeRoar2 = fsm.GetState("Wake Roar 2");
+
+        ((Wait)wakeAntic.Actions[2]).time = 0.1f;
+        ((Wait)wakeRoar2.Actions[5]).time = 0.1f;
+
+        SetTransitionToState(startState, sleep, 1);
+
+        var customActionStartTrigger = new CustomLogicFsm(fsm);
+        customActionStartTrigger.action += (Fsm fsm) =>
+        {
+            var pos = fsm.GameObject.transform.position;
+
+            var customTrigger = CreateTrigger("Coral_39");
+            var triggerPos = customTrigger.transform.position;
+            customTrigger.transform.position = new Vector3(pos.x, pos.y, pos.z);
+
+            var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
+            triggerComponent.fsm = fsm;
+
+            triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
+            {
+                fsm.FsmComponent.SendEvent("WAKE");
+            };
+        };
+
+        sleep.Actions = InsertInArray(sleep.Actions, customActionStartTrigger, sleep.Actions.Length);
+
+        return true;
+    }
+    public static bool PatchFsm_WatcherAtTheEdgeBattleMusic(Fsm fsm)
+    {
+        var state1 = fsm.GetState("State 1");
+        var musicPause = fsm.GetState("Music Pause");
+        var music = fsm.GetState("Music");
+
+        ((TransitionToAudioSnapshot)music.Actions[1]).transitionTime = 0.5f;
+
+        SetTransitionToState(state1, music, 0);
 
         return true;
     }
