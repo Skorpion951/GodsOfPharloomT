@@ -281,6 +281,11 @@ public class PatchedFsm
         {
             new FsmPatch("Seth", "Control", PatchFsm_SethControl),
         }),
+        new PatchedFsm("Memory_Ant_Queen", new FsmPatch[]
+        {
+            new FsmPatch("Hunter Queen Boss", "Control", PatchFsm_SkarrsingerKarmelitaBossControl),
+            new FsmPatch("Challenge Region", "Challenge", PatchFsm_SkarrsingerKarmelitaChallengeRegion),
+        }),
 
     };
     public enum BossName
@@ -1980,6 +1985,34 @@ public class PatchedFsm
 
         dormant.Transitions = RemoveFromArray(dormant.Transitions, 0);
         dormant.Transitions = RemoveFromArray(dormant.Transitions, 0);
+
+        return true;
+    }
+    public static bool PatchFsm_SkarrsingerKarmelitaBossControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var challengePause = fsm.GetState("Challenge Pause");
+        var launchInAntic = fsm.GetState("Launch In Antic");
+        var roar = fsm.GetState("Roar");
+
+        ((Wait)challengePause.Actions[1]).time = 0;
+        ((Wait)roar.Actions[5]).time = 0.1f;
+
+        SetTransitionToState(challengePause, launchInAntic, 0);
+
+        return true;
+    }
+    public static bool PatchFsm_SkarrsingerKarmelitaChallengeRegion(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var idle = fsm.GetState("Idle");
+        var inRegion = fsm.GetState("In Region");
+        var hornetVoice = fsm.GetState("Hornet Voice");
+        var challenge2 = fsm.GetState("Challenge 2");
+
+        ((Wait)challenge2.Actions[1]).time = 0;
+
+        SetTransitionToState(idle, hornetVoice, 0);
 
         return true;
     }
