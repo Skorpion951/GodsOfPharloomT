@@ -259,6 +259,10 @@ public class PatchedFsm
             new FsmPatch("Lost Lace Boss", "Control", PatchFsm_LostLaceBossControl),
             new FsmPatch("Lost Lace Boss", "Death Control", PatchFsm_LostLaceDeathControl),
         }),
+        new PatchedFsm("Shellwood_11b_Memory", new FsmPatch[]
+        {
+            new FsmPatch("Boss Scene", "Control", PatchFsm_NylethBossSceneControl),
+        }),
 
     };
     public enum BossName
@@ -1850,6 +1854,20 @@ public class PatchedFsm
         var midDeathSplash = fsm.GetState("Mid Death Splash");
 
         ((Wait)midDeathSplash.Actions[8]).time = 0.2f;
+
+        return true;
+    }
+    public static bool PatchFsm_NylethBossSceneControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var unencountered = fsm.GetState("Unencountered");
+        var scream = fsm.GetState("Scream");
+        var floorBreak = fsm.GetState("Floor Break");
+        var roofUp = fsm.GetState("Roof Up");
+
+        ((Wait)scream.Actions[9]).time = 0.1f;
+        ((Wait)floorBreak.Actions[8]).time = 0.3f;
+        ((Wait)roofUp.Actions[6]).time = 0f;
 
         return true;
     }
