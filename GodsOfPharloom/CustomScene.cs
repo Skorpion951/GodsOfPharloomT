@@ -21,9 +21,8 @@ public class CustomScene
         this.sceneName = sceneName;
     }
     
-    public void Add(string gateName, Vector3 position, TransitionPointInfo TransitionPointInfo)
+    public void AddTransitionPoint(string gateName, Vector3 position, TransitionPointInfo TransitionPointInfo)
     {
-
         TransitionGates.Add(new TransitionGateInfo(gateName, position, TransitionPointInfo));
         SceneTeleportMap.AddTransitionGate(this.sceneName, gateName);
     }
@@ -77,7 +76,7 @@ public class CustomScene
     public System.Collections.IEnumerator GetObjectFromSilkScene(string[] path, string sceneName, Action<GameObject> func)
     {
         string scenePath = "Scenes/" + sceneName;
-        var op = Addressables.LoadSceneAsync(scenePath, LoadSceneMode.Additive, activateOnLoad: false);
+        var op = UnityEngine.AddressableAssets.Addressables.LoadSceneAsync(scenePath, UnityEngine.SceneManagement.LoadSceneMode.Additive, activateOnLoad: false);
         GodsOfPharloomMod.Log.LogInfo("000000000000000000");
         yield return op;
         GodsOfPharloomMod.Log.LogInfo("000000000000000000.1");

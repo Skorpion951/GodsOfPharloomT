@@ -17,14 +17,18 @@ public class PatchedFsm
 {
     public static Func<object, MethodInfo, object[], object> InvokeMethod = (instance, method, obj) => method.Invoke(instance, obj);
     public static MethodInfo activateChildOnTrigger = AccessTools.Method(typeof(ActivateChildrenOnContact), "OnTriggerEnter2D");
-    private class CustomLogicFsm : FsmStateAction
+    public class CustomLogicFsm : FsmStateAction
     {
         public Action<Fsm> action;
+        public Action updateAction;
         public Fsm fsm;
         public override void OnEnter()
         {
             action?.Invoke(fsm);
-            Finish();
+        }
+        public override void OnUpdate()
+        {
+            updateAction?.Invoke();
         }
         public CustomLogicFsm(Fsm fsm)
         {
@@ -260,6 +264,7 @@ public class PatchedFsm
             new FsmPatch("Abyss_Cocoon_Silk", "Animate during lace death", PatchFsm_LostLaceGrandMother),
             new FsmPatch("Lost Lace Boss", "Control", PatchFsm_LostLaceBossControl),
             new FsmPatch("Lost Lace Boss", "Death Control", PatchFsm_LostLaceDeathControl),
+            new FsmPatch("door_entry", "Control", PatchFsm_LostLaceDoorEntryControl),
         }),
         new PatchedFsm("Shellwood_11b_Memory", new FsmPatch[]
         {
@@ -1884,6 +1889,22 @@ public class PatchedFsm
         var midDeathSplash = fsm.GetState("Mid Death Splash");
 
         ((Wait)midDeathSplash.Actions[8]).time = 0.2f;
+
+        return true;
+    }
+    public static bool PatchFsm_LostLaceDoorEntryControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var fallIn = fsm.GetState("Fall In");
+        var land = fsm.GetState("Land");
+
+        ((Wait)init.Actions[19]).time = 0f;
+
+        fallIn.Actions = RemoveFromArray(fallIn.Actions, 7);
+
+        land.Actions = RemoveFromArray(land.Actions, 1);
+        land.Actions = RemoveFromArray(land.Actions, 1);
+        land.Actions = RemoveFromArray(land.Actions, 2);
 
         return true;
     }

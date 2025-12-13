@@ -496,8 +496,8 @@
     <Reference Include="zlib.net">
       <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\zlib.net.dll</HintPath>
     </Reference>
-    <EmbeddedResource Include="Bundles/Boss_Scenes/gg_pharloom_atrium" />
-    <EmbeddedResource Include="Bundles/Boss_Scenes/gg_moss_mother" />
+    <EmbeddedResource Include="Bundles/Scenes/gg_pharloom_atrium" />
+    <EmbeddedResource Include="Bundles/Scenes/gg_pharloom_hall_of_gods" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="Build">
