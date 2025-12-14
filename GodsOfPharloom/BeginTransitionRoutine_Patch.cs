@@ -316,6 +316,17 @@ namespace Gods_Of_Pharloom
             }
         }
 
+
+
+
+
+
+
+
+
+
+
+
         private static System.Collections.IEnumerator OriginalBeginRoutine(SceneLoad __instance, CustomScene scene)
         {
             Log.LogInfo("PAAAAAAAAATTTTTCCCCHHHEEEDDD");
@@ -378,6 +389,7 @@ namespace Gods_Of_Pharloom
             }
             scene.isSceneActive = false;
             scene.isPreloading = false;
+            Log.LogInfo("WELYESAGA");
             ////////////////////////////////////////////////////////////
 
             InvokeMethod(RecordEndTime, new object[] {SceneLoad.Phases.Fetch});//RecordEndTime(SceneLoad.Phases.Fetch);

@@ -1808,6 +1808,7 @@ public class PatchedFsm
             var animationObj = ((FindNamedChild)init.Actions[42]).storeResult.Value.transform.GetChild(0).gameObject;
             var animationComponent = animationObj.GetComponent<Animator>();
             animationComponent.speed = laceAppearSpeed;
+            customActionSpeedUpAnimation.Finish();
         };
 
         init.Actions = InsertInArray(init.Actions, customActionSpeedUpAnimation, init.Actions.Length - 1);

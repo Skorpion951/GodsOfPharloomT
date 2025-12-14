@@ -57,28 +57,41 @@ namespace Gods_Of_Pharloom
         public static Dictionary<string, BossInfo> bosses = new Dictionary<string, BossInfo>{
             {"Moss Mother", new BossInfo("Tut_03", "start_battle_entry", "Moss Mother", new float[][]{new float[]{120f, 2f, 1.5f}}, 
                                         ascendedVersion : new BossInfo("Weave_03", "start_battle_entry", "Moss Mother", new float[][]{new float[]{350f, 2f, 1.5f},
-                                                                                                      new float[]{350f, 2f, 1.5f}}))},
+                                                                                                                                      new float[]{350f, 2f, 1.5f}}))},
             {"Bell Beast", new BossInfo("Bone_05", "start_battle_entry", "Bell Beast", new float[][]{new float[]{150f, 2f, 1.5f}})},
             {"Fourth Chorus", new BossInfo("Bone_East_08", "start_battle_entry", "Fourth Chorus", new float[][]{new float[]{500f, 2f, 1.5f}})},
             {"Great Conchflies", new BossInfo("Coral_11", "start_battle_entry", "Great Conchflies", new float[][]{new float[]{400f, 2f, 1.5f}})},
             {"Lace1", new BossInfo("Bone_East_12", "start_battle_entry", "Lace In Deep Docks", new float[][]{new float[]{250f, 2f, 1.5f}})},
+            {"Lost Garmond", new BossInfo("Bone_East_12", "start_battle_entry", "Lace In Deep Docks", new float[][]{new float[]{250f, 2f, 1.5f}})},
 
-            {"Lost Lace", new BossInfo("Abyss Cocoon", "start_battle_entry", "Lost Lace", new float[][]{new float[]{1800f, 1.5f, 2f}})},
+            {"Lost Lace", new BossInfo("Abyss_Cocoon", "start_battle_entry", "Lost Lace", new float[][]{new float[]{1800f, 1.5f, 2f}})},
 
         };
         public string sceneName;
         public string entryGate;
         public string bossName;
-        public float[][] bossesHp;
+        public Dictionary<string, float>[] bossesHpMul;
         public BossInfo ascendedVersion;
+        public bool noInputOnStart;
 
-        public BossInfo(string sceneName, string entryGate, string bossName, float[][] bossesHp, BossInfo ascendedVersion = null)
+        public BossInfo(string sceneName, string entryGate, string bossName, float[][] bossesHpMul, BossInfo ascendedVersion = null, bool noInputOnStart = true)
         {
             this.sceneName = sceneName;
             this.entryGate = entryGate;
             this.bossName = bossName;
-            this.bossesHp = bossesHp;
             this.ascendedVersion = ascendedVersion;
+            this.noInputOnStart = noInputOnStart;
+
+            var dictionary = new Dictionary<string, float>[bossesHpMul.Length];
+            for(int i = 0; i < bossesHpMul.Length; i++)
+            {
+                dictionary[i] = new Dictionary<string, float>{{"OrigHp", bossesHpMul[i][0]},
+                                                              {"Attuned", bossesHpMul[i][1]},
+                                                              {"Ascended", bossesHpMul[i][2]},
+                                                              {"Radiant", bossesHpMul[i][2]}
+                                                            };
+            };
+            this.bossesHpMul = dictionary;
         }
     }
     public class BossSequence : MonoBehaviour
@@ -91,7 +104,7 @@ namespace Gods_Of_Pharloom
         public string backEntry;
         public string backScene;
         public bool doEndSequence = false;
-        public Fsm sequenceController;
+        public PlayMakerFSM sequenceController;
         public string difficultMode;
         public bool isPantheon = false;
         public bool isHoG = false;
@@ -102,9 +115,12 @@ namespace Gods_Of_Pharloom
             isInSequence = true;
             currentBoss = bossSequence[0];
 
+            var fsmComponent = this.gameObject.AddComponent<PlayMakerFSM>();
+            fsmComponent.enabled = false;
 
+            var fsm = fsmComponent.Fsm;
 
-            var fsm = sequenceController;
+            sequenceController = fsmComponent;
 
             var startSequence = new FsmState(fsm);
             startSequence.Name = "Start Sequence";
@@ -134,7 +150,7 @@ namespace Gods_Of_Pharloom
                 var index = ++instance.currentBossIndex;
                 if(index !< instance.bossSequence.Length)
                 {
-                    instance.sequenceController.FsmComponent.SendEvent("END SEQUENCE");
+                    instance.sequenceController.SendEvent("END SEQUENCE");
                 }
             };
 
@@ -177,7 +193,7 @@ namespace Gods_Of_Pharloom
 
             startSequence.Actions = new FsmStateAction[]{startSequenceAction};
 
-
+            fsm.States = new FsmState[]{startSequence, idle, next, endSequence};
 
             fsm.FsmComponent.enabled = true;
         }
@@ -188,7 +204,7 @@ namespace Gods_Of_Pharloom
                 SceneName = currentBoss.sceneName,
                 EntryGateName = currentBoss.entryGate,
                 EntrySkip = true,
-                Visualization = GameManager.SceneLoadVisualizations.Default
+                Visualization = GameManager.SceneLoadVisualizations.Default,
             };
 
             GameManager.instance.BeginSceneTransition(sceneLoadInfo);
@@ -225,10 +241,6 @@ namespace Gods_Of_Pharloom
             DontDestroyOnLoad(go);
 
             var sequenceComponent = go.AddComponent<BossSequence>();
-
-            var fsmComponent = instance.gameObject.AddComponent<PlayMakerFSM>();
-            fsmComponent.enabled = false;
-            sequenceComponent.sequenceController = fsmComponent.Fsm;
 
             sequenceComponent.bossSequence = bossSequence;
             sequenceComponent.backEntry = backEntry;

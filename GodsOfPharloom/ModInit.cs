@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using System.Reflection;
 using HarmonyLib;
+using Unity.Mathematics;
 
 namespace Gods_Of_Pharloom
 {
@@ -143,13 +144,13 @@ namespace Gods_Of_Pharloom
         void InitCustomScenes()
         {
             var GG_Pharloom_Atrium = new CustomScene("GG_Pharloom_Atrium");
-            GG_Pharloom_Atrium.AddTransitionPoint("door1", new Vector3(79.68f, 73.9f, 0), new TransitionPointInfo("Belltown", "door1", isADoor: true));
-            GG_Pharloom_Atrium.AddTransitionPoint("door2", new Vector3(57.5f, 54f, 0), new TransitionPointInfo("GG_Pharloom_Hall_Of_Gods", "left1", isADoor: true));
+            GG_Pharloom_Atrium.AddTransitionPoint("door1", new Vector3(79.68f, 73.9f, 0), new TransitionPointInfo("Belltown", "door1", isADoor: true, noInputOnStart: false));
+            GG_Pharloom_Atrium.AddTransitionPoint("door2", new Vector3(57.5f, 54f, 0), new TransitionPointInfo("GG_Pharloom_Hall_Of_Gods", "left1", isADoor: true, noInputOnStart: false));
             GG_Pharloom_Atrium.AfterSceneActivated += () => {GG_Pharloom_Atrium.isSceneActive = true;};
             customScenes.Add(GG_Pharloom_Atrium);
 
             var GG_Pharloom_HoG = new CustomScene("GG_Pharloom_Hall_Of_Gods");
-            GG_Pharloom_HoG.AddTransitionPoint("left1", new Vector3(44.64f, 52.58f, 0), new TransitionPointInfo("GG_Pharloom_Atrium", "door2", isADoor: false));
+            GG_Pharloom_HoG.AddTransitionPoint("left1", new Vector3(44.64f, 52.58f, 0), new TransitionPointInfo("GG_Pharloom_Atrium", "door2", isADoor: false, noInputOnStart: false));
             GG_Pharloom_HoG.AfterSceneActivated += () => {
                 var rootObjects = SceneManager.GetSceneByName("GG_Pharloom_Hall_Of_Gods").GetRootGameObjects();
                 foreach(var obj in rootObjects)
@@ -166,13 +167,15 @@ namespace Gods_Of_Pharloom
                 }
 
                 GG_Pharloom_HoG.isSceneActive = true;
-                };
+            };
             customScenes.Add(GG_Pharloom_HoG);
 
             var AbyssCocoon = new CustomScene("Abyss_Cocoon");
-            AbyssCocoon.AddTransitionPoint("start_battle_entry", new Vector3(79.68f, 73.9f, 0), new TransitionPointInfo("Belltown", "door1", isADoor: true, isOneTimeTransition: true));
+            AbyssCocoon.AddTransitionPoint("start_battle_entry", new Vector3(29.16f, 5.65f, 0), new TransitionPointInfo("Belltown", "door1", isADoor: true, 
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, hardLandOnExit: true));
             AbyssCocoon.isSkongScene = true;
             AbyssCocoon.AfterSceneActivated += () => {AbyssCocoon.isSceneActive = true;};
+            customScenes.Add(AbyssCocoon);
         }
     }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Diagnostics.Eventing.Reader;
 using System.Runtime.CompilerServices;
 using Gods_Of_Pharloom;
+using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -66,7 +67,47 @@ public class CustomScene
 
         //adding transition point
         var tp = gm.AddComponent<TransitionPoint>();
+        if (item.tp.noInputOnStart)
+        {
+            var fsmComponent = gm.AddComponent<PlayMakerFSM>();
+            tp.customEntryFSM = fsmComponent;
+            fsmComponent.enabled = false;
+
+            var fsm = fsmComponent.Fsm;
+
+            var init = new FsmState(fsm);
+            init.Name = "Init";
+
+            var noInput = new FsmState(fsm);
+            noInput.Name = "No Input";
+
+            fsm.StartState = "Init";
+
+            var noInputAction = new PatchedFsm.CustomLogicFsm(fsm);
+            noInputAction.action = (Fsm fsm) =>
+            {
+                HeroController.instance.hero_state = GlobalEnums.ActorStates.no_input;
+            };
+
+            init.Transitions = new FsmTransition[]
+            {
+                new FsmTransition
+                {
+                    FsmEvent = FsmEvent.GetFsmEvent("FINISH ENTRY"),
+                    ToFsmState = noInput
+                }
+            };
+
+            noInput.Actions = new FsmStateAction[]{noInputAction};
+
+            fsm.States = new FsmState[]{init, noInput};
+
+            fsm.FsmComponent.enabled = true;
+        }
+        
         tp.targetScene = item.tp.targetScene;
+        tp.dontWalkOutOfDoor = item.tp.dontWalkOutOfDoor;
+        tp.hardLandOnExit = item.tp.hardLandOnExit;
         tp.entryPoint = item.tp.entryPoint;
         tp.InteractLabel = item.tp.InteractLabel;
         tp.isADoor = item.tp.isADoor;

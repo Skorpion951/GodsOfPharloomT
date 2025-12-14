@@ -1,3 +1,4 @@
+using HutongGames.PlayMaker.Actions;
 using UnityEngine;
 public class TransitionPointInfo
 {
@@ -6,15 +7,22 @@ public class TransitionPointInfo
     public InteractableBase.PromptLabels InteractLabel;
     public bool isADoor;
     public bool isOneTimeTransition;
+    public bool dontWalkOutOfDoor;
+    public bool hardLandOnExit;
+    public bool noInputOnStart;
 
     public TransitionPointInfo(string targetScene, string entryPoint,
                 InteractableBase.PromptLabels InteractLabel = InteractableBase.PromptLabels.Enter, bool isADoor = false,
-                bool isOneTimeTransition = false)
+                bool isOneTimeTransition = false, bool dontWalkOutOfDoor = false, bool hardLandOnExit = false,
+                bool noInputOnStart = true)
     {
         this.targetScene = targetScene;
         this.entryPoint = entryPoint;
         this.InteractLabel = InteractLabel;
         this.isADoor = isADoor;
         this.isOneTimeTransition = isOneTimeTransition;
+        this.dontWalkOutOfDoor = dontWalkOutOfDoor;
+        this.hardLandOnExit = hardLandOnExit;
+        this.noInputOnStart = noInputOnStart;
     }
 }
