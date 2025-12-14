@@ -300,54 +300,7 @@ public class PatchedFsm
         }),
 
     };
-    public enum BossName
-    {
-        MossMother = 0,
-        DoubleMossMother,
-        BellBeast,
-        FourthChorus,
-        GreatConchflies,
-        Lace1,
-        LastJudge,
-        Moorwing,
-        Phantom,
-        SavageBeastfly1,
-        SisterSplinter,
-        SkullTyrant,
-        Window,
-        Broodmother,
-        CogworkDancers,
-        DisgracedChefLugoli,
-        FatherOfTheFlame,
-        FirstSinner,
-        ForebrothersSignisAndGron,
-        GarmondAndZaza,
-        GrandMotherSilk,
-        GroalTheGreat,
-        Lace2,
-        RagingConchfly,
-        SavageBeastfly2,
-        SecondSentiel,
-        Shakra,
-        TheUnravelled,
-        Trobbio,
-        Voltvyrm,
-        BellEater,
-        CloverDancers,
-        Crawfather,
-        CrustKingKhann,
-        GurrTheOutcast,
-        LostGarmond,
-        LostLace,
-        Nyleth,
-        Palestag,
-        Pinstress,
-        PlasmifiedZango,
-        ShrineGuardianSeth,
-        SkarrsingerKarmelita,
-        TormentedTrobbio,
-        WatherAtTheEdge
-    };
+
     public static string[] bossesSceneName = new string[]
     {
         "Tut_03", //MossMother
@@ -395,23 +348,6 @@ public class PatchedFsm
         "Memory_Ant_Queen", //SkarrsingerKarmelita
         "Library_13", //TormentedTrobbio
         "Coral_39", //WatherAtTheEdge
-    };
-    public static string[][] bossesGameObjName = new string[][]
-    {
-        new []{"Mossbone Mother"},
-        new []{"Mossbone Mother A"},
-        new []{"Bone Beast"},
-        new []{"song_golem"},
-        new []{"Boss Scene", }
-
-    };
-    public static string[][] bossesFsmName = new string[][]
-    {
-        new[] {"Control"},
-        new[] {"Control"},
-        new[] {"Control"},
-        new[] {"Control"},
-
     };
     
     public static void SetTransitionToState(FsmState state, FsmState to, int transitionIndex)
@@ -506,7 +442,7 @@ public class PatchedFsm
     }
     public static bool PatchFsm_FourthChorusBossScene(Fsm fsm)
     {
-        if(GodsOfPharloomMod.currentBoss == BossName.SavageBeastfly2)
+        if(Gods_Of_Pharloom.BossSequence.currentBoss == BossInfo.bosses["Savage Beastfly 2"])
         {
             var init = fsm.GetState("Init");
 

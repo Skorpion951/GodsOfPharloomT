@@ -15,10 +15,12 @@ public class CustomScene
     public Action AfterSceneActivated;
     public bool isSceneActive = false;
     public bool isPreloading = false;
+    public bool isSkongScene = false;
 
-    public CustomScene(string sceneName)
+    public CustomScene(string sceneName, bool isSkongScene = false)
     {
         this.sceneName = sceneName;
+        this.isSkongScene = isSkongScene;
     }
     
     public void AddTransitionPoint(string gateName, Vector3 position, TransitionPointInfo TransitionPointInfo)
@@ -60,6 +62,7 @@ public class CustomScene
         //setup collider size
         if(item.gateName.Contains("top") || item.gateName.Contains("bot")) collider.size = new Vector2(4, 1);
         else collider.size = new Vector2(1, 4);
+        if(item.tp.isOneTimeTransition) collider.enabled = false;
 
         //adding transition point
         var tp = gm.AddComponent<TransitionPoint>();

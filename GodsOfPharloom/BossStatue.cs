@@ -12,6 +12,7 @@ namespace Gods_Of_Pharloom
 {
     public class BossStatueInfo
     {
+        public static string hog_sceneName = "GG_Pharloom_Hall_Of_Gods";
         public static List<string> difficultModes = new List<string>{
             "Attuned",
             "Ascended",
@@ -29,37 +30,33 @@ namespace Gods_Of_Pharloom
         public static GameObject selectArrow;
         public static BossStatueInfo[] bossStatues = new BossStatueInfo[]
         {
-            new BossStatueInfo(PatchedFsm.BossName.LostLace, "Abyss_Cocoon", "LostLace_Statue", "Lost Lace", 900, 1000),
+            new BossStatueInfo(BossInfo.bosses["Lost Lace"], "Abyss_Cocoon", "LostLace_Statue", "Lost Lace"),
         };
         [Serializable]
         private class Badges
         {
-            public PatchedFsm.BossName boss;
+            public string boss;
             public bool hasAttunedBadge = false;
             public bool hasAscendedBadge = false;
             public bool hasRadiantBadge = false;
-            public Badges(PatchedFsm.BossName boss)
+            public Badges(string boss)
             {
                 this.boss = boss;
             }
         }
 
-        PatchedFsm.BossName boss;
+        public BossInfo boss;
         string sceneName;
         public string statueObjectName;
         public string bossName;
-        int attunedHp;
-        int ascend_radiantHp;
         Badges badges;
 
-        public BossStatueInfo(PatchedFsm.BossName boss, string sceneName, string statueObjectName, string bossName, int attunedHp, int ascend_radiantHp)
+        public BossStatueInfo(BossInfo boss, string sceneName, string statueObjectName, string bossName)
         {
             this.boss = boss;
             this.sceneName = sceneName;
             this.statueObjectName = statueObjectName;
             this.bossName = bossName;
-            this.attunedHp = attunedHp;
-            this.ascend_radiantHp = ascend_radiantHp;
         }
     }
     public class BossStatue : MonoBehaviour
@@ -70,7 +67,7 @@ namespace Gods_Of_Pharloom
         {
             if(BossStatueInfo.difficultyModeCanvas == null)
             {
-                var rootObjects = SceneManager.GetSceneByName("GG_Pharloom_Hall_Of_Gods").GetRootGameObjects();
+                var rootObjects = SceneManager.GetSceneByName(BossStatueInfo.hog_sceneName).GetRootGameObjects();
                 foreach(var obj in rootObjects)
                 {
                     if(obj.name == BossStatueInfo.difficultyModeCanvasGOName)
@@ -231,6 +228,12 @@ namespace Gods_Of_Pharloom
             };
             exitMenu.Actions = new FsmStateAction[]{new HutongGames.PlayMaker.Actions.NextFrameEvent(), exitAction};
 
+            var startBossFightAction = new PatchedFsm.CustomLogicFsm(fsm);
+            startBossFightAction.action += (Fsm fsm) =>
+            {
+                BossSequence.CreateSequence(new BossInfo[]{instance.boss}, "back_entry1", BossStatueInfo.hog_sceneName);
+            };
+
 
             init.Transitions = new FsmTransition[]
             {
@@ -272,6 +275,8 @@ namespace Gods_Of_Pharloom
                     FsmEvent = FsmEvent.GetFsmEvent("FINISHED")
                 },  
             };
+
+            startBossFight.Actions = new FsmStateAction[]{startBossFightAction};
 
 
             fsm.States = new FsmState[]{init, idle, interact, startBossFight, exitMenu};

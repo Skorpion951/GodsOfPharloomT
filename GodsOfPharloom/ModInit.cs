@@ -168,6 +168,11 @@ namespace Gods_Of_Pharloom
                 GG_Pharloom_HoG.isSceneActive = true;
                 };
             customScenes.Add(GG_Pharloom_HoG);
+
+            var AbyssCocoon = new CustomScene("Abyss_Cocoon");
+            AbyssCocoon.AddTransitionPoint("start_battle_entry", new Vector3(79.68f, 73.9f, 0), new TransitionPointInfo("Belltown", "door1", isADoor: true, isOneTimeTransition: true));
+            AbyssCocoon.isSkongScene = true;
+            AbyssCocoon.AfterSceneActivated += () => {AbyssCocoon.isSceneActive = true;};
         }
     }
 }
