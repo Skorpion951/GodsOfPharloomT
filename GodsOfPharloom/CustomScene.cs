@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Diagnostics.Eventing.Reader;
 using System.Runtime.CompilerServices;
+using System.Windows.Forms.VisualStyles;
 using Gods_Of_Pharloom;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
@@ -67,7 +68,7 @@ public class CustomScene
 
         //adding transition point
         var tp = gm.AddComponent<TransitionPoint>();
-        if (item.tp.noInputOnStart)
+
         {
             var fsmComponent = gm.AddComponent<PlayMakerFSM>();
             tp.customEntryFSM = fsmComponent;
@@ -78,15 +79,16 @@ public class CustomScene
             var init = new FsmState(fsm);
             init.Name = "Init";
 
-            var noInput = new FsmState(fsm);
-            noInput.Name = "No Input";
+            var afterEntry = new FsmState(fsm);
+            afterEntry.Name = "After Entry";
 
             fsm.StartState = "Init";
 
-            var noInputAction = new PatchedFsm.CustomLogicFsm(fsm);
-            noInputAction.action = (Fsm fsm) =>
+            var actionAfter = new PatchedFsm.CustomLogicFsm(fsm);
+            actionAfter.action = (Fsm fsm) =>
             {
-                HeroController.instance.hero_state = GlobalEnums.ActorStates.no_input;
+                if(item.tp.forceMemoryZone) GameManager.instance.ForceCurrentSceneIsMemory(true);
+                if(item.tp.noInputOnStart) HeroController.instance.hero_state = GlobalEnums.ActorStates.no_input;
             };
 
             init.Transitions = new FsmTransition[]
@@ -94,15 +96,25 @@ public class CustomScene
                 new FsmTransition
                 {
                     FsmEvent = FsmEvent.GetFsmEvent("FINISH ENTRY"),
-                    ToFsmState = noInput
+                    ToFsmState = afterEntry
                 }
             };
 
-            noInput.Actions = new FsmStateAction[]{noInputAction};
+            afterEntry.Actions = new FsmStateAction[]{actionAfter};
 
-            fsm.States = new FsmState[]{init, noInput};
+            fsm.States = new FsmState[]{init, afterEntry};
 
             fsm.FsmComponent.enabled = true;
+        }
+        if (item.tp.alwaysEnterRight)
+        {
+            tp.alwaysEnterRight = true;
+            tp.alwaysEnterLeft = false;
+        }
+        else
+        {
+            tp.alwaysEnterLeft = true;
+            tp.alwaysEnterRight = false;
         }
         
         tp.targetScene = item.tp.targetScene;

@@ -4,69 +4,9 @@ using UnityEngine.SceneManagement;
 
 namespace Gods_Of_Pharloom
 {
-    // public enum Bosses
-    // {
-    //     MossMother = 0,
-    //     DoubleMossMother,
-    //     BellBeast,
-    //     FourthChorus,
-    //     GreatConchflies,
-    //     Lace1,
-    //     LastJudge,
-    //     Moorwing,
-    //     Phantom,
-    //     SavageBeastfly1,
-    //     SisterSplinter,
-    //     SkullTyrant,
-    //     Window,
-    //     Broodmother,
-    //     CogworkDancers,
-    //     DisgracedChefLugoli,
-    //     FatherOfTheFlame,
-    //     FirstSinner,
-    //     ForebrothersSignisAndGron,
-    //     GarmondAndZaza,
-    //     GrandMotherSilk,
-    //     GroalTheGreat,
-    //     Lace2,
-    //     RagingConchfly,
-    //     SavageBeastfly2,
-    //     SecondSentiel,
-    //     Shakra,
-    //     TheUnravelled,
-    //     Trobbio,
-    //     Voltvyrm,
-    //     BellEater,
-    //     CloverDancers,
-    //     Crawfather,
-    //     CrustKingKhann,
-    //     GurrTheOutcast,
-    //     LostGarmond,
-    //     LostLace,
-    //     Nyleth,
-    //     Palestag,
-    //     Pinstress,
-    //     PlasmifiedZango,
-    //     ShrineGuardianSeth,
-    //     SkarrsingerKarmelita,
-    //     TormentedTrobbio,
-    //     WatherAtTheEdge
-    // };
     public class BossInfo
     {
-        public static Dictionary<string, BossInfo> bosses = new Dictionary<string, BossInfo>{
-            {"Moss Mother", new BossInfo("Tut_03", "start_battle_entry", "Moss Mother", new float[][]{new float[]{120f, 2f, 1.5f}}, 
-                                        ascendedVersion : new BossInfo("Weave_03", "start_battle_entry", "Moss Mother", new float[][]{new float[]{350f, 2f, 1.5f},
-                                                                                                                                      new float[]{350f, 2f, 1.5f}}))},
-            {"Bell Beast", new BossInfo("Bone_05", "start_battle_entry", "Bell Beast", new float[][]{new float[]{150f, 2f, 1.5f}})},
-            {"Fourth Chorus", new BossInfo("Bone_East_08", "start_battle_entry", "Fourth Chorus", new float[][]{new float[]{500f, 2f, 1.5f}})},
-            {"Great Conchflies", new BossInfo("Coral_11", "start_battle_entry", "Great Conchflies", new float[][]{new float[]{400f, 2f, 1.5f}})},
-            {"Lace1", new BossInfo("Bone_East_12", "start_battle_entry", "Lace In Deep Docks", new float[][]{new float[]{250f, 2f, 1.5f}})},
-            {"Lost Garmond", new BossInfo("Bone_East_12", "start_battle_entry", "Lace In Deep Docks", new float[][]{new float[]{250f, 2f, 1.5f}})},
-
-            {"Lost Lace", new BossInfo("Abyss_Cocoon", "start_battle_entry", "Lost Lace", new float[][]{new float[]{1800f, 1.5f, 2f}})},
-
-        };
+        public static Dictionary<string, BossInfo> bosses = CreateBossesInfo();
         public string sceneName;
         public string entryGate;
         public string bossName;
@@ -93,6 +33,28 @@ namespace Gods_Of_Pharloom
             };
             this.bossesHpMul = dictionary;
         }
+        public static Dictionary<string, BossInfo> CreateBossesInfo()
+        {
+            var bossesInfo = new BossInfo[]
+            {
+                new BossInfo("Tut_03", "start_battle_entry", "Moss Mother", new float[][]{new float[]{120f, 2f, 1.5f}}, 
+                                        ascendedVersion : new BossInfo("Weave_03", "start_battle_entry", "Moss Mother", new float[][]{new float[]{350f, 2f, 1.5f}})),
+                new BossInfo("Bone_05", "start_battle_entry", "Bell Beast", new float[][]{new float[]{150f, 2f, 1.5f}}),
+                new BossInfo("Bone_East_08", "start_battle_entry", "Fourth Chorus", new float[][]{new float[]{500f, 2f, 1.5f}}),
+                new BossInfo("Coral_11", "start_battle_entry", "Great Conchflies", new float[][]{new float[]{400f, 2f, 1.5f}}),
+                new BossInfo("Bone_East_12", "start_battle_entry", "Lace In Deep Docks", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Bone_East_12", "start_battle_entry", "Lost Garmond", new float[][]{new float[]{250f, 2f, 1.5f}}),
+
+                new BossInfo("Abyss_Cocoon", "start_battle_entry", "Lost Lace", new float[][]{new float[]{1800f, 1.5f, 2f}}),
+            };
+
+            var dict = new Dictionary<string, BossInfo>();
+            foreach(var bossInfo in bossesInfo)
+            {
+                dict[bossInfo.bossName] = bossInfo;
+            }
+            return dict;
+        }
     }
     public class BossSequence : MonoBehaviour
     {
@@ -103,7 +65,6 @@ namespace Gods_Of_Pharloom
         public int currentBossIndex = 0;
         public string backEntry;
         public string backScene;
-        public bool doEndSequence = false;
         public PlayMakerFSM sequenceController;
         public string difficultMode;
         public bool isPantheon = false;
@@ -151,7 +112,14 @@ namespace Gods_Of_Pharloom
                 if(index !< instance.bossSequence.Length)
                 {
                     instance.sequenceController.SendEvent("END SEQUENCE");
+                    return;
                 }
+            };
+
+            var endSequenceAction = new PatchedFsm.CustomLogicFsm(fsm);
+            endSequenceAction.action += (Fsm fsm) =>
+            {
+                instance.EndSequence();
             };
 
             startSequence.Transitions = new FsmTransition[]
@@ -221,8 +189,9 @@ namespace Gods_Of_Pharloom
 
             GameManager.instance.BeginSceneTransition(sceneLoadInfo);
         }
-        public void SequenceEnd()
+        public void EndSequence()
         {
+            PlayerDataMod.instance.badges[currentBoss.bossName].badges[BossStatueInfo.currentDifficultMode] = true;
             var sceneLoadInfo = new GameManager.SceneLoadInfo
             {
                 SceneName = backScene,

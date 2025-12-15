@@ -20,6 +20,7 @@ namespace Gods_Of_Pharloom
         public static List<AssetBundle> assetBundles = new List<AssetBundle>();
         public static List<CustomScene> customScenes = new List<CustomScene>();
         public static BepInEx.Logging.ManualLogSource Log;
+        public static PlayerDataMod playerDataMod;
         Keyboard keyboard;
         public void LoadBundle(string bundleName)
         {
@@ -45,6 +46,9 @@ namespace Gods_Of_Pharloom
         }
         private void Awake()
         {
+            playerDataMod = new PlayerDataMod();
+            playerDataMod.LoadData();
+
             Harmony.CreateAndPatchAll(typeof(GodsOfPharloomMod), null);
             InitCustomScenes();
             // Plugin startup logic
@@ -97,7 +101,7 @@ namespace Gods_Of_Pharloom
             if(to.name == "Ant_17")
             {
                 TransitionPoint.TransitionPoints[0].targetScene = "GG_Pharloom_Hall_Of_Gods";
-                TransitionPoint.TransitionPoints[0].entryPoint = "left1";
+                TransitionPoint.TransitionPoints[0].entryPoint = "door1";
             }
             if(to.name == "Belltown")
             {
@@ -145,12 +149,12 @@ namespace Gods_Of_Pharloom
         {
             var GG_Pharloom_Atrium = new CustomScene("GG_Pharloom_Atrium");
             GG_Pharloom_Atrium.AddTransitionPoint("door1", new Vector3(79.68f, 73.9f, 0), new TransitionPointInfo("Belltown", "door1", isADoor: true, noInputOnStart: false));
-            GG_Pharloom_Atrium.AddTransitionPoint("door2", new Vector3(57.5f, 54f, 0), new TransitionPointInfo("GG_Pharloom_Hall_Of_Gods", "left1", isADoor: true, noInputOnStart: false));
+            GG_Pharloom_Atrium.AddTransitionPoint("door2", new Vector3(57.5f, 54f, 0), new TransitionPointInfo("GG_Pharloom_Hall_Of_Gods", "door1", isADoor: true, noInputOnStart: false));
             GG_Pharloom_Atrium.AfterSceneActivated += () => {GG_Pharloom_Atrium.isSceneActive = true;};
             customScenes.Add(GG_Pharloom_Atrium);
 
             var GG_Pharloom_HoG = new CustomScene("GG_Pharloom_Hall_Of_Gods");
-            GG_Pharloom_HoG.AddTransitionPoint("left1", new Vector3(44.64f, 52.58f, 0), new TransitionPointInfo("GG_Pharloom_Atrium", "door2", isADoor: false, noInputOnStart: false));
+            GG_Pharloom_HoG.AddTransitionPoint("door1", new Vector3(44.64f, 52.58f, 0), new TransitionPointInfo("GG_Pharloom_Atrium", "door2", isADoor: true, noInputOnStart: false));
             GG_Pharloom_HoG.AfterSceneActivated += () => {
                 var rootObjects = SceneManager.GetSceneByName("GG_Pharloom_Hall_Of_Gods").GetRootGameObjects();
                 foreach(var obj in rootObjects)

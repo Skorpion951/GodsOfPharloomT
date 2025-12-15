@@ -10,11 +10,13 @@ public class TransitionPointInfo
     public bool dontWalkOutOfDoor;
     public bool hardLandOnExit;
     public bool noInputOnStart;
+    public bool alwaysEnterRight;
+    public bool forceMemoryZone;
 
     public TransitionPointInfo(string targetScene, string entryPoint,
                 InteractableBase.PromptLabels InteractLabel = InteractableBase.PromptLabels.Enter, bool isADoor = false,
                 bool isOneTimeTransition = false, bool dontWalkOutOfDoor = false, bool hardLandOnExit = false,
-                bool noInputOnStart = true)
+                bool noInputOnStart = true, bool alwaysEnterRight = true, bool forceMemoryZone = true)
     {
         this.targetScene = targetScene;
         this.entryPoint = entryPoint;
@@ -24,5 +26,7 @@ public class TransitionPointInfo
         this.dontWalkOutOfDoor = dontWalkOutOfDoor;
         this.hardLandOnExit = hardLandOnExit;
         this.noInputOnStart = noInputOnStart;
+        this.alwaysEnterRight = alwaysEnterRight;
+        this.forceMemoryZone = forceMemoryZone;
     }
 }

@@ -7,9 +7,27 @@ using System.Reflection;
 using HarmonyLib;
 using HutongGames.PlayMaker;
 using UnityEngine.UI;
+using HutongGames.PlayMaker.Actions;
+using System.Windows.Forms;
 
 namespace Gods_Of_Pharloom
 {
+    [Serializable]
+    public class Badges
+    {
+        public string bossStatue;
+        public Dictionary<string, bool> badges;
+        public Badges(string bossStatue)
+        {
+            this.bossStatue = bossStatue;
+            badges = new Dictionary<string, bool>
+            {
+                {"Attuned", false},
+                {"Ascended", false},
+                {"Radiant", false}
+            };
+        }
+    }
     public class BossStatueInfo
     {
         public static string hog_sceneName = "GG_Pharloom_Hall_Of_Gods";
@@ -25,43 +43,42 @@ namespace Gods_Of_Pharloom
         public static GameObject attunedBadge;
         public static GameObject ascendedBadge;
         public static GameObject radiantBadge;
-        public static Dictionary<string, GameObject> menuBadgesGOs = new Dictionary<string, GameObject>();
-        public Dictionary<string, GameObject> statueBadgesGOs = new Dictionary<string, GameObject>();
+        public static Dictionary<string, Dictionary<string, GameObject>> menuModesGOs; //attuned, ascended, radiant etc.
+        public Dictionary<string, GameObject> statueModeSpriteGOs; //attuned, ascended, radiant etc.
         public static GameObject selectArrow;
-        public static BossStatueInfo[] bossStatues = new BossStatueInfo[]
-        {
-            new BossStatueInfo(BossInfo.bosses["Lost Lace"], "Abyss_Cocoon", "LostLace_Statue", "Lost Lace"),
-        };
-        [Serializable]
-        private class Badges
-        {
-            public string boss;
-            public bool hasAttunedBadge = false;
-            public bool hasAscendedBadge = false;
-            public bool hasRadiantBadge = false;
-            public Badges(string boss)
-            {
-                this.boss = boss;
-            }
-        }
+        public static BossStatueInfo[] bossStatues = CreateBossesStatue();
 
         public BossInfo boss;
-        string sceneName;
         public string statueObjectName;
-        public string bossName;
+        public int statueIndex;
+        public Dictionary<string, Dictionary<string, GameObject>> modes;
         Badges badges;
 
-        public BossStatueInfo(BossInfo boss, string sceneName, string statueObjectName, string bossName)
+        public BossStatueInfo(BossInfo boss, string statueObjectName)
         {
             this.boss = boss;
-            this.sceneName = sceneName;
             this.statueObjectName = statueObjectName;
-            this.bossName = bossName;
+            this.badges = PlayerDataMod.instance.badges[boss.bossName];
+        }
+
+        public static BossStatueInfo[] CreateBossesStatue()
+        {
+            var statues = new BossStatueInfo[]
+            {
+                new BossStatueInfo(BossInfo.bosses["Lost Lace"], "LostLace_Statue"),
+            };
+
+            for(int i = 0; i < statues.Length; i++)
+            {
+                statues[i].statueIndex = i;
+            }
+
+            return statues;
         }
     }
     public class BossStatue : MonoBehaviour
     {
-        public BossStatueInfo instance;
+        public static BossStatueInfo instance;
 
         void Awake()
         {
@@ -77,16 +94,23 @@ namespace Gods_Of_Pharloom
 
                         foreach(Transform child in children)
                         {
-                            if(child.gameObject.name == "AttunedBadge"){
-                                BossStatueInfo.menuBadgesGOs["Attuned"] = child.gameObject;
-                                continue;
-                            }
-                            if(child.gameObject.name == "AscendedBadge"){
-                                BossStatueInfo.menuBadgesGOs["Ascended"] = child.gameObject;
-                                continue;
-                            }
-                            if(child.gameObject.name == "RadiantBadge"){
-                                BossStatueInfo.menuBadgesGOs["Radiant"] = child.gameObject;
+                            if(child.gameObject.name == "Modes")
+                            {
+                                var modes = new Dictionary<string, Dictionary<string, GameObject>>();
+
+                                var children2 = child;
+                                foreach(Transform child2 in children2)
+                                {
+                                    var children3 = child2;
+                                    var dict = new Dictionary<string, GameObject>();
+                                    foreach(Transform child3 in children3)
+                                    {
+                                        dict[child3.name] = child3.gameObject;
+                                    }
+                                    modes[child2.name] = dict;
+                                }
+
+                                BossStatueInfo.menuModesGOs = modes;
                                 continue;
                             }
                             if(child.gameObject.name == "BossNameText"){
@@ -113,21 +137,12 @@ namespace Gods_Of_Pharloom
                 if(child1.name == "Orbs")
                 {
                     var children = child1.gameObject.transform;
+                    var statueSpritesModes = new Dictionary<string, GameObject>();
                     foreach(Transform child2 in children)
                     {
-                        if(child2.gameObject.name == "Attuned_Orb"){
-                            instance.statueBadgesGOs["Attuned"] = child2.gameObject;
-                            continue;
-                        }
-                        if(child2.gameObject.name == "Ascended_Orb"){
-                            instance.statueBadgesGOs["Ascended"] = child2.gameObject;
-                            continue;
-                        }
-                        if(child2.gameObject.name == "Radiant_Orb"){
-                            instance.statueBadgesGOs["Radiant"] = child2.gameObject;
-                            continue;
-                        }
+                        statueSpritesModes[child2.name] = child2.gameObject;
                     }
+                    instance.statueModeSpriteGOs = statueSpritesModes;
                 }
             }
 
@@ -142,14 +157,9 @@ namespace Gods_Of_Pharloom
             var go = this.gameObject;
             var inputHandler = InputHandler.Instance.inputActions;
 
-            var collider = go.AddComponent<BoxCollider2D>();
             var interactComponent = go.AddComponent<PlayMakerNPC>();
             var fsmComponent = go.AddComponent<PlayMakerFSM>();
             var fsm = fsmComponent.Fsm;
-
-            collider.size = new Vector2(3f, 0.3f);
-            collider.offset = new Vector2(0f, -1.35f);
-            collider.isTrigger = true;
 
             interactComponent.InteractLabel = InteractableBase.PromptLabels.Challenge;
             interactComponent.CustomEventTarget = fsmComponent;
@@ -173,8 +183,12 @@ namespace Gods_Of_Pharloom
             var interactAction = new PatchedFsm.CustomLogicFsm(fsm);
             interactAction.action += (Fsm fsm) =>
             {
+                foreach(var item in BossStatueInfo.menuModesGOs)
+                {
+                    item.Value["SpriteMode"].SetActive(PlayerDataMod.instance.badges[instance.boss.bossName].badges[item.Key]);
+                }
                 var text = BossStatueInfo.bossNameGO.GetComponent<Text>();
-                text.text = instance.bossName;
+                text.text = instance.boss.bossName;
                 BossStatueInfo.difficultyModeCanvas.SetActive(true);
             };
             interactAction.updateAction += () =>
@@ -185,13 +199,14 @@ namespace Gods_Of_Pharloom
                     var index = (tmpIndex == 0) ? BossStatueInfo.difficultModes.Count : tmpIndex;
                     BossStatueInfo.currentDifficultMode = BossStatueInfo.difficultModes[index - 1];
 
-                    var mode = BossStatueInfo.currentDifficultMode;
-                    var badge = BossStatueInfo.menuBadgesGOs[mode];
+                    var currentMode = BossStatueInfo.currentDifficultMode;
+                    var menuMod = BossStatueInfo.menuModesGOs[currentMode];
+                    var spriteMod = menuMod["SpriteMode"];
 
-                    var badgePos = badge.transform.position;
+                    var spritePos = spriteMod.transform.position;
                     var arrowPos = BossStatueInfo.selectArrow.transform.position;
 
-                    BossStatueInfo.selectArrow.transform.position = new Vector3(arrowPos.x, badgePos.y, arrowPos.z);
+                    BossStatueInfo.selectArrow.transform.position = new Vector3(arrowPos.x, spritePos.y, arrowPos.z);
                 }
                 if (inputHandler.Down.WasPressed)
                 {
@@ -199,13 +214,14 @@ namespace Gods_Of_Pharloom
                     var index = (tmpIndex == BossStatueInfo.difficultModes.Count - 1) ? -1 : tmpIndex;
                     BossStatueInfo.currentDifficultMode = BossStatueInfo.difficultModes[index + 1];
 
-                    var mode = BossStatueInfo.currentDifficultMode;
-                    var badge = BossStatueInfo.menuBadgesGOs[mode];
+                    var currentMode = BossStatueInfo.currentDifficultMode;
+                    var menuMod = BossStatueInfo.menuModesGOs[currentMode];
+                    var spriteMod = menuMod["SpriteMode"];
 
-                    var badgePos = badge.transform.position;
+                    var spritePos = spriteMod.transform.position;
                     var arrowPos = BossStatueInfo.selectArrow.transform.position;
 
-                    BossStatueInfo.selectArrow.transform.position = new Vector3(arrowPos.x, badgePos.y, arrowPos.z);
+                    BossStatueInfo.selectArrow.transform.position = new Vector3(arrowPos.x, spritePos.y, arrowPos.z);
                 }
                 if (inputHandler.Jump.WasPressed)
                 {
