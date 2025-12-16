@@ -6,7 +6,7 @@ namespace Gods_Of_Pharloom
 {
     public class BossInfo
     {
-        public static Dictionary<string, BossInfo> bosses = CreateBossesInfo();
+        public static Dictionary<string, BossInfo> bosses;
         public string sceneName;
         public string entryGate;
         public string bossName;
@@ -33,7 +33,7 @@ namespace Gods_Of_Pharloom
             };
             this.bossesHpMul = dictionary;
         }
-        public static Dictionary<string, BossInfo> CreateBossesInfo()
+        public static void InitBossesInfo()
         {
             var bossesInfo = new BossInfo[]
             {
@@ -53,7 +53,7 @@ namespace Gods_Of_Pharloom
             {
                 dict[bossInfo.bossName] = bossInfo;
             }
-            return dict;
+            bosses = dict;
         }
     }
     public class BossSequence : MonoBehaviour
@@ -108,8 +108,8 @@ namespace Gods_Of_Pharloom
             var nextAction = new PatchedFsm.CustomLogicFsm(fsm);
             nextAction.action += (Fsm fsm) =>
             {
-                var index = ++instance.currentBossIndex;
-                if(index !< instance.bossSequence.Length)
+                instance.currentBossIndex++;
+                if(!(currentBossIndex < instance.bossSequence.Length))
                 {
                     instance.sequenceController.SendEvent("END SEQUENCE");
                     return;
@@ -120,6 +120,7 @@ namespace Gods_Of_Pharloom
             endSequenceAction.action += (Fsm fsm) =>
             {
                 instance.EndSequence();
+                endSequenceAction.Finish();
             };
 
             startSequence.Transitions = new FsmTransition[]
@@ -135,7 +136,7 @@ namespace Gods_Of_Pharloom
             {
                 new FsmTransition
                 {
-                    FsmEvent = FsmEvent.GetFsmEvent("BOSS DEAD"),
+                    FsmEvent = FsmEvent.GetFsmEvent(PatchedFsm.bossDeadEvent), //boss dead event
                     ToFsmState = next
                 },
                 new FsmTransition
@@ -160,6 +161,8 @@ namespace Gods_Of_Pharloom
             };
 
             startSequence.Actions = new FsmStateAction[]{startSequenceAction};
+            next.Actions = new FsmStateAction[]{nextAction};
+            endSequence.Actions = new FsmStateAction[]{endSequenceAction};
 
             fsm.States = new FsmState[]{startSequence, idle, next, endSequence};
 
@@ -191,7 +194,7 @@ namespace Gods_Of_Pharloom
         }
         public void EndSequence()
         {
-            PlayerDataMod.instance.badges[currentBoss.bossName].badges[BossStatueInfo.currentDifficultMode] = true;
+            GodsOfPharloomMod.playerData.badges[currentBoss.bossName].badges[BossStatueInfo.currentDifficultMode] = true;
             var sceneLoadInfo = new GameManager.SceneLoadInfo
             {
                 SceneName = backScene,

@@ -2,6 +2,8 @@ using HutongGames.PlayMaker.Actions;
 using UnityEngine;
 public class TransitionPointInfo
 {
+    public string gateName;
+    public Vector3 position;
     public string targetScene;
     public string entryPoint;
     public InteractableBase.PromptLabels InteractLabel;
@@ -13,11 +15,13 @@ public class TransitionPointInfo
     public bool alwaysEnterRight;
     public bool forceMemoryZone;
 
-    public TransitionPointInfo(string targetScene, string entryPoint,
+    public TransitionPointInfo(string gateName, Vector3 position, string targetScene, string entryPoint,
                 InteractableBase.PromptLabels InteractLabel = InteractableBase.PromptLabels.Enter, bool isADoor = false,
                 bool isOneTimeTransition = false, bool dontWalkOutOfDoor = false, bool hardLandOnExit = false,
                 bool noInputOnStart = true, bool alwaysEnterRight = true, bool forceMemoryZone = true)
     {
+        this.gateName = gateName;
+        this.position = position;
         this.targetScene = targetScene;
         this.entryPoint = entryPoint;
         this.InteractLabel = InteractLabel;

@@ -10,6 +10,7 @@ namespace Gods_Of_Pharloom
 {
     public partial class GodsOfPharloomMod : BaseUnityPlugin
     {
+        public static Action<Scene, Scene> afterSceneLoaded;
         public static MethodInfo RecordBeginTime = AccessTools.Method(typeof(SceneLoad), "RecordBeginTime");
         public static MethodInfo RecordEndTime = AccessTools.Method(typeof(SceneLoad), "RecordEndTime");
         public static MethodInfo LocalTryClearMemory = AccessTools.Method(typeof(SceneLoad), "LocalTryClearMemory");
@@ -42,9 +43,13 @@ namespace Gods_Of_Pharloom
 
             bool wasPreloaded = false;
 
+            //////////////////////////////////////////////////////////////////////////////////
+            
+            Scene from = SceneManager.GetActiveScene();
+            AsyncOperation op;
             if (!scene.isPreloading)
             {
-                var op = SceneManager.LoadSceneAsync(scene.sceneName, LoadSceneMode.Additive);
+                op = SceneManager.LoadSceneAsync(scene.sceneName, LoadSceneMode.Additive);
                 yield return op;
                 scene.Activate();
             }
@@ -52,8 +57,14 @@ namespace Gods_Of_Pharloom
             {
                 yield return null;
             }
+
             scene.isSceneActive = false;
             scene.isPreloading = false;
+
+            Scene to = SceneManager.GetSceneByName(__instance.TargetSceneName);
+            afterSceneLoaded?.Invoke(from, to);
+
+            //////////////////////////////////////////////////////////////////////////////////
 
             InvokeMethod(RecordBeginTime, new object[] {SceneLoad.Phases.FetchBlocked});
             while (!__instance.IsFetchAllowed)
@@ -380,7 +391,9 @@ namespace Gods_Of_Pharloom
             yield return (UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>)
                 (operationHandle.GetValue(__instance));
             
+
             //////////////////////////////////////////////
+            Scene from = SceneManager.GetActiveScene();
             scene.Activate();
 
             while(!scene.isSceneActive)
@@ -389,7 +402,9 @@ namespace Gods_Of_Pharloom
             }
             scene.isSceneActive = false;
             scene.isPreloading = false;
-            Log.LogInfo("WELYESAGA");
+
+            Scene to = SceneManager.GetSceneByName(__instance.TargetSceneName);
+            afterSceneLoaded?.Invoke(from, to);
             ////////////////////////////////////////////////////////////
 
             InvokeMethod(RecordEndTime, new object[] {SceneLoad.Phases.Fetch});//RecordEndTime(SceneLoad.Phases.Fetch);

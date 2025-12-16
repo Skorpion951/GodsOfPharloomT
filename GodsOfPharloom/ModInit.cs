@@ -6,21 +6,23 @@ using UnityEngine.SceneManagement;
 using System.Reflection;
 using HarmonyLib;
 using Unity.Mathematics;
+using Newtonsoft.Json;
 
 namespace Gods_Of_Pharloom
 {
     [BepInPlugin("bepinex.plugin.test", "Test", "0.0.0.1")]
     public partial class GodsOfPharloomMod : BaseUnityPlugin
     {
+        string pathToModData = BepInEx.Paths.ConfigPath + "/" +"GodsOfPharloomData.bin";
+        public static PlayerDataMod playerData;
         public static object obj;
         private static string[] assetBundleNames =
         {
-            "gg_pharloom_atrium", "gg_moss_mother", "gg_pharloom_hall_of_gods"
+            "gg_pharloom_atrium", "gg_pharloom_hall_of_gods"
         };
         public static List<AssetBundle> assetBundles = new List<AssetBundle>();
         public static List<CustomScene> customScenes = new List<CustomScene>();
         public static BepInEx.Logging.ManualLogSource Log;
-        public static PlayerDataMod playerDataMod;
         Keyboard keyboard;
         public void LoadBundle(string bundleName)
         {
@@ -44,17 +46,46 @@ namespace Gods_Of_Pharloom
                 Logger.LogInfo(bundle.GetAllScenePaths()[0]);
             }
         }
+        public void LoadModData()
+        {
+            if (!File.Exists(pathToModData))
+            {
+                var newData = new PlayerDataMod();
+                var jsonString = JsonUtility.ToJson(newData, true);
+                File.WriteAllText(pathToModData, jsonString);
+            }
+
+            var json = File.ReadAllText(pathToModData);
+            playerData = JsonUtility.FromJson<PlayerDataMod>(json);
+        }
+        public void SaveModData()
+        {
+            var jsonString = JsonUtility.ToJson(playerData, true);
+            File.WriteAllText(pathToModData, jsonString);
+        }
         private void Awake()
         {
-            playerDataMod = new PlayerDataMod();
-            playerDataMod.LoadData();
+            Log = this.Logger;
+            try{
+            Logger.LogInfo($"Plugin is loaded!");
+            BossInfo.InitBossesInfo();
+            BossStatueInfo.InitBossesStatue();
+            LoadModData();
+            BossStatueInfo.GetBadges();
+
+            }
+            catch(Exception ex)
+            {
+                Logger.LogInfo(ex.Message);
+            }
+
+
 
             Harmony.CreateAndPatchAll(typeof(GodsOfPharloomMod), null);
             InitCustomScenes();
             // Plugin startup logic
             Logger.LogInfo($"Plugin is loaded!");
             SceneManager.activeSceneChanged += OnSceneChanged;
-            Log = this.Logger;
 
             foreach(string name in assetBundleNames)
             {
@@ -132,29 +163,19 @@ namespace Gods_Of_Pharloom
                         return;
                     }
                 }
-                return;
-                if(tp1 != null)
-                {
-                    tp1.targetScene = "Belltown";
-                    tp1.entryPoint = "door1";
-                    tp1.entryOffset = new Vector2(0, 0);
-                    // tp1.GetType().GetField("ignoredInput", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(tp1, true);
-                    tp1.GetType().GetField("isADoor", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(tp1, true);
-                    // tp1.GetType().GetField("activated", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(tp1, true);
-                }
             }
         }
 
         void InitCustomScenes()
         {
             var GG_Pharloom_Atrium = new CustomScene("GG_Pharloom_Atrium");
-            GG_Pharloom_Atrium.AddTransitionPoint("door1", new Vector3(79.68f, 73.9f, 0), new TransitionPointInfo("Belltown", "door1", isADoor: true, noInputOnStart: false));
-            GG_Pharloom_Atrium.AddTransitionPoint("door2", new Vector3(57.5f, 54f, 0), new TransitionPointInfo("GG_Pharloom_Hall_Of_Gods", "door1", isADoor: true, noInputOnStart: false));
+            GG_Pharloom_Atrium.AddTransitionPoint(new TransitionPointInfo("door1", new Vector3(79.68f, 73.9f, 0), "Belltown", "door1", isADoor: true, noInputOnStart: false));
+            GG_Pharloom_Atrium.AddTransitionPoint(new TransitionPointInfo("door2", new Vector3(57.5f, 54f, 0), "GG_Pharloom_Hall_Of_Gods", "door1", isADoor: true, noInputOnStart: false));
             GG_Pharloom_Atrium.AfterSceneActivated += () => {GG_Pharloom_Atrium.isSceneActive = true;};
             customScenes.Add(GG_Pharloom_Atrium);
 
             var GG_Pharloom_HoG = new CustomScene("GG_Pharloom_Hall_Of_Gods");
-            GG_Pharloom_HoG.AddTransitionPoint("door1", new Vector3(44.64f, 52.58f, 0), new TransitionPointInfo("GG_Pharloom_Atrium", "door2", isADoor: true, noInputOnStart: false));
+            GG_Pharloom_HoG.AddTransitionPoint(new TransitionPointInfo("door1", new Vector3(44.64f, 52.58f, 0), "GG_Pharloom_Atrium", "door2", isADoor: true, noInputOnStart: false));
             GG_Pharloom_HoG.AfterSceneActivated += () => {
                 var rootObjects = SceneManager.GetSceneByName("GG_Pharloom_Hall_Of_Gods").GetRootGameObjects();
                 foreach(var obj in rootObjects)
@@ -175,8 +196,8 @@ namespace Gods_Of_Pharloom
             customScenes.Add(GG_Pharloom_HoG);
 
             var AbyssCocoon = new CustomScene("Abyss_Cocoon");
-            AbyssCocoon.AddTransitionPoint("start_battle_entry", new Vector3(29.16f, 5.65f, 0), new TransitionPointInfo("Belltown", "door1", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true, hardLandOnExit: true));
+            AbyssCocoon.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(29.16f, 5.65f, 0), "Belltown", "door1", isADoor: true, 
+            isOneTimeTransition: true, dontWalkOutOfDoor : true));
             AbyssCocoon.isSkongScene = true;
             AbyssCocoon.AfterSceneActivated += () => {AbyssCocoon.isSceneActive = true;};
             customScenes.Add(AbyssCocoon);

@@ -66,6 +66,7 @@ public class PatchedFsm
             this.method = method;
         }
     }
+    public static string bossDeadEvent = "BOSS DEAD EVENT MOD";
     public string sceneName;
     public FsmPatch[] fsms;
 
@@ -265,6 +266,7 @@ public class PatchedFsm
             new FsmPatch("Lost Lace Boss", "Control", PatchFsm_LostLaceBossControl),
             new FsmPatch("Lost Lace Boss", "Death Control", PatchFsm_LostLaceDeathControl),
             new FsmPatch("door_entry", "Control", PatchFsm_LostLaceDoorEntryControl),
+            new FsmPatch("Corpse Lost Lace(Clone)", "Control", PatchFsm_LostLaceCorpseControl),
         }),
         new PatchedFsm("Shellwood_11b_Memory", new FsmPatch[]
         {
@@ -1842,6 +1844,27 @@ public class PatchedFsm
         land.Actions = RemoveFromArray(land.Actions, 1);
         land.Actions = RemoveFromArray(land.Actions, 1);
         land.Actions = RemoveFromArray(land.Actions, 2);
+
+        return true;
+    }
+    public static bool PatchFsm_LostLaceCorpseControl(Fsm fsm)
+    {
+        var steam = fsm.GetState("Steam");
+        var blow = fsm.GetState("Blow");
+        var air = fsm.GetState("Air");
+        var splashIn = fsm.GetState("Splash In");
+        var end = fsm.GetState("End");
+
+        ((Wait)steam.Actions[1]).time = 0.01f;
+
+        var customActionSendEvent = new CustomLogicFsm(fsm);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+            customActionSendEvent.Finish();
+        };
+
+        end.Actions = InsertInArray(end.Actions, customActionSendEvent, 0);
 
         return true;
     }

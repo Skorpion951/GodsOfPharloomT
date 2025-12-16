@@ -13,7 +13,7 @@ using UnityEngine.Tilemaps;
 public class CustomScene
 {
     public string sceneName {get; private set;}
-    private List<TransitionGateInfo> TransitionGates = new List<TransitionGateInfo>();
+    private List<TransitionPointInfo> TransitionGates = new List<TransitionPointInfo>();
     public Action AfterSceneActivated;
     public bool isSceneActive = false;
     public bool isPreloading = false;
@@ -25,16 +25,16 @@ public class CustomScene
         this.isSkongScene = isSkongScene;
     }
     
-    public void AddTransitionPoint(string gateName, Vector3 position, TransitionPointInfo TransitionPointInfo)
+    public void AddTransitionPoint(TransitionPointInfo TransitionPointInfo)
     {
-        TransitionGates.Add(new TransitionGateInfo(gateName, position, TransitionPointInfo));
-        SceneTeleportMap.AddTransitionGate(this.sceneName, gateName);
+        TransitionGates.Add(TransitionPointInfo);
+        SceneTeleportMap.AddTransitionGate(this.sceneName, TransitionPointInfo.gateName);
     }
     public bool Remove(string entryPoint)
     {
         var itemToRemove = TransitionGates.Find(item =>
         {
-            return item.tp.entryPoint == entryPoint;
+            return item.entryPoint == entryPoint;
         });
 
         if(TransitionGates.IndexOf(itemToRemove) == -1) return false;
@@ -51,7 +51,7 @@ public class CustomScene
         yield return op;
         this.Activate();
     }
-    private void CreateGate(TransitionGateInfo item)
+    private void CreateGate(TransitionPointInfo item)
     {
         //create\\
         var gm = new GameObject(item.gateName);
@@ -59,54 +59,57 @@ public class CustomScene
         collider.isTrigger = true;
 
         //setup gate's position
-        gm.transform.position = item.pos;
+        gm.transform.position = item.position;
         
         //setup collider size
         if(item.gateName.Contains("top") || item.gateName.Contains("bot")) collider.size = new Vector2(4, 1);
         else collider.size = new Vector2(1, 4);
-        if(item.tp.isOneTimeTransition) collider.enabled = false;
+        if(item.isOneTimeTransition) collider.enabled = false;
 
         //adding transition point
-        var tp = gm.AddComponent<TransitionPoint>();
+        CreateTransitionPoint(item, gm);
+        SceneManager.MoveGameObjectToScene(gm, SceneManager.GetSceneByName(sceneName));
+    }
+    public static TransitionPoint CreateTransitionPoint(TransitionPointInfo item, GameObject go)
+    {
+        var tp = go.AddComponent<TransitionPoint>();
 
+        var fsmComponent = go.AddComponent<PlayMakerFSM>();
+        tp.customEntryFSM = fsmComponent;
+        fsmComponent.enabled = false;
+
+        var fsm = fsmComponent.Fsm;
+
+        var init = new FsmState(fsm);
+        init.Name = "Init";
+
+        var afterEntry = new FsmState(fsm);
+        afterEntry.Name = "After Entry";
+
+        fsm.StartState = "Init";
+
+        var actionAfter = new PatchedFsm.CustomLogicFsm(fsm);
+        actionAfter.action = (Fsm fsm) =>
         {
-            var fsmComponent = gm.AddComponent<PlayMakerFSM>();
-            tp.customEntryFSM = fsmComponent;
-            fsmComponent.enabled = false;
+            if(item.forceMemoryZone) GameManager.instance.ForceCurrentSceneIsMemory(true);
+            if(item.noInputOnStart) HeroController.instance.hero_state = GlobalEnums.ActorStates.no_input;
+        };
 
-            var fsm = fsmComponent.Fsm;
-
-            var init = new FsmState(fsm);
-            init.Name = "Init";
-
-            var afterEntry = new FsmState(fsm);
-            afterEntry.Name = "After Entry";
-
-            fsm.StartState = "Init";
-
-            var actionAfter = new PatchedFsm.CustomLogicFsm(fsm);
-            actionAfter.action = (Fsm fsm) =>
+        init.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
             {
-                if(item.tp.forceMemoryZone) GameManager.instance.ForceCurrentSceneIsMemory(true);
-                if(item.tp.noInputOnStart) HeroController.instance.hero_state = GlobalEnums.ActorStates.no_input;
-            };
+                FsmEvent = FsmEvent.GetFsmEvent("FINISH ENTRY"),
+                ToFsmState = afterEntry
+            }
+        };
 
-            init.Transitions = new FsmTransition[]
-            {
-                new FsmTransition
-                {
-                    FsmEvent = FsmEvent.GetFsmEvent("FINISH ENTRY"),
-                    ToFsmState = afterEntry
-                }
-            };
+        afterEntry.Actions = new FsmStateAction[]{actionAfter};
 
-            afterEntry.Actions = new FsmStateAction[]{actionAfter};
+        fsm.States = new FsmState[]{init, afterEntry};
 
-            fsm.States = new FsmState[]{init, afterEntry};
-
-            fsm.FsmComponent.enabled = true;
-        }
-        if (item.tp.alwaysEnterRight)
+        fsm.FsmComponent.enabled = true;
+        if (item.alwaysEnterRight)
         {
             tp.alwaysEnterRight = true;
             tp.alwaysEnterLeft = false;
@@ -117,16 +120,17 @@ public class CustomScene
             tp.alwaysEnterRight = false;
         }
         
-        tp.targetScene = item.tp.targetScene;
-        tp.dontWalkOutOfDoor = item.tp.dontWalkOutOfDoor;
-        tp.hardLandOnExit = item.tp.hardLandOnExit;
-        tp.entryPoint = item.tp.entryPoint;
-        tp.InteractLabel = item.tp.InteractLabel;
-        tp.isADoor = item.tp.isADoor;
+        tp.targetScene = item.targetScene;
+        tp.dontWalkOutOfDoor = item.dontWalkOutOfDoor;
+        tp.hardLandOnExit = item.hardLandOnExit;
+        tp.entryPoint = item.entryPoint;
+        tp.InteractLabel = item.InteractLabel;
+        tp.isADoor = item.isADoor;
         tp.OnDoorEnter = new UnityEngine.Events.UnityEvent();
-        tp.respawnMarker = gm.AddComponent<HazardRespawnMarker>();
+        tp.respawnMarker = go.AddComponent<HazardRespawnMarker>();
         tp.Activate();
-        SceneManager.MoveGameObjectToScene(gm, SceneManager.GetSceneByName(sceneName));
+
+        return tp;
     }
 
     public System.Collections.IEnumerator GetObjectFromSilkScene(string[] path, string sceneName, Action<GameObject> func)

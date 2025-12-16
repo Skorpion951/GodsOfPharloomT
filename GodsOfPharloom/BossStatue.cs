@@ -46,7 +46,7 @@ namespace Gods_Of_Pharloom
         public static Dictionary<string, Dictionary<string, GameObject>> menuModesGOs; //attuned, ascended, radiant etc.
         public Dictionary<string, GameObject> statueModeSpriteGOs; //attuned, ascended, radiant etc.
         public static GameObject selectArrow;
-        public static BossStatueInfo[] bossStatues = CreateBossesStatue();
+        public static BossStatueInfo[] bossStatues;
 
         public BossInfo boss;
         public string statueObjectName;
@@ -58,10 +58,9 @@ namespace Gods_Of_Pharloom
         {
             this.boss = boss;
             this.statueObjectName = statueObjectName;
-            this.badges = PlayerDataMod.instance.badges[boss.bossName];
         }
 
-        public static BossStatueInfo[] CreateBossesStatue()
+        public static void InitBossesStatue()
         {
             var statues = new BossStatueInfo[]
             {
@@ -73,7 +72,15 @@ namespace Gods_Of_Pharloom
                 statues[i].statueIndex = i;
             }
 
-            return statues;
+            bossStatues = statues;
+        }
+
+        public static void GetBadges()
+        {
+            foreach(var bossStatue in bossStatues)
+            {
+                bossStatue.badges = GodsOfPharloomMod.playerData.badges[bossStatue.boss.bossName];
+            }
         }
     }
     public class BossStatue : MonoBehaviour
@@ -148,14 +155,32 @@ namespace Gods_Of_Pharloom
 
             if(instance != null)
             {
-                InitChallangeRegion();
+                InitChallengeRegion();
             }
         }
 
-        void InitChallangeRegion()
+        void InitChallengeRegion()
         {
+            //arrow on current difficult mode
+            var currentMode = BossStatueInfo.currentDifficultMode;
+            var menuMod = BossStatueInfo.menuModesGOs[currentMode];
+            var spriteMod = menuMod["SpriteMode"];
+            var spritePos = spriteMod.transform.position;
+            var arrowPos = BossStatueInfo.selectArrow.transform.position;
+
+            BossStatueInfo.selectArrow.transform.position = new Vector3(arrowPos.x, spritePos.y, arrowPos.z);
+
+
+
             var go = this.gameObject;
+
+            var go_backEntry = new GameObject($"back_entry{instance.statueIndex}");
+            SceneManager.MoveGameObjectToScene(go_backEntry, SceneManager.GetSceneByName(BossStatueInfo.hog_sceneName));
+            go_backEntry.transform.position = go.transform.position;
             var inputHandler = InputHandler.Instance.inputActions;
+
+            var tp = CustomScene.CreateTransitionPoint(new TransitionPointInfo($"back_entry{instance.statueIndex}", new Vector3(), "", "", 
+                                                        dontWalkOutOfDoor: true, isADoor: true, noInputOnStart: false), go_backEntry);
 
             var interactComponent = go.AddComponent<PlayMakerNPC>();
             var fsmComponent = go.AddComponent<PlayMakerFSM>();
@@ -185,7 +210,7 @@ namespace Gods_Of_Pharloom
             {
                 foreach(var item in BossStatueInfo.menuModesGOs)
                 {
-                    item.Value["SpriteMode"].SetActive(PlayerDataMod.instance.badges[instance.boss.bossName].badges[item.Key]);
+                    item.Value["SpriteMode"].SetActive(GodsOfPharloomMod.playerData.badges[instance.boss.bossName].badges[item.Key]);
                 }
                 var text = BossStatueInfo.bossNameGO.GetComponent<Text>();
                 text.text = instance.boss.bossName;
@@ -225,6 +250,7 @@ namespace Gods_Of_Pharloom
                 }
                 if (inputHandler.Jump.WasPressed)
                 {
+
                     fsm.FsmComponent.SendEvent("START BOSS FIGHT");
                 }
                 if (inputHandler.QuickCast.WasPressed)
@@ -247,7 +273,7 @@ namespace Gods_Of_Pharloom
             var startBossFightAction = new PatchedFsm.CustomLogicFsm(fsm);
             startBossFightAction.action += (Fsm fsm) =>
             {
-                BossSequence.CreateSequence(new BossInfo[]{instance.boss}, "back_entry1", BossStatueInfo.hog_sceneName);
+                BossSequence.CreateSequence(new BossInfo[]{instance.boss}, $"back_entry{instance.statueIndex}", BossStatueInfo.hog_sceneName);
             };
 
 
