@@ -13,14 +13,16 @@ namespace Gods_Of_Pharloom
         public Dictionary<string, float>[] bossesHpMul;
         public BossInfo ascendedVersion;
         public bool noInputOnStart;
+        public bool is3ActBoss;
 
-        public BossInfo(string sceneName, string entryGate, string bossName, float[][] bossesHpMul, BossInfo ascendedVersion = null, bool noInputOnStart = true)
+        public BossInfo(string sceneName, string entryGate, string bossName, float[][] bossesHpMul, BossInfo ascendedVersion = null, bool noInputOnStart = true, bool is3ActBoss = false)
         {
             this.sceneName = sceneName;
             this.entryGate = entryGate;
             this.bossName = bossName;
             this.ascendedVersion = ascendedVersion;
             this.noInputOnStart = noInputOnStart;
+            this.is3ActBoss = is3ActBoss;
 
             var dictionary = new Dictionary<string, float>[bossesHpMul.Length];
             for(int i = 0; i < bossesHpMul.Length; i++)
@@ -42,10 +44,44 @@ namespace Gods_Of_Pharloom
                 new BossInfo("Bone_05", "start_battle_entry", "Bell Beast", new float[][]{new float[]{150f, 2f, 1.5f}}),
                 new BossInfo("Bone_East_08", "start_battle_entry", "Fourth Chorus", new float[][]{new float[]{500f, 2f, 1.5f}}),
                 new BossInfo("Coral_11", "start_battle_entry", "Great Conchflies", new float[][]{new float[]{400f, 2f, 1.5f}}),
-                new BossInfo("Bone_East_12", "start_battle_entry", "Lace In Deep Docks", new float[][]{new float[]{250f, 2f, 1.5f}}),
-                new BossInfo("Bone_East_12", "start_battle_entry", "Lost Garmond", new float[][]{new float[]{250f, 2f, 1.5f}}),
-
-                new BossInfo("Abyss_Cocoon", "start_battle_entry", "Lost Lace", new float[][]{new float[]{1800f, 1.5f, 2f}}),
+                new BossInfo("Bone_East_12", "start_battle_entry", "Lace in Deep Docks", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Coral_Judge_Arena", "start_battle_entry", "The Last Judge", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Greymoor_08", "start_battle_entry", "Moorwing", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Organ_01", "start_battle_entry", "Phantom", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Ant_19", "start_battle_entry", "Beastfly In Chapel Of The Beast", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Shellwood_18", "start_battle_entry", "Sister Splinter", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Bone_15", "start_battle_entry", "Skull Tyrant", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Belltown_Shrine", "start_battle_entry", "Widow", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Slab_16b", "start_battle_entry", "Broodmother", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Cog_Dancers", "start_battle_entry", "Cogwork Dancers", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Dust_Chef", "start_battle_entry", "Disgraced Chef Lugoli", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Belltown_08", "start_battle_entry", "Father of the Flame", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Slab_10b", "start_battle_entry", "First Sinner", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Dock_09", "start_battle_entry", "Forebrothers Signis & Gron", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Library_09", "start_battle_entry", "Garmond & Zaza", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Cradle_03", "start_battle_entry", "Grand Mother Silk", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Shadow_18", "start_battle_entry", "Groal the Great", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Song_Tower_01", "start_battle_entry", "Lace in the Cradle", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Coral_27", "start_battle_entry", "Raging Conchfly", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Bone_East_08", "start_battle_entry", "Beastfly in Far Fields", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Hang_17b", "start_battle_entry", "Second Sentiel", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Greymoor_08", "start_battle_entry", "Shakra", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Ward_02", "start_battle_entry", "The Unravelled", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Library_13", "start_battle_entry", "Trobbio", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Coral_29", "start_battle_entry", "Voltvyrm", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Bellway_Centipede_Arena", "start_battle_entry", "Bell Eater", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
+                new BossInfo("Room_CrowCourt_02", "start_battle_entry", "Crawfather", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
+                new BossInfo("Memory_Coral_Tower", "start_battle_entry", "Crust King Khann", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
+                new BossInfo("Bone_East_18b", "start_battle_entry", "Gurr the Outcast", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
+                new BossInfo("Coral_33", "start_battle_entry", "Lost Garmond", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
+                new BossInfo("Abyss_Cocoon", "start_battle_entry", "Lost Lace", new float[][]{new float[]{1800f, 1.5f, 2f}}, is3ActBoss: true),
+                new BossInfo("Shellwood_11b_Memory", "start_battle_entry", "Nyleth", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
+                new BossInfo("Clover_19", "start_battle_entry", "Palestag", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
+                new BossInfo("Peak_07", "start_battle_entry", "Pinstress", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
+                new BossInfo("Crawl_10", "start_battle_entry", "Plasmified Zango", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
+                new BossInfo("Shellwood_22", "start_battle_entry", "Shrine Guardian Seth", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
+                new BossInfo("Memory_Ant_Queen", "start_battle_entry", "Skarrsinger Karmelita", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
+                new BossInfo("Coral_39", "start_battle_entry", "Watcher at the Edge", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
             };
 
             var dict = new Dictionary<string, BossInfo>();
@@ -67,8 +103,8 @@ namespace Gods_Of_Pharloom
         public string backScene;
         public PlayMakerFSM sequenceController;
         public string difficultMode;
-        public bool isPantheon = false;
-        public bool isHoG = false;
+        public bool isPantheon;
+        public bool isHoG;
 
         void OnEnable()
         {
@@ -114,6 +150,9 @@ namespace Gods_Of_Pharloom
                     instance.sequenceController.SendEvent("END SEQUENCE");
                     return;
                 }
+
+                instance.NextBoss();
+                instance.sequenceController.SendEvent("NEXT");
             };
 
             var endSequenceAction = new PatchedFsm.CustomLogicFsm(fsm);
@@ -150,7 +189,7 @@ namespace Gods_Of_Pharloom
             {
                 new FsmTransition
                 {
-                    FsmEvent = FsmEvent.GetFsmEvent("REPEAT"),
+                    FsmEvent = FsmEvent.GetFsmEvent("NEXT"),
                     ToFsmState = idle
                 },
                 new FsmTransition
@@ -170,13 +209,27 @@ namespace Gods_Of_Pharloom
         }
         public void StartSequence()
         {
-            var sceneLoadInfo = new GameManager.SceneLoadInfo
+            GameManager.SceneLoadInfo sceneLoadInfo;
+            if(instance.isHoG && currentBoss.ascendedVersion != null && (BossStatueInfo.currentDifficultMode == "Ascended" || BossStatueInfo.currentDifficultMode == "Radiant"))
             {
-                SceneName = currentBoss.sceneName,
-                EntryGateName = currentBoss.entryGate,
-                EntrySkip = true,
-                Visualization = GameManager.SceneLoadVisualizations.Default,
-            };
+                sceneLoadInfo = new GameManager.SceneLoadInfo
+                {
+                    SceneName = currentBoss.ascendedVersion.sceneName,
+                    EntryGateName = currentBoss.ascendedVersion.entryGate,
+                    EntrySkip = true,
+                    Visualization = GameManager.SceneLoadVisualizations.Default,
+                };
+            }
+            else
+            {
+                sceneLoadInfo = new GameManager.SceneLoadInfo
+                {
+                    SceneName = currentBoss.sceneName,
+                    EntryGateName = currentBoss.entryGate,
+                    EntrySkip = true,
+                    Visualization = GameManager.SceneLoadVisualizations.Default,
+                };
+            }
 
             GameManager.instance.BeginSceneTransition(sceneLoadInfo);
         }
@@ -194,7 +247,9 @@ namespace Gods_Of_Pharloom
         }
         public void EndSequence()
         {
-            GodsOfPharloomMod.playerData.badges[currentBoss.bossName].badges[BossStatueInfo.currentDifficultMode] = true;
+            if(instance.isHoG)
+                PlayerDataMod.instance.badges[currentBoss.bossName].badges[BossStatueInfo.currentDifficultMode] = true;
+            
             var sceneLoadInfo = new GameManager.SceneLoadInfo
             {
                 SceneName = backScene,
@@ -204,6 +259,8 @@ namespace Gods_Of_Pharloom
             };
 
             GameManager.instance.BeginSceneTransition(sceneLoadInfo);
+
+            this.Destroy();
         }
         public static GameObject CreateSequence(BossInfo[] bossSequence, string backEntry, string backScene, bool isPantheon = false,
                 bool isHoG = false, string difficultMode = "")

@@ -49,22 +49,20 @@ namespace Gods_Of_Pharloom
         public static BossStatueInfo[] bossStatues;
 
         public BossInfo boss;
-        public string statueObjectName;
         public int statueIndex;
         public Dictionary<string, Dictionary<string, GameObject>> modes;
         Badges badges;
 
-        public BossStatueInfo(BossInfo boss, string statueObjectName)
+        public BossStatueInfo(BossInfo boss)
         {
             this.boss = boss;
-            this.statueObjectName = statueObjectName;
         }
 
         public static void InitBossesStatue()
         {
             var statues = new BossStatueInfo[]
             {
-                new BossStatueInfo(BossInfo.bosses["Lost Lace"], "LostLace_Statue"),
+                new BossStatueInfo(BossInfo.bosses["Lost Lace"]),
             };
 
             for(int i = 0; i < statues.Length; i++)
@@ -79,7 +77,7 @@ namespace Gods_Of_Pharloom
         {
             foreach(var bossStatue in bossStatues)
             {
-                bossStatue.badges = GodsOfPharloomMod.playerData.badges[bossStatue.boss.bossName];
+                bossStatue.badges = PlayerDataMod.instance.badges[bossStatue.boss.bossName];
             }
         }
     }
@@ -133,7 +131,7 @@ namespace Gods_Of_Pharloom
 
             foreach(var bossStatue in BossStatueInfo.bossStatues)
             {
-                if(this.gameObject.name == bossStatue.statueObjectName){
+                if(this.gameObject.name == bossStatue.boss.bossName){
                     instance = bossStatue;
                     break;
                 }
@@ -170,7 +168,16 @@ namespace Gods_Of_Pharloom
 
             BossStatueInfo.selectArrow.transform.position = new Vector3(arrowPos.x, spritePos.y, arrowPos.z);
 
-
+            // set statue's hardest badge
+            var modes = BossStatueInfo.difficultModes;
+            for(int i = modes.Count - 1; i >= 0; i--)
+            {
+                if (PlayerDataMod.instance.badges[instance.boss.bossName].badges[modes[i]])
+                {
+                    instance.statueModeSpriteGOs[modes[i]].SetActive(true);
+                    break;
+                }
+            }
 
             var go = this.gameObject;
 
@@ -210,7 +217,7 @@ namespace Gods_Of_Pharloom
             {
                 foreach(var item in BossStatueInfo.menuModesGOs)
                 {
-                    item.Value["SpriteMode"].SetActive(GodsOfPharloomMod.playerData.badges[instance.boss.bossName].badges[item.Key]);
+                    item.Value["SpriteMode"].SetActive(PlayerDataMod.instance.badges[instance.boss.bossName].badges[item.Key]);
                 }
                 var text = BossStatueInfo.bossNameGO.GetComponent<Text>();
                 text.text = instance.boss.bossName;
@@ -273,7 +280,7 @@ namespace Gods_Of_Pharloom
             var startBossFightAction = new PatchedFsm.CustomLogicFsm(fsm);
             startBossFightAction.action += (Fsm fsm) =>
             {
-                BossSequence.CreateSequence(new BossInfo[]{instance.boss}, $"back_entry{instance.statueIndex}", BossStatueInfo.hog_sceneName);
+                BossSequence.CreateSequence(new BossInfo[]{instance.boss}, $"back_entry{instance.statueIndex}", BossStatueInfo.hog_sceneName, isHoG: true);
             };
 
 
