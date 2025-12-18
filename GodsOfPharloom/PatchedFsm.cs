@@ -104,7 +104,7 @@ public class PatchedFsm
         }),
         new PatchedFsm("Bone_East_08", new FsmPatch[]
         {
-            new FsmPatch("Boss Scene", "Control", PatchFsm_FourthChorusBossScene)
+            new FsmPatch("Boss Scene", "Control", PatchFsm_BossScene)
         }),
         new PatchedFsm("Coral_11", new FsmPatch[]
         {
@@ -120,7 +120,8 @@ public class PatchedFsm
         new PatchedFsm("Coral_Judge_Arena", new FsmPatch[]
         {
             new FsmPatch("Last Judge", "Control", PatchFsm_LastJudge),
-            new FsmPatch("Boss Scene", "Control", PatchFsm_LastJudgeBattleScene)
+            new FsmPatch("Boss Scene", "Control", PatchFsm_LastJudgeBattleScene),
+            new FsmPatch("Corpse Last Judge(Clone)", "Control", PatchFsm_LastJudgeCorpseControl)
         }),
         new PatchedFsm("Greymoor_08_boss", new FsmPatch[]
         {
@@ -732,7 +733,7 @@ public class PatchedFsm
 
         return true;
     }
-    public static bool PatchFsm_FourthChorusBossScene(Fsm fsm)
+    public static bool PatchFsm_BossScene(Fsm fsm)
     {
         var init = fsm.GetState("Init");
         var meetReady = fsm.GetState("Meet Ready");
@@ -983,6 +984,55 @@ public class PatchedFsm
         var encountered = fsm.GetState("Encountered");
 
         SetTransitionToState(init, encountered, 0);
+        SetTransitionToState(init, encountered, 2);
+        SetTransitionToState(init, encountered, 3);
+
+        return true;
+    }
+    public static bool PatchFsm_LastJudgeCorpseControl(Fsm fsm)
+    {
+        var steam1 = fsm.GetState("Steam 1");
+        var steam2 = fsm.GetState("Steam 2");
+        var explode = fsm.GetState("Explode");
+        var finalBlow = fsm.GetState("Final Blow");
+        var land = fsm.GetState("Land");
+        var break1 = fsm.GetState("Break 1");
+        var break2 = fsm.GetState("Break 2");
+        var break3 = fsm.GetState("Break 3");
+
+        ((Wait)steam1.Actions[3]).time = 0.01f;
+        ((Wait)steam2.Actions[3]).time = 0.01f;
+
+        var customActionSendEvent = new CustomLogicFsm(fsm);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+        var waitAction = new Wait
+        {
+            time = BossInfo.waitForBossDeathAnim,
+            finishEvent = FsmEvent.GetFsmEvent("FINISHED")
+        };
+
+        var customState2 = new FsmState(fsm);
+        customState2.Actions = new FsmStateAction[]{customActionSendEvent};
+
+        var customState1 = new FsmState(fsm);
+        customState1.Actions = new FsmStateAction[]{waitAction};
+        customState1.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent("FINISHED"),
+                ToFsmState = customState2
+            }
+        };
+
+        break3.Actions = InsertInArray(break3.Actions, customActionSendEvent, 0);
+
+        SetTransitionToState(explode, finalBlow, 0);
+
+        land.Actions = RemoveFromArray(land.Actions, 6);
 
         return true;
     }
@@ -2308,6 +2358,7 @@ public class PatchedFsm
         var air = fsm.GetState("Air");
         var splashIn = fsm.GetState("Splash In");
         var end = fsm.GetState("End");
+        var stagger = fsm.GetState("Stagger");
 
         ((Wait)steam.Actions[1]).time = 0.01f;
 
@@ -2319,6 +2370,8 @@ public class PatchedFsm
         };
 
         end.Actions = InsertInArray(end.Actions, customActionSendEvent, 0);
+
+        SetTransitionToState(stagger, blow, 0);
 
         return true;
     }

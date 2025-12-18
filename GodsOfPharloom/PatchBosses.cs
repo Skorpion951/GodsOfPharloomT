@@ -137,11 +137,7 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(PersistentIntItem), "Awake")]
         private static bool PersistentIntItemPatch_Prefix(PersistentIntItem __instance)
         {
-            if(BossSequence.isInSequence && __instance.gameObject.name == "Churchkeeper Basement")
-            {
-                Destroy(__instance.gameObject);
-                return false;
-            }
+            
             return true;
         }
         [HarmonyPrefix]
@@ -154,6 +150,11 @@ namespace Gods_Of_Pharloom
                 return false;
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Great Conchflies"] && __instance.gameObject.name == "Driller A" || __instance.gameObject.name == "Driller B")
+            {
+                GameObject.Destroy(__instance);
+                return false;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["The Last Judge"] && __instance.gameObject.name == "Last Judge")
             {
                 GameObject.Destroy(__instance);
                 return false;
@@ -174,6 +175,11 @@ namespace Gods_Of_Pharloom
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Fourth Chorus"] && __instance.gameObject.name == "Lava Rocks"){
                 GameObject.Destroy(__instance);
+                return false;
+            }
+            if(BossSequence.isInSequence && __instance.gameObject.name == "Churchkeeper Basement")
+            {
+                Destroy(__instance.gameObject);
                 return false;
             }
             return true;

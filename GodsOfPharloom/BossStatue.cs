@@ -280,7 +280,7 @@ namespace Gods_Of_Pharloom
             var startBossFightAction = new PatchedFsm.CustomLogicFsm(fsm);
             startBossFightAction.action += (Fsm fsm) =>
             {
-                BossSequence.CreateSequence(new BossInfo[]{instance.boss}, $"back_entry{instance.statueIndex}", BossStatueInfo.hog_sceneName, isHoG: true);
+                BossSequence.SetSequence(new BossInfo[]{instance.boss}, $"back_entry{instance.statueIndex}", BossStatueInfo.hog_sceneName, isHoG: true);
             };
 
 

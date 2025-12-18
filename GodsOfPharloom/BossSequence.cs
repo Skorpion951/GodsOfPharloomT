@@ -1,4 +1,5 @@
 using HutongGames.PlayMaker;
+using HutongGames.PlayMaker.Actions;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -93,32 +94,52 @@ namespace Gods_Of_Pharloom
             bosses = dict;
         }
     }
-    public class BossSequence : MonoBehaviour
+    public static class BossSequence
     {
-        public static BossSequence instance;
+        public static GameObject sequenceGO;
         public static bool isInSequence = false;
-        public BossInfo[] bossSequence;
+        public static BossInfo[] bossSequence;
         public static BossInfo currentBoss;
-        public int currentBossIndex = 0;
-        public string backEntry;
-        public string backScene;
-        public PlayMakerFSM sequenceController;
-        public string difficultMode;
-        public bool isPantheon;
-        public bool isHoG;
+        public static int currentBossIndex = 0;
+        public static string backEntry;
+        public static string backScene;
+        public static PlayMakerFSM sequenceController;
+        public static string difficultMode;
+        public static bool isPantheon;
+        public static bool isHoG;
 
-        void OnEnable()
+        public static void Reset()
         {
-            instance = this;
-            isInSequence = true;
-            currentBoss = bossSequence[0];
+            isInSequence = false;
+            bossSequence = null;
+            currentBoss = null;
+            currentBossIndex = 0;
+            difficultMode = "";
+            isPantheon = false;
+            isHoG = false;
 
-            var fsmComponent = this.gameObject.AddComponent<PlayMakerFSM>();
+            sequenceController.SetState("Dormant");
+        }
+        public static void Start()
+        {
+            isInSequence = true;
+            sequenceController.SendEvent("START SEQUENCE");
+        }
+
+        public static void CreateSequenceController()
+        {
+            var go = new GameObject("BossSequence");
+            GameObject.DontDestroyOnLoad(go);
+
+            var fsmComponent = go.gameObject.AddComponent<PlayMakerFSM>();
             fsmComponent.enabled = false;
 
             var fsm = fsmComponent.Fsm;
 
             sequenceController = fsmComponent;
+
+            var dormant = new FsmState(fsm);
+            dormant.Name = "Dormant";
 
             var startSequence = new FsmState(fsm);
             startSequence.Name = "Start Sequence";
@@ -132,12 +153,12 @@ namespace Gods_Of_Pharloom
             var endSequence = new FsmState(fsm);
             endSequence.Name = "End Sequence";
 
-            fsm.StartState = "Start Sequence";
+            fsm.StartState = "Dormant";
 
             var startSequenceAction = new PatchedFsm.CustomLogicFsm(fsm);
             startSequenceAction.action = (Fsm fsm) =>
             {
-                instance.StartSequence();
+                StartSequence();
 
                 startSequenceAction.Finish();
             };
@@ -145,22 +166,31 @@ namespace Gods_Of_Pharloom
             var nextAction = new PatchedFsm.CustomLogicFsm(fsm);
             nextAction.action += (Fsm fsm) =>
             {
-                instance.currentBossIndex++;
-                if(!(currentBossIndex < instance.bossSequence.Length))
+                currentBossIndex++;
+                if(!(currentBossIndex < bossSequence.Length))
                 {
-                    instance.sequenceController.SendEvent("END SEQUENCE");
+                    sequenceController.SendEvent("END SEQUENCE");
                     return;
                 }
 
-                instance.NextBoss();
-                instance.sequenceController.SendEvent("NEXT");
+                NextBoss();
+                sequenceController.SendEvent("NEXT");
             };
 
             var endSequenceAction = new PatchedFsm.CustomLogicFsm(fsm);
             endSequenceAction.action += (Fsm fsm) =>
             {
-                instance.EndSequence();
+                EndSequence();
                 endSequenceAction.Finish();
+            };
+
+            dormant.Transitions = new FsmTransition[]
+            {
+                new FsmTransition
+                {
+                    FsmEvent = FsmEvent.GetFsmEvent("START SEQUENCE"),
+                    ToFsmState = startSequence
+                }
             };
 
             startSequence.Transitions = new FsmTransition[]
@@ -204,11 +234,11 @@ namespace Gods_Of_Pharloom
             next.Actions = new FsmStateAction[]{nextAction};
             endSequence.Actions = new FsmStateAction[]{endSequenceAction};
 
-            fsm.States = new FsmState[]{startSequence, idle, next, endSequence};
+            fsm.States = new FsmState[]{dormant, startSequence, idle, next, endSequence};
 
             fsm.FsmComponent.enabled = true;
         }
-        public void StartSequence()
+        public static void StartSequence()
         {
             if (currentBoss.is3ActBoss)
             {
@@ -220,7 +250,7 @@ namespace Gods_Of_Pharloom
             }
 
             GameManager.SceneLoadInfo sceneLoadInfo;
-            if(instance.isHoG && currentBoss.ascendedVersion != null && (BossStatueInfo.currentDifficultMode == "Ascended" || BossStatueInfo.currentDifficultMode == "Radiant"))
+            if(isHoG && currentBoss.ascendedVersion != null && (BossStatueInfo.currentDifficultMode == "Ascended" || BossStatueInfo.currentDifficultMode == "Radiant"))
             {
                 sceneLoadInfo = new GameManager.SceneLoadInfo
                 {
@@ -243,7 +273,7 @@ namespace Gods_Of_Pharloom
 
             GameManager.instance.BeginSceneTransition(sceneLoadInfo);
         }
-        public void NextBoss()
+        public static void NextBoss()
         {
             if (currentBoss.is3ActBoss)
             {
@@ -264,9 +294,9 @@ namespace Gods_Of_Pharloom
 
             GameManager.instance.BeginSceneTransition(sceneLoadInfo);
         }
-        public void EndSequence()
+        public static void EndSequence()
         {
-            if(instance.isHoG)
+            if(isHoG)
                 PlayerDataMod.instance.badges[currentBoss.bossName].badges[BossStatueInfo.currentDifficultMode] = true;
             
             var sceneLoadInfo = new GameManager.SceneLoadInfo
@@ -279,34 +309,26 @@ namespace Gods_Of_Pharloom
 
             GameManager.instance.BeginSceneTransition(sceneLoadInfo);
 
-            this.Destroy();
+            Reset();
         }
-        public static GameObject CreateSequence(BossInfo[] bossSequence, string backEntry, string backScene, bool isPantheon = false,
-                bool isHoG = false, string difficultMode = "")
+        public static void SetSequence(BossInfo[] bossSequence, string backEntry, string backScene, bool isPantheon = false,
+                bool isHoG = false, string difficultMode = "", bool startImmediately = true)
         {
-            var go = new GameObject("BossSequence");
-            go.SetActive(false);
-            DontDestroyOnLoad(go);
+            Reset();
 
-            var sequenceComponent = go.AddComponent<BossSequence>();
+            BossSequence.bossSequence = bossSequence;
+            BossSequence.currentBoss = bossSequence[0];
+            BossSequence.backEntry = backEntry;
+            BossSequence.backScene = backScene;
 
-            sequenceComponent.bossSequence = bossSequence;
-            sequenceComponent.backEntry = backEntry;
-            sequenceComponent.backScene = backScene;
+            BossSequence.isPantheon = isPantheon;
+            BossSequence.isHoG = isHoG;
+            BossSequence.difficultMode = difficultMode;
 
-            sequenceComponent.isPantheon = isPantheon;
-            sequenceComponent.isHoG = isHoG;
-            sequenceComponent.difficultMode = difficultMode;
-
-            go.SetActive(true);
-
-            return go;
-        }
-        public void Destroy()
-        {
-            isInSequence = false;
-            currentBoss = null;
-            GameObject.Destroy(this.gameObject);
+            if (startImmediately)
+            {
+                Start();
+            }
         }
     }
 }

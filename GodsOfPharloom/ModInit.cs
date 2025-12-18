@@ -81,7 +81,7 @@ namespace Gods_Of_Pharloom
                 Logger.LogInfo(ex.Message);
             }
 
-
+            BossSequence.CreateSequenceController();
 
             Harmony.CreateAndPatchAll(typeof(GodsOfPharloomMod), null);
             InitCustomScenes();
