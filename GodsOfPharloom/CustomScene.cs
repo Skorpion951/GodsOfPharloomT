@@ -93,6 +93,7 @@ public class CustomScene
         {
             if(item.forceMemoryZone) GameManager.instance.ForceCurrentSceneIsMemory(true);
             if(item.noInputOnStart) HeroController.instance.hero_state = GlobalEnums.ActorStates.no_input;
+            item.afterTransition?.Invoke();
         };
 
         init.Transitions = new FsmTransition[]

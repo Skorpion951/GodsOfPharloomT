@@ -43,7 +43,21 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(SceneAdditiveLoadConditional), "OnEnable")]
         private static void SceneAdditiveLoadPatch_Prefix(SceneAdditiveLoadConditional __instance)
         {
-            if(BossSequence.currentBoss == BossInfo.bosses["Savage Beastfly 2"] && __instance.gameObject.name.Contains("Beastfly"))
+            if(BossSequence.currentBoss == BossInfo.bosses["Fourth Chorus"] && __instance.gameObject.name.Contains("Boss Golem Loader"))
+            {
+                FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo tests = __instance.GetType().GetField("tests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+                var playerDataTest = new PlayerDataTest();
+
+                questTests.SetValue(__instance, new QuestTest[0]);
+                tests.SetValue(__instance, playerDataTest);
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Fourth Chorus"] && __instance.gameObject.name.Contains("Boss Beastfly Loader"))
+            {
+                Destroy(__instance.gameObject);
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Savage Beastfly in Far Fields"] && __instance.gameObject.name.Contains("Boss Beastfly Loader"))
             {
                 PlayerData.instance.defeatedBoneFlyerGiantGolemScene = false;
 
@@ -54,6 +68,14 @@ namespace Gods_Of_Pharloom
 
                 questTests.SetValue(__instance, new QuestTest[0]);
                 tests.SetValue(__instance, playerDataTest);
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Savage Beastfly in Far Fields"] && __instance.gameObject.name.Contains("Boss Golem Loader"))
+            {
+                Destroy(__instance.gameObject);
+            }
+            if(BossSequence.isInSequence && __instance.gameObject.name.Contains("Rest Golem Loader"))
+            {
+                Destroy(__instance.gameObject);
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Shakra"] && __instance.gameObject.name.Contains("Mapper Sparring"))
             {
@@ -70,6 +92,16 @@ namespace Gods_Of_Pharloom
                 GameObject.Destroy(__instance.gameObject);
             }
             if(BossSequence.currentBoss == BossInfo.bosses["The Unravelled"] && __instance.gameObject.name.Contains("Boss Loader"))
+            {
+                FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo tests = __instance.GetType().GetField("tests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+                var playerDataTest = new PlayerDataTest();
+
+                questTests.SetValue(__instance, new QuestTest[0]);
+                tests.SetValue(__instance, playerDataTest);
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Bell Beast"] && __instance.gameObject.name.Contains("Boss Additive Loader"))
             {
                 FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo tests = __instance.GetType().GetField("tests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -121,6 +153,11 @@ namespace Gods_Of_Pharloom
                 GameObject.Destroy(__instance);
                 return false;
             }
+            if(BossSequence.currentBoss == BossInfo.bosses["Great Conchflies"] && __instance.gameObject.name == "Driller A" || __instance.gameObject.name == "Driller B")
+            {
+                GameObject.Destroy(__instance);
+                return false;
+            }
             return true;
         }
         [HarmonyPrefix]
@@ -129,6 +166,24 @@ namespace Gods_Of_Pharloom
         {
             if(BossSequence.currentBoss == BossInfo.bosses["Moss Mother"] && __instance.gameObject.name == "Battle Scene"){
                 GameObject.Destroy(__instance);
+                return false;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Bell Beast"] && __instance.gameObject.name == "Boss Scene"){
+                GameObject.Destroy(__instance);
+                return false;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Fourth Chorus"] && __instance.gameObject.name == "Lava Rocks"){
+                GameObject.Destroy(__instance);
+                return false;
+            }
+            return true;
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(DeactivateIfPlayerdataFalse), "OnEnable")]
+        private static bool DeactivateIfPlayerdataFalse_Prefix(DeactivateIfPlayerdataFalse __instance)
+        {
+            if(BossSequence.currentBoss == BossInfo.bosses["Great Conchflies"] && __instance.gameObject.name == "Coral Driller Return Corpse"){
+                __instance.gameObject.SetActive(false);
                 return false;
             }
             return true;

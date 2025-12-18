@@ -14,11 +14,13 @@ public class TransitionPointInfo
     public bool noInputOnStart;
     public bool alwaysEnterRight;
     public bool forceMemoryZone;
+    public Action afterTransition;
 
     public TransitionPointInfo(string gateName, Vector3 position, string targetScene, string entryPoint,
                 InteractableBase.PromptLabels InteractLabel = InteractableBase.PromptLabels.Enter, bool isADoor = false,
                 bool isOneTimeTransition = false, bool dontWalkOutOfDoor = false, bool hardLandOnExit = false,
-                bool noInputOnStart = true, bool alwaysEnterRight = true, bool forceMemoryZone = true)
+                bool noInputOnStart = true, bool alwaysEnterRight = true, bool forceMemoryZone = true,
+                Action afterTransition = null)
     {
         this.gateName = gateName;
         this.position = position;
@@ -32,5 +34,6 @@ public class TransitionPointInfo
         this.noInputOnStart = noInputOnStart;
         this.alwaysEnterRight = alwaysEnterRight;
         this.forceMemoryZone = forceMemoryZone;
+        this.afterTransition = afterTransition;
     }
 }

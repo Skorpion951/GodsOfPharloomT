@@ -91,9 +91,12 @@ public class PatchedFsm
             new FsmPatch("Moss Vine Cluster (2)", "Control", PatchFsm_MossMotherMossVineCluster),
             new FsmPatch("Mossbone Mother B Ambient Corpse(Clone)", "Death", PatchFsm_MossMotherBCorpseControl),
         }),
-        new PatchedFsm("Bone_05", new FsmPatch[]
+        new PatchedFsm("Bone_05_Boss", new FsmPatch[]
         {
-            new FsmPatch("Bone Beast", "Control", PatchFsm_BellBeast)
+            new FsmPatch("Bone Beast", "Control", PatchFsm_BellBeast),
+            new FsmPatch("Boss Scene", "Return State", PatchFsm_BellBeastReturnState),
+            new FsmPatch("Return Battle", "Start Return Battle", PatchFsm_BellBeastStartReturnBattle),
+            new FsmPatch("Bone Beast Corpse(Clone)", "Death", PatchFsm_BellBeastCorpseControl),
         }),
         new PatchedFsm("Bone_East_08_Boss_Golem", new FsmPatch[]
         {
@@ -107,7 +110,8 @@ public class PatchedFsm
         {
             new FsmPatch("Driller A", "Control", PatchFsm_GreatConchfliesDriller),
             new FsmPatch("Driller B", "Control", PatchFsm_GreatConchfliesDriller),
-            new FsmPatch("Boss Scene", "Control", PatchFsm_GreatConchfliesBattleScene)
+            new FsmPatch("Boss Scene", "Control", PatchFsm_GreatConchfliesBattleScene),
+            new FsmPatch("Corpse Coral Conch Driller Giant(Clone)", "Death", PatchFsm_GreatConchfliesCorpseControl)
         }),
         new PatchedFsm("Bone_East_12", new FsmPatch[]
         {
@@ -540,6 +544,7 @@ public class PatchedFsm
         var steam = fsm.GetState("Steam");
         var blow = fsm.GetState("Blow");
         var waitFrame = fsm.GetState("Wait Frame");
+        var stagger = fsm.GetState("Stagger");
 
         ((Wait)steam.Actions[1]).time = 0.01f;
 
@@ -550,7 +555,7 @@ public class PatchedFsm
         };
         var waitAction = new Wait
         {
-            time = 1f,
+            time = BossInfo.waitForBossDeathAnim,
             finishEvent = FsmEvent.GetFsmEvent("FINISHED")
         };
 
@@ -570,6 +575,7 @@ public class PatchedFsm
 
         blow.Transitions[0].ToFsmState = customState1;
 
+        SetTransitionToState(stagger, blow, 0);
 
         return true;
     }
@@ -578,6 +584,7 @@ public class PatchedFsm
         var steam = fsm.GetState("Steam");
         var blow = fsm.GetState("Blow");
         var state1 = fsm.GetState("State 1");
+        var blackThread = fsm.GetState("Black Thread?");
 
         ((Wait)steam.Actions[1]).time = 0.01f;
 
@@ -588,7 +595,7 @@ public class PatchedFsm
         };
         var waitAction = new Wait
         {
-            time = 1f,
+            time = BossInfo.waitForBossDeathAnim,
             finishEvent = FsmEvent.GetFsmEvent("FINISHED")
         };
 
@@ -609,12 +616,12 @@ public class PatchedFsm
         blow.Transitions[0].ToFsmState = customState1;
         blow.Transitions[0].FsmEvent = FsmEvent.GetFsmEvent("FINISHED");
 
+        SetTransitionToState(blackThread, blow, 1);
 
         return true;
     }
     public static bool PatchFsm_BellBeast(Fsm fsm)
     {
-
         var submergedInit = fsm.GetState("Submerged Init");
         var emergeAnticC = fsm.GetState("Emerge Antic C");
         var init = fsm.GetState("Init");
@@ -623,6 +630,69 @@ public class PatchedFsm
 
         // init.Transitions[0].ToState = emergeAnticC.Name;
         // init.Transitions[0].ToFsmState = emergeAnticC;
+
+        return true;
+    }
+    public static bool PatchFsm_BellBeastReturnState(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var setReturnState = fsm.GetState("Set Return State");
+
+        SetTransitionToState(init, setReturnState, 0);
+
+        return true;
+    }
+    public static bool PatchFsm_BellBeastStartReturnBattle(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var sceneSetup = fsm.GetState("Scene Setup");
+        var startBattle = fsm.GetState("Start Battle");
+
+        ((Wait)startBattle.Actions[1]).time = 0.5f;
+
+        sceneSetup.Actions = RemoveFromArray(sceneSetup.Actions, 4); //Wait
+
+
+        return true;
+    }
+    public static bool PatchFsm_BellBeastCorpseControl(Fsm fsm)
+    {
+        var stagger = fsm.GetState("Stagger");
+        var steam = fsm.GetState("Steam");
+        var blow = fsm.GetState("Blow");
+        var state1 = fsm.GetState("State 1");
+
+        ((Wait)blow.Actions[1]).time = 0.1f;
+
+        var customActionSendEvent = new CustomLogicFsm(fsm);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+        var waitAction = new Wait
+        {
+            time = BossInfo.waitForBossDeathAnim,
+            finishEvent = FsmEvent.GetFsmEvent("FINISHED")
+        };
+
+        var customState2 = new FsmState(fsm);
+        customState2.Actions = new FsmStateAction[]{customActionSendEvent};
+
+        var customState1 = new FsmState(fsm);
+        customState1.Actions = new FsmStateAction[]{waitAction};
+        customState1.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent("FINISHED"),
+                ToFsmState = customState2
+            }
+        };
+
+        blow.Transitions[0].ToFsmState = customState1;
+        blow.Transitions[0].FsmEvent = FsmEvent.GetFsmEvent("FINISHED");
+
+        SetTransitionToState(stagger, blow, 0);
 
         return true;
     }
@@ -635,9 +705,22 @@ public class PatchedFsm
         var roarClamp = fsm.GetState("Roar Clamp");
         var roarNoClamp = fsm.GetState("Roar No Clamp");
         var meet = fsm.GetState("Meet?");
+        var deathAnim = fsm.GetState("Death Anim");
+        var explode = fsm.GetState("Explode");
+        var deathFall = fsm.GetState("Death Fall");
+        var deathLand = fsm.GetState("Death Land");
 
         ((Wait)(roarNoClamp.Actions[11])).time = 0.1f;
         ((Wait)(roarClamp.Actions[11])).time = 0.1f;
+        // ((Wait)deathFall.Actions[1]).time = 1.25f;
+
+        var customActionSendEvent = new CustomLogicFsm(fsm);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
+        deathLand.Actions = InsertInArray(deathLand.Actions, customActionSendEvent, 0);
 
         init.Transitions[0].ToState = remeetRoar.Name;
         init.Transitions[0].ToFsmState = remeetRoar;
@@ -645,14 +728,21 @@ public class PatchedFsm
         remeetRoar.Transitions[0].ToState = roarNoClamp.Name;
         remeetRoar.Transitions[0].ToFsmState = roarNoClamp;
 
+        SetTransitionToState(deathAnim, explode, 0);
+
         return true;
     }
     public static bool PatchFsm_FourthChorusBossScene(Fsm fsm)
     {
-        if(Gods_Of_Pharloom.BossSequence.currentBoss == BossInfo.bosses["Savage Beastfly 2"])
-        {
-            var init = fsm.GetState("Init");
+        var init = fsm.GetState("Init");
+        var meetReady = fsm.GetState("Meet Ready");
+        var remeet1 = fsm.GetState("Remeet 1");
+        var remeet2 = fsm.GetState("Remeet 2");
+        var remeetReady = fsm.GetState("Remeet Ready");
+        var beastfly = fsm.GetState("Beastfly?");
 
+        if(Gods_Of_Pharloom.BossSequence.currentBoss == BossInfo.bosses["Savage Beastfly in Far Fields"])
+        {
             var customAction = new CustomLogicFsm(fsm);
             customAction.action += (Fsm fsm) =>
             {
@@ -671,11 +761,60 @@ public class PatchedFsm
 
             init.Actions = InsertInArray(init.Actions, customAction, 16);
         }
-        var remeet1 = fsm.GetState("Remeet 1");
-        var remeet2 = fsm.GetState("Remeet 2");
 
-        ((Wait)(remeet1.Actions[7])).time = 0f;
+        ((Wait)(remeet1.Actions[7])).time = 0.01f;
         ((Wait)(remeet2.Actions[2])).time = 0f;
+
+        var wait = new Wait
+        {
+            time = 0.5f,
+            finishEvent = FsmEvent.GetFsmEvent("FINISHED")
+        };
+
+        var customState = new FsmState(fsm);
+        customState.Actions = new FsmStateAction[]{wait};
+        customState.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent("FINISHED"),
+                ToFsmState = remeetReady
+            }
+        };
+
+        var customActionCreateTriggerForStart = new CustomLogicFsm(fsm);
+        customActionCreateTriggerForStart.action += (Fsm fsm) =>
+        {
+            var pos = fsm.GameObject.transform.position;
+
+            var customTrigger = CreateTrigger("Bone_East_08");
+            var triggerPos = customTrigger.transform.position;
+            customTrigger.transform.position = new Vector3(80f, 7f, pos.z);
+
+            var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
+            triggerComponent.fsm = fsm;
+
+            triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
+            {
+                fsm.FsmComponent.SendEvent("ENTER");
+            };
+        };
+
+        remeetReady.Actions = InsertInArray(remeetReady.Actions,
+                              customActionCreateTriggerForStart, remeetReady.Actions.Length);
+
+        if(Gods_Of_Pharloom.BossSequence.currentBoss == BossInfo.bosses["Fourth Chorus"])
+        {
+            SetTransitionToState(init, customState, 0);
+            SetTransitionToState(init, customState, 1);
+            SetTransitionToState(init, customState, 2);
+        }
+        if(Gods_Of_Pharloom.BossSequence.currentBoss == BossInfo.bosses["Savage Beastfly in Far Fields"])
+        {
+            SetTransitionToState(init, beastfly, 0);
+            SetTransitionToState(init, beastfly, 1);
+            SetTransitionToState(init, beastfly, 2);
+        }
 
         return true;
     }
@@ -690,11 +829,11 @@ public class PatchedFsm
 
         ((Wait)(startPauseS.Actions[0])).time = 0f;
 
-        arenaStart.Transitions[1].ToState = startPauseS.Name;
-        arenaStart.Transitions[1].ToFsmState = startPauseS;
+        SetTransitionToState(arenaStart, startPauseS, 1);
 
-        state.Transitions[1].ToState = restartReady.Name;
-        state.Transitions[1].ToFsmState = restartReady;
+        SetTransitionToState(state, restartReady, 1);
+        SetTransitionToState(state, restartReady, 2);
+        SetTransitionToState(state, restartReady, 3);
 
         // restartReady.Transitions[0].ToState = startPauseS.Name;
         // restartReady.Transitions[0].ToFsmState = startPauseS;
@@ -750,6 +889,51 @@ public class PatchedFsm
 
         SetTransitionToState(dormant, introG2, 0);
         SetTransitionToState(dormant, introR2, 1);
+
+        return true;
+    }
+    public static bool PatchFsm_GreatConchfliesCorpseControl(Fsm fsm)
+    {
+        var stagger = fsm.GetState("Stagger");
+        var steam = fsm.GetState("Steam");
+        var blow = fsm.GetState("Blow");
+        var land = fsm.GetState("Land");
+
+        var customActionSendEvent = new CustomLogicFsm(fsm);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+        var waitAction = new Wait
+        {
+            time = BossInfo.waitForBossDeathAnim,
+            finishEvent = FsmEvent.GetFsmEvent("FINISHED")
+        };
+
+        var customState2 = new FsmState(fsm);
+        customState2.Actions = new FsmStateAction[]{customActionSendEvent};
+
+        var customState1 = new FsmState(fsm);
+        customState1.Actions = new FsmStateAction[]{waitAction};
+        customState1.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent("FINISHED"),
+                ToFsmState = customState2
+            }
+        };
+
+        land.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                ToFsmState = customState1,
+                FsmEvent = FsmEvent.GetFsmEvent("FINISHED")
+            }
+        };
+
+        SetTransitionToState(stagger, blow, 0);
 
         return true;
     }
@@ -1614,7 +1798,7 @@ public class PatchedFsm
 
         ((Wait)(init.Actions[12])).time = 0f;
         ((Wait)(rematchPause.Actions[2])).time = 0f;
-        ((Wait)(entryAntic.Actions[6])).time = 0f;
+        ((Wait)(entryAntic.Actions[6])).time = 0.1f;
         ((Wait)(rematchRoar.Actions[3])).time = 0.1f;
 
         return true;

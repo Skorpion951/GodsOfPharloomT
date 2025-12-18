@@ -207,16 +207,27 @@ namespace Gods_Of_Pharloom
 
             var Bone_05 = new CustomScene("Bone_05");
             Bone_05.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(86.48f, 3.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Bone_05.isSkongScene = true;
             Bone_05.AfterSceneActivated += () => {Bone_05.isSceneActive = true;};
             customScenes.Add(Bone_05);
 
             var Bone_East_08 = new CustomScene("Bone_East_08");
-            Bone_East_08.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(77.6f, 7.07f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            Bone_East_08.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(76.89f, 8.08f, 0), "", "", isADoor: true, 
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false, afterTransition: () =>
+            {
+                GameObject.Find("Temp plat").SetActive(false);
+            }));
             Bone_East_08.isSkongScene = true;
-            Bone_East_08.AfterSceneActivated += () => {Bone_East_08.isSceneActive = true;};
+            Bone_East_08.AfterSceneActivated += () => {
+                var go = new GameObject("Temp plat");
+                SceneManager.MoveGameObjectToScene(go, SceneManager.GetSceneByName("Bone_East_08"));
+                go.AddComponent<BoxCollider2D>();
+                go.layer = 8;
+                go.transform.position = new Vector3(76.89f, 4.9f, 0);
+
+                Bone_East_08.isSceneActive = true;
+            };
             customScenes.Add(Bone_East_08);
 
             var Coral_11 = new CustomScene("Coral_11");
