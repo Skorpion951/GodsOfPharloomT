@@ -101,5 +101,37 @@ namespace Gods_Of_Pharloom
                 __instance.gameObject.SetActive(false);
             }
         }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(PersistentIntItem), "Awake")]
+        private static bool PersistentIntItemPatch_Prefix(PersistentIntItem __instance)
+        {
+            if(BossSequence.isInSequence && __instance.gameObject.name == "Churchkeeper Basement")
+            {
+                Destroy(__instance.gameObject);
+                return false;
+            }
+            return true;
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(PersistentBoolItem), "Awake")]
+        private static bool PersistentBoolItemPatch_Prefix(PersistentBoolItem __instance)
+        {
+            if(BossSequence.currentBoss == BossInfo.bosses["Moss Mother"] && __instance.gameObject.name == "Battle Scene" || __instance.gameObject.name == "Boss Scene")
+            {
+                GameObject.Destroy(__instance);
+                return false;
+            }
+            return true;
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(DeactivateIfPlayerdataTrue), "OnEnable")]
+        private static bool DeactivateIfPlayerdataTrue_Prefix(DeactivateIfPlayerdataTrue __instance)
+        {
+            if(BossSequence.currentBoss == BossInfo.bosses["Moss Mother"] && __instance.gameObject.name == "Battle Scene"){
+                GameObject.Destroy(__instance);
+                return false;
+            }
+            return true;
+        }
     }
 }

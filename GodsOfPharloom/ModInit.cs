@@ -112,7 +112,7 @@ namespace Gods_Of_Pharloom
         void Update()
         {
             keyboard = Keyboard.current;
-            if (keyboard.altKey.wasPressedThisFrame)
+            if (keyboard.f8Key.wasPressedThisFrame)
             {
                 FastTeleport.Start();
             }
@@ -193,14 +193,14 @@ namespace Gods_Of_Pharloom
 
             var Tut_03 = new CustomScene("Tut_03");
             Tut_03.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(58.41f, 17.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Tut_03.isSkongScene = true;
             Tut_03.AfterSceneActivated += () => {Tut_03.isSceneActive = true;};
             customScenes.Add(Tut_03);
 
             var Weave_03 = new CustomScene("Weave_03");
             Weave_03.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(13.41f, 20.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Weave_03.isSkongScene = true;
             Weave_03.AfterSceneActivated += () => {Weave_03.isSceneActive = true;};
             customScenes.Add(Weave_03);
@@ -227,8 +227,8 @@ namespace Gods_Of_Pharloom
             customScenes.Add(Coral_11);
 
             var Bone_East_12 = new CustomScene("Bone_East_12");
-            Bone_East_12.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(90.92f, 7.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            Bone_East_12.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(92f, 7.57f, 0), "", "", isADoor: true, 
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Bone_East_12.isSkongScene = true;
             Bone_East_12.AfterSceneActivated += () => {Bone_East_12.isSceneActive = true;};
             customScenes.Add(Bone_East_12);
@@ -249,14 +249,14 @@ namespace Gods_Of_Pharloom
 
             var Organ_01 = new CustomScene("Organ_01");
             Organ_01.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(84.36f, 104.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Organ_01.isSkongScene = true;
             Organ_01.AfterSceneActivated += () => {Organ_01.isSceneActive = true;};
             customScenes.Add(Organ_01);
 
             var Ant_19 = new CustomScene("Ant_19");
             Ant_19.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(54.8f, 34.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Ant_19.isSkongScene = true;
             Ant_19.AfterSceneActivated += () => {Ant_19.isSceneActive = true;};
             customScenes.Add(Ant_19);

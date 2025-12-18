@@ -60,14 +60,14 @@ namespace Gods_Of_Pharloom
 
         public static void InitBossesStatue()
         {
-            var statues = new BossStatueInfo[]
-            {
-                new BossStatueInfo(BossInfo.bosses["Lost Lace"]),
-            };
+            var statues = new BossStatueInfo[BossInfo.bosses.Count];
 
-            for(int i = 0; i < statues.Length; i++)
+            int i = 0;
+            foreach(var boss in BossInfo.bosses)
             {
+                statues[i] = new BossStatueInfo(boss.Value);
                 statues[i].statueIndex = i;
+                i++;
             }
 
             bossStatues = statues;
@@ -83,7 +83,7 @@ namespace Gods_Of_Pharloom
     }
     public class BossStatue : MonoBehaviour
     {
-        public static BossStatueInfo instance;
+        public BossStatueInfo instance;
 
         void Awake()
         {

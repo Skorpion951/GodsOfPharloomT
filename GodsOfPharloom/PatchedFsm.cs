@@ -25,6 +25,7 @@ public class PatchedFsm
         public override void OnEnter()
         {
             action?.Invoke(fsm);
+            if(updateAction == null) this.Finish();
         }
         public override void OnUpdate()
         {
@@ -78,11 +79,17 @@ public class PatchedFsm
     public static PatchedFsm[] patchedFsms = new PatchedFsm[]{
         new PatchedFsm("Tut_03", new FsmPatch[]
         {
-            new FsmPatch("Mossbone Mother", "Control", PatchFsm_MossMother)
+            new FsmPatch("Mossbone Mother", "Control", PatchFsm_MossMother),
+            new FsmPatch("Moss Vine Cluster", "Control", PatchFsm_MossMotherMossVineCluster),
+            new FsmPatch("Moss Vine Cluster (1)", "Control", PatchFsm_MossMotherMossVineCluster),
+            new FsmPatch("Mossbone Mother Corpse(Clone)", "Death", PatchFsm_MossMotherCorpseControl),
         }),
         new PatchedFsm("Weave_03", new FsmPatch[]
         {
-            new FsmPatch("Mossbone Mother A", "Control", PatchFsm_MossMother)
+            new FsmPatch("Mossbone Mother A", "Control", PatchFsm_MossMotherDoubleA),
+            new FsmPatch("Mossbone Mother B", "Control", PatchFsm_MossMotherDoubleB),
+            new FsmPatch("Moss Vine Cluster (2)", "Control", PatchFsm_MossMotherMossVineCluster),
+            new FsmPatch("Mossbone Mother B Ambient Corpse(Clone)", "Death", PatchFsm_MossMotherBCorpseControl),
         }),
         new PatchedFsm("Bone_05", new FsmPatch[]
         {
@@ -385,7 +392,7 @@ public class PatchedFsm
     public static bool PatchFsm_MossMother(Fsm fsm)
     {
 
-        var initState = fsm.GetState("Init");
+        var init = fsm.GetState("Init");
         var dormantState = fsm.GetState("Dormant");
         var returnReadyState = fsm.GetState("Return Ready");
         var returnAntic = fsm.GetState("Return Antic");
@@ -398,12 +405,210 @@ public class PatchedFsm
         ((Wait)(returnPause.Actions[0])).time = 0;
         // ((Wait)(returnIn.Actions[13])).time = 0f;
 
+        var customActionCreateTriggerForStart = new CustomLogicFsm(fsm);
+        customActionCreateTriggerForStart.action += (Fsm fsm) =>
+        {
+            var pos = fsm.GameObject.transform.position;
+
+            var bossSceneChild = ((GetParent)init.Actions[4]).storeResult.Value;
+            var bossScene = bossSceneChild.transform.parent;
+            var battleSceneComponent = bossScene.GetComponent<BattleScene>();
+            battleSceneComponent.battleStartPause = 0;
+
+            var customTrigger = CreateTrigger("Tut_03");
+            var triggerPos = customTrigger.transform.position;
+            customTrigger.transform.position = new Vector3(pos.x, 13f, pos.z);
+
+            var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
+            triggerComponent.fsm = fsm;
+
+            triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
+            {
+                battleSceneComponent.StartBattle();
+            };
+        };
+
         
-        var initToDormant = initState.Transitions.FirstOrDefault(i => {
+        var initToDormant = init.Transitions.FirstOrDefault(i => {
             return i.ToState == dormantState.Name;
         });
         initToDormant.ToState = returnReadyState.Name;
         initToDormant.ToFsmState = returnReadyState;
+
+        returnReadyState.Actions = InsertInArray(returnReadyState.Actions, customActionCreateTriggerForStart, returnReadyState.Actions.Length);
+
+        return true;
+    }
+    public static bool PatchFsm_MossMotherDoubleA(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var dormantState = fsm.GetState("Dormant");
+        var returnReadyState = fsm.GetState("Return Ready");
+        var returnReady2 = fsm.GetState("Return Ready 2");
+        var returnPause2 = fsm.GetState("Return Pause 2");
+        var returnAntic2 = fsm.GetState("Return Antic 2");
+        var returnIn2 = fsm.GetState("Return In 2");
+        var returnAntic = fsm.GetState("Return Antic");
+        var roarState = fsm.GetState("Roar");
+        var returnIn = fsm.GetState("Return In");
+        var returnPause = fsm.GetState("Return Pause");
+        
+        ((Wait)(roarState.Actions[6])).time = 0.01f;
+        ((Wait)(returnAntic2.Actions[0])).time = 0;
+        ((Wait)(returnPause2.Actions[0])).time = 0;
+
+        var customActionInitDisableCocoon = new CustomLogicFsm(fsm);
+        customActionInitDisableCocoon.action = (Fsm fsm) =>
+        {
+            var cocoon = ((FindChild)init.Actions[8]).storeResult.Value;
+            cocoon.SetActive(false);
+        };
+
+        var customActionSetPosition = new CustomLogicFsm(fsm);
+        customActionSetPosition.action = (Fsm fsm) =>
+        {
+            var posPlanned = ((SetPosition2D)returnIn2.Actions[3]).Vector.Value;
+            var posGO = fsm.GameObject.transform.position;
+            fsm.GameObject.transform.position = new Vector3(21.87f, posPlanned.y, posGO.z);
+
+            var scale = fsm.GameObject.transform.localScale;
+            fsm.GameObject.transform.localScale = new Vector3(-1, scale.y, scale.z);
+        };
+
+        var customActionCreateTriggerForStart = new CustomLogicFsm(fsm);
+        customActionCreateTriggerForStart.action += (Fsm fsm) =>
+        {
+            var pos = fsm.GameObject.transform.position;
+
+            var bossSceneChild = ((GetParent)init.Actions[4]).storeResult.Value;
+            var bossScene = bossSceneChild.transform.parent;
+            var battleSceneComponent = bossScene.GetComponent<BattleScene>();
+            battleSceneComponent.battleStartPause = 0;
+
+            var customTrigger = CreateTrigger("Weave_03");
+            var triggerPos = customTrigger.transform.position;
+            customTrigger.transform.position = new Vector3(pos.x, 20f, pos.z);
+
+            var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
+            triggerComponent.fsm = fsm;
+
+            triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
+            {
+                battleSceneComponent.StartBattle();
+            };
+        };
+
+        init.Actions = InsertInArray(init.Actions, customActionInitDisableCocoon, init.Actions.Length - 1);
+        returnReady2.Actions = InsertInArray(returnReady2.Actions, customActionCreateTriggerForStart, returnReady2.Actions.Length);
+        returnIn2.Actions = InsertInArray(returnIn2.Actions, customActionSetPosition, 4);
+
+        
+        SetTransitionToState(init, returnReady2, 0);
+
+        return true;
+    }
+    public static bool PatchFsm_MossMotherDoubleB(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+
+        var customActionInit = new CustomLogicFsm(fsm);
+        customActionInit.action += (Fsm fsm) =>
+        {
+            var children = fsm.GameObject.transform;
+            foreach(Transform child in children)
+            {
+                if(child.name == "Mossbone Mother Ambient Corpse(Clone)")
+                {
+                    child.name = "Mossbone Mother B Ambient Corpse(Clone)";
+                    break;
+                }
+            }
+        };
+
+        init.Actions = InsertInArray(init.Actions, customActionInit, init.Actions.Length - 1);
+
+        return true;
+    }
+    public static bool PatchFsm_MossMotherMossVineCluster(Fsm fsm)
+    {
+        fsm.GameObject.SetActive(false);
+
+        return true;
+    }
+    public static bool PatchFsm_MossMotherCorpseControl(Fsm fsm)
+    {
+        var steam = fsm.GetState("Steam");
+        var blow = fsm.GetState("Blow");
+        var waitFrame = fsm.GetState("Wait Frame");
+
+        ((Wait)steam.Actions[1]).time = 0.01f;
+
+        var customActionSendEvent = new CustomLogicFsm(fsm);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+        var waitAction = new Wait
+        {
+            time = 1f,
+            finishEvent = FsmEvent.GetFsmEvent("FINISHED")
+        };
+
+        var customState2 = new FsmState(fsm);
+        customState2.Actions = new FsmStateAction[]{customActionSendEvent};
+
+        var customState1 = new FsmState(fsm);
+        customState1.Actions = new FsmStateAction[]{waitAction};
+        customState1.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent("FINISHED"),
+                ToFsmState = customState2
+            }
+        };
+
+        blow.Transitions[0].ToFsmState = customState1;
+
+
+        return true;
+    }
+    public static bool PatchFsm_MossMotherBCorpseControl(Fsm fsm)
+    {
+        var steam = fsm.GetState("Steam");
+        var blow = fsm.GetState("Blow");
+        var state1 = fsm.GetState("State 1");
+
+        ((Wait)steam.Actions[1]).time = 0.01f;
+
+        var customActionSendEvent = new CustomLogicFsm(fsm);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+        var waitAction = new Wait
+        {
+            time = 1f,
+            finishEvent = FsmEvent.GetFsmEvent("FINISHED")
+        };
+
+        var customState2 = new FsmState(fsm);
+        customState2.Actions = new FsmStateAction[]{customActionSendEvent};
+
+        var customState1 = new FsmState(fsm);
+        customState1.Actions = new FsmStateAction[]{waitAction};
+        customState1.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent("FINISHED"),
+                ToFsmState = customState2
+            }
+        };
+
+        blow.Transitions[0].ToFsmState = customState1;
+        blow.Transitions[0].FsmEvent = FsmEvent.GetFsmEvent("FINISHED");
+
 
         return true;
     }
@@ -494,6 +699,26 @@ public class PatchedFsm
         // restartReady.Transitions[0].ToState = startPauseS.Name;
         // restartReady.Transitions[0].ToFsmState = startPauseS;
 
+        var customActionCreateTriggerForStart = new CustomLogicFsm(fsm);
+        customActionCreateTriggerForStart.action += (Fsm fsm) =>
+        {
+            var pos = fsm.GameObject.transform.position;
+
+            var customTrigger = CreateTrigger("Coral_11");
+            var triggerPos = customTrigger.transform.position;
+            customTrigger.transform.position = new Vector3(52.6f, 14.5f, 0);
+
+            var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
+            triggerComponent.fsm = fsm;
+
+            triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
+            {
+                fsm.FsmComponent.SendEvent("ENTER");
+            };
+        };
+
+        restartReady.Actions = InsertInArray(restartReady.Actions, customActionCreateTriggerForStart, restartReady.Actions.Length - 1);
+
         return true;
     }
     public static bool PatchFsm_GreatConchfliesDriller(Fsm fsm)
@@ -530,11 +755,31 @@ public class PatchedFsm
     }
     public static bool PatchFsm_Lace1(Fsm fsm)
     {
-
         var enctountred = fsm.GetState("Encountered?");
         var refight = fsm.GetState("Refight");
+        var dormant = fsm.GetState("Dormant");
+
+        var customActionCreateTriggerForStart = new CustomLogicFsm(fsm);
+        customActionCreateTriggerForStart.action += (Fsm fsm) =>
+        {
+            var pos = fsm.GameObject.transform.position;
+
+            var customTrigger = CreateTrigger("Bone_East_12");
+            var triggerPos = customTrigger.transform.position;
+            customTrigger.transform.position = new Vector3(pos.x, pos.y, pos.z);
+
+            var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
+            triggerComponent.fsm = fsm;
+
+            triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
+            {
+                fsm.FsmComponent.SendEvent("ENTER");
+            };
+        };
 
         SetTransitionToState(enctountred, refight, 0);
+
+        dormant.Actions = InsertInArray(dormant.Actions, customActionCreateTriggerForStart, dormant.Actions.Length);
 
         return true;
     }
@@ -580,6 +825,7 @@ public class PatchedFsm
         var enter = fsm.GetState("Enter");
         var FGColumn = fsm.GetState("FG Column");
         var organNote = fsm.GetState("Organ Note");
+        var organHit = fsm.GetState("Organ Hit");
 
         ((Wait)(BGFog.Actions[0])).time = 0.1f;
         ((Wait)(enter.Actions[3])).time = 0f;
@@ -605,7 +851,7 @@ public class PatchedFsm
 
             int xPos = 15;
 
-            if(HeroController.instance.transform.position.x > fogColumnBGGO.transform.position.x) return;
+            // if(HeroController.instance.transform.position.x > fogColumnBGGO.transform.position.x) return;
 
             fogDamagerGO.transform.position = new Vector3(fogDamagerGO.transform.position.x + xPos, fogDamagerGO.transform.position.y, fogDamagerGO.transform.position.z);
             fogColumnAnticGO.transform.position = new Vector3(fogColumnAnticGO.transform.position.x + xPos, fogColumnAnticGO.transform.position.y, fogColumnAnticGO.transform.position.z);
@@ -613,14 +859,26 @@ public class PatchedFsm
             phantomBossGO.transform.position = new Vector3(phantomBossGO.transform.position.x + xPos, phantomBossGO.transform.position.y, phantomBossGO.transform.position.z);
         };
 
+        var customActionSkipAnimation = new CustomLogicFsm(fsm);
+        customActionSkipAnimation.action += (Fsm fsm) =>
+        {
+            fsm.FsmComponent.SendEvent("FINISHED");
+        };
+
         var list = BGFog.Actions.ToList();
         list.Insert(list.Count - 1, customAction);
         BGFog.Actions = list.ToArray();
+
+        // organHit.Actions = InsertInArray(organHit.Actions, customActionSkipAnimation, organHit.Actions.Length);
 
         return true;
     }
     public static bool PatchFsm_SavageBeastfly1(Fsm fsm)
     {
+        var pos = fsm.GameObject.transform.position;
+        fsm.GameObject.transform.position = new Vector3(61.76f, 39.5f, pos.z);
+
+
         var init = fsm.GetState("Init");
         var choice = fsm.GetState("Choice");
         var idlyFlyAudio = fsm.GetState("Idly Fly Audio?");
@@ -628,26 +886,38 @@ public class PatchedFsm
         var introLook = fsm.GetState("Intro Look");
         var introRoar = fsm.GetState("Intro Roar");
 
-        var waitForCondition = new CustomWaitConditionFsm();
-
         choice.Transitions = RemoveFromArray(choice.Transitions, 3);
-        rematch.Actions = InsertInArray(rematch.Actions, waitForCondition, 0);
 
         ((WaitRandom)(introLook.Actions[5])).timeMin = 0f;
         ((WaitRandom)(introLook.Actions[5])).timeMax = 0f;
         ((Wait)(introRoar.Actions[0])).time = 0.1f;
-        
-        SetTransitionToState(rematch, introLook, 0);
 
-        var customTrigger = CreateTrigger("Ant_19");
-        var triggerPos = customTrigger.transform.position;
-        customTrigger.transform.position = new Vector3(43.45f, 39.28f, triggerPos.z);
-
-        var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
-        triggerComponent.fsmAction = waitForCondition;
-        triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
+        var customActionCreateTriggerForStart = new CustomLogicFsm(fsm);
+        customActionCreateTriggerForStart.action += (Fsm fsm) =>
         {
-            fsmAction.Finish();
+            var pos = fsm.GameObject.transform.position;
+
+            var customTrigger = CreateTrigger("Ant_19");
+            var triggerPos = customTrigger.transform.position;
+            customTrigger.transform.position = new Vector3(43.45f, 39.28f, pos.z);
+
+            var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
+            triggerComponent.fsm = fsm;
+
+            triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
+            {
+                fsm.FsmComponent.SendEvent("TO INTRO LOOK");
+            };
+        };
+
+        rematch.Actions = new FsmStateAction[]{customActionCreateTriggerForStart};
+        rematch.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent("TO INTRO LOOK"),
+                ToFsmState = introLook
+            }
         };
 
 
@@ -994,7 +1264,7 @@ public class PatchedFsm
         var p2TelePause = fsm.GetState("P2 Tele Pause");
         var p2Roar = fsm.GetState("P2 Roar");
 
-        if(init == null) return false;
+        if(init == null) return true;
 
         ((Wait)(introWave.Actions[7])).time = 0.01f;
         ((Wait)(introStand.Actions[2])).time = 0.01f;

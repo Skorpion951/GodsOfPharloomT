@@ -48,7 +48,7 @@ namespace Gods_Of_Pharloom
                 new BossInfo("Coral_Judge_Arena", "start_battle_entry", "The Last Judge", new float[][]{new float[]{250f, 2f, 1.5f}}),
                 new BossInfo("Greymoor_08", "start_battle_entry", "Moorwing", new float[][]{new float[]{250f, 2f, 1.5f}}),
                 new BossInfo("Organ_01", "start_battle_entry", "Phantom", new float[][]{new float[]{250f, 2f, 1.5f}}),
-                new BossInfo("Ant_19", "start_battle_entry", "Beastfly In Chapel Of The Beast", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Ant_19", "start_battle_entry", "Savage Beastfly in Chapel of The Beast", new float[][]{new float[]{250f, 2f, 1.5f}}),
                 new BossInfo("Shellwood_18", "start_battle_entry", "Sister Splinter", new float[][]{new float[]{250f, 2f, 1.5f}}),
                 new BossInfo("Bone_15", "start_battle_entry", "Skull Tyrant", new float[][]{new float[]{250f, 2f, 1.5f}}),
                 new BossInfo("Belltown_Shrine", "start_battle_entry", "Widow", new float[][]{new float[]{250f, 2f, 1.5f}}),
@@ -63,7 +63,7 @@ namespace Gods_Of_Pharloom
                 new BossInfo("Shadow_18", "start_battle_entry", "Groal the Great", new float[][]{new float[]{250f, 2f, 1.5f}}),
                 new BossInfo("Song_Tower_01", "start_battle_entry", "Lace in the Cradle", new float[][]{new float[]{250f, 2f, 1.5f}}),
                 new BossInfo("Coral_27", "start_battle_entry", "Raging Conchfly", new float[][]{new float[]{250f, 2f, 1.5f}}),
-                new BossInfo("Bone_East_08", "start_battle_entry", "Beastfly in Far Fields", new float[][]{new float[]{250f, 2f, 1.5f}}),
+                new BossInfo("Bone_East_08", "start_battle_entry", "Savage Beastfly in Far Fields", new float[][]{new float[]{250f, 2f, 1.5f}}),
                 new BossInfo("Hang_17b", "start_battle_entry", "Second Sentiel", new float[][]{new float[]{250f, 2f, 1.5f}}),
                 new BossInfo("Greymoor_08", "start_battle_entry", "Shakra", new float[][]{new float[]{250f, 2f, 1.5f}}),
                 new BossInfo("Ward_02", "start_battle_entry", "The Unravelled", new float[][]{new float[]{250f, 2f, 1.5f}}),
@@ -209,6 +209,15 @@ namespace Gods_Of_Pharloom
         }
         public void StartSequence()
         {
+            if (currentBoss.is3ActBoss)
+            {
+                PlayerData.instance.blackThreadWorld = true;
+            }
+            else
+            {
+                PlayerData.instance.blackThreadWorld = false;
+            }
+
             GameManager.SceneLoadInfo sceneLoadInfo;
             if(instance.isHoG && currentBoss.ascendedVersion != null && (BossStatueInfo.currentDifficultMode == "Ascended" || BossStatueInfo.currentDifficultMode == "Radiant"))
             {
@@ -235,6 +244,15 @@ namespace Gods_Of_Pharloom
         }
         public void NextBoss()
         {
+            if (currentBoss.is3ActBoss)
+            {
+                PlayerData.instance.blackThreadWorld = true;
+            }
+            else
+            {
+                PlayerData.instance.blackThreadWorld = false;
+            }
+
             var sceneLoadInfo = new GameManager.SceneLoadInfo
             {
                 SceneName = currentBoss.sceneName,

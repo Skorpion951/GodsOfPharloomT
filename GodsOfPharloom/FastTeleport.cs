@@ -1,8 +1,8 @@
 namespace Gods_Of_Pharloom;
 public class FastTeleport
 {
-    public static string sceneName = "Weave_03";
-    public static string entryGate = "right1";
+    public static string sceneName = "GG_Pharloom_Hall_Of_Gods";
+    public static string entryGate = "door1";
     public static void Start()
     {
         var sceneLoadInfo = new GameManager.SceneLoadInfo
