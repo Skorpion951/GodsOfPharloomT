@@ -87,10 +87,22 @@ namespace Gods_Of_Pharloom
                 questTests.SetValue(__instance, new QuestTest[0]);
                 tests.SetValue(__instance, playerDataTest);
             }
-            if(BossSequence.currentBoss == BossInfo.bosses["Moorwing"] && __instance.gameObject.name.Contains("Mapper Sparring"))
+
+            if(BossSequence.currentBoss == BossInfo.bosses["Moorwing"] && __instance.gameObject.name.Contains("Mapper Sparring") || __instance.gameObject.name.Contains("Caravan Scene Loader"))
             {
                 GameObject.Destroy(__instance.gameObject);
             }
+            if(BossSequence.currentBoss == BossInfo.bosses["Moorwing"] && __instance.gameObject.name.Contains("Boss Scene Loader"))
+            {
+                FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo tests = __instance.GetType().GetField("tests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+                var playerDataTest = new PlayerDataTest();
+
+                questTests.SetValue(__instance, new QuestTest[0]);
+                tests.SetValue(__instance, playerDataTest);
+            }
+
             if(BossSequence.currentBoss == BossInfo.bosses["The Unravelled"] && __instance.gameObject.name.Contains("Boss Loader"))
             {
                 FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -131,6 +143,10 @@ namespace Gods_Of_Pharloom
             if(BossSequence.currentBoss == BossInfo.bosses["Lost Garmond"] && __instance.gameObject.name == "Pre Garmond")
             {
                 __instance.gameObject.SetActive(false);
+            }
+            if(BossSequence.isInSequence && __instance.gameObject.name == "Gnat Corpse Ground")
+            {
+                Destroy(__instance.gameObject);
             }
         }
         [HarmonyPrefix]
@@ -182,6 +198,12 @@ namespace Gods_Of_Pharloom
                 Destroy(__instance.gameObject);
                 return false;
             }
+            if(BossSequence.currentBoss == BossInfo.bosses["Lace in Deep Docks"] &&
+                __instance.gameObject.name == "Boss Scene")
+            {
+                Destroy(__instance);
+                return false;
+            }
             return true;
         }
         [HarmonyPrefix]
@@ -190,6 +212,29 @@ namespace Gods_Of_Pharloom
         {
             if(BossSequence.currentBoss == BossInfo.bosses["Great Conchflies"] && __instance.gameObject.name == "Coral Driller Return Corpse"){
                 __instance.gameObject.SetActive(false);
+                return false;
+            }
+            return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ActivateIfPlayerdataFalse), "OnEnable")]
+        private static bool ActivateIfPlayerdataFalse_Prefix(ActivateIfPlayerdataFalse __instance)
+        {
+            if(BossSequence.currentBoss == BossInfo.bosses["Savage Beastfly in Chapel of The Beast"] && __instance.gameObject.name == "Boss Control"){
+                __instance.objectToActivate.SetActive(true);
+                Destroy(__instance);
+                return false;
+            }
+            return true;
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ActivateIfPlayerdataTrue), "OnEnable")]
+        private static bool ActivateIfPlayerdataTrue_Prefix(ActivateIfPlayerdataTrue __instance)
+        {
+            if(BossSequence.currentBoss == BossInfo.bosses["Savage Beastfly in Chapel of The Beast"] && __instance.gameObject.name == "Boss Control"){
+                __instance.objectToActivate.SetActive(false);
+                Destroy(__instance);
                 return false;
             }
             return true;

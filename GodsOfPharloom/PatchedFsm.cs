@@ -115,7 +115,8 @@ public class PatchedFsm
         }),
         new PatchedFsm("Bone_East_12", new FsmPatch[]
         {
-            new FsmPatch("Lace Boss1", "Control", PatchFsm_Lace1)
+            new FsmPatch("Lace Boss1", "Control", PatchFsm_Lace1),
+            new FsmPatch("Corpse Lace1(Clone)", "Control", PatchFsm_Lace1CorpseControl),
         }),
         new PatchedFsm("Coral_Judge_Arena", new FsmPatch[]
         {
@@ -125,7 +126,9 @@ public class PatchedFsm
         }),
         new PatchedFsm("Greymoor_08_boss", new FsmPatch[]
         {
-            new FsmPatch("Vampire Gnat", "Control", PatchFsm_Moorwing)
+            new FsmPatch("Vampire Gnat", "Control", PatchFsm_Moorwing),
+            new FsmPatch("Tension Range", "Control", PatchFsm_MoorwingTensionAudio),
+            new FsmPatch("Vampire Gnat Corpse(Clone)", "Death", PatchFsm_MoorwingCorpseControl),
         }),
         new PatchedFsm("Organ_01", new FsmPatch[]
         {
@@ -135,6 +138,8 @@ public class PatchedFsm
         new PatchedFsm("Ant_19", new FsmPatch[]
         {
             new FsmPatch("Bone Flyer Giant", "Control", PatchFsm_SavageBeastfly1),
+            new FsmPatch("Boss Scene", "Control", PatchFsm_SavageBeastfly1BossScene),
+            new FsmPatch("Corpse Giant Bone Flyer(Clone)", "Death", PatchFsm_SavageBeastfly1CorpseControl),
         }),
         new PatchedFsm("Shellwood_18", new FsmPatch[]
         {
@@ -968,6 +973,28 @@ public class PatchedFsm
 
         return true;
     }
+    public static bool PatchFsm_Lace1CorpseControl(Fsm fsm)
+    {
+        var stagger = fsm.GetState("Stagger");
+        var steam = fsm.GetState("Steam");
+        var blow = fsm.GetState("Blow");
+        var land = fsm.GetState("Land");
+        var jumpAntic = fsm.GetState("Jump Antic");
+
+        ((Wait)land.Actions[3]).time = 1f;
+
+        var customActionSendEvent = new CustomLogicFsm(fsm);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
+        SetTransitionToState(stagger, blow, 0);
+
+        jumpAntic.Actions = InsertInArray(jumpAntic.Actions, customActionSendEvent, 0);
+
+        return true;
+    }
     public static bool PatchFsm_LastJudge(Fsm fsm)
     {
         var introRoar = fsm.GetState("Intro Roar");
@@ -1046,8 +1073,107 @@ public class PatchedFsm
 
         return true;
     }
+    public static bool PatchFsm_MoorwingTensionAudio(Fsm fsm)
+    {
+        GameObject.Destroy(fsm.FsmComponent);
+
+        return true;
+    }
+    public static bool PatchFsm_MoorwingCorpseControl(Fsm fsm)
+    {
+        var stagger = fsm.GetState("Stagger");
+        var steam = fsm.GetState("Steam");
+        var blow = fsm.GetState("Blow");
+        var land = fsm.GetState("Land");
+        var landCheck = fsm.GetState("Land Check");
+        var fall = fsm.GetState("Fall");
+
+        var customActionSendEvent = new CustomLogicFsm(fsm);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+        var waitAction = new Wait
+        {
+            time = BossInfo.waitForBossDeathAnim,
+            finishEvent = FsmEvent.GetFsmEvent("FINISHED")
+        };
+
+        var customState2 = new FsmState(fsm);
+        customState2.Actions = new FsmStateAction[]{customActionSendEvent};
+
+        var customState1 = new FsmState(fsm);
+        customState1.Actions = new FsmStateAction[]{waitAction};
+        customState1.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent("FINISHED"),
+                ToFsmState = customState2
+            }
+        };
+
+        land.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                ToFsmState = customState1,
+                FsmEvent = FsmEvent.GetFsmEvent("FINISHED")
+            }
+        };
+
+        SetTransitionToState(stagger, blow, 0);
+        SetTransitionToState(blow, fall, 0);
+        SetTransitionToState(land, customState1, 0);
+
+        return true;
+    }
     public static bool PatchFsm_Phantom(Fsm fsm)
     {
+        var hornetL = fsm.GetState("Hornet L");
+        var hornetR = fsm.GetState("Hornet R");
+        var parryReady = fsm.GetState("Parry Ready");
+        var parryFacing = fsm.GetState("Parry Facing");
+        var hornetFaceL = fsm.GetState("Hornet Face L");
+        var hornetFaceR = fsm.GetState("Hornet Face R");
+        var clashCutscene = fsm.GetState("Clash Cutscene");
+        var timeFreeze = fsm.GetState("Time Freeze");
+        var DCLand = fsm.GetState("DC Land");
+        var crossSlashEnd = fsm.GetState("Cross Slash End");
+        var bloodStream = fsm.GetState("Blood Stream");
+        var deathSteam = fsm.GetState("Death Steam");
+        var deathExplode = fsm.GetState("Death Explode");
+        var fadeToBlack = fsm.GetState("Fade To Black");
+        var endPause = fsm.GetState("End Pause");
+
+        ((Wait)clashCutscene.Actions[14]).time = 0.1f;
+        ((Wait)timeFreeze.Actions[4]).time = 0.1f;
+        ((Wait)crossSlashEnd.Actions[4]).time = 0.1f;
+
+        var bossDeathSound = ((AudioPlayRandomVoiceFromTableV2)deathSteam.Actions[1]);
+
+        var customActionDoParry = new CustomLogicFsm(fsm);
+        customActionDoParry.action += (Fsm fsm) =>
+        {
+            fsm.FsmComponent.SendEvent("PARRY");
+        };
+
+        var customActionSendEvent = new CustomLogicFsm(fsm);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
+        parryReady.Actions = InsertInArray(parryReady.Actions, customActionDoParry, 0);
+        bloodStream.Actions = InsertInArray(bloodStream.Actions, bossDeathSound, bloodStream.Actions.Length);
+        fadeToBlack.Actions = new FsmStateAction[]{customActionSendEvent};
+
+        DCLand.Actions = RemoveFromArray(DCLand.Actions, 2);
+        deathSteam.Actions = RemoveFromArray(deathSteam.Actions, 4);
+
+        SetTransitionToState(bloodStream, deathExplode, 0);
+
+        fadeToBlack.Transitions = new FsmTransition[0];
 
         return true;
     }
@@ -1103,6 +1229,8 @@ public class PatchedFsm
         list.Insert(list.Count - 1, customAction);
         BGFog.Actions = list.ToArray();
 
+        init.Actions = RemoveFromArray(init.Actions, 9); //player data bool test
+
         // organHit.Actions = InsertInArray(organHit.Actions, customActionSkipAnimation, organHit.Actions.Length);
 
         return true;
@@ -1154,6 +1282,52 @@ public class PatchedFsm
             }
         };
 
+
+        return true;
+    }
+    public static bool PatchFsm_SavageBeastfly1BossScene(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var idle = fsm.GetState("Idle");
+
+        idle.Transitions[1].ToFsmState = null;
+
+        return true;
+    }
+    public static bool PatchFsm_SavageBeastfly1CorpseControl(Fsm fsm)
+    {
+        var stagger = fsm.GetState("Stagger");
+        var steam = fsm.GetState("Steam");
+        var blow = fsm.GetState("Blow");
+        var land = fsm.GetState("Land");
+
+        var customActionSendEvent = new CustomLogicFsm(fsm);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+        var waitAction = new Wait
+        {
+            time = BossInfo.waitForBossDeathAnim,
+            finishEvent = FsmEvent.GetFsmEvent("FINISHED")
+        };
+
+        var customState2 = new FsmState(fsm);
+        customState2.Actions = new FsmStateAction[]{customActionSendEvent};
+
+        var customState1 = new FsmState(fsm);
+        customState1.Actions = new FsmStateAction[]{waitAction};
+        customState1.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent("FINISHED"),
+                ToFsmState = customState2
+            }
+        };
+
+        // SetTransitionToState(stagger, blow, 0);
+        SetTransitionToState(blow, customState1, 0);
 
         return true;
     }

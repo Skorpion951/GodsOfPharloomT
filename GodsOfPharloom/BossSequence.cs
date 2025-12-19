@@ -8,7 +8,7 @@ namespace Gods_Of_Pharloom
     public class BossInfo
     {
         public static Dictionary<string, BossInfo> bosses;
-        public static float waitForBossDeathAnim = 1f;
+        public static float waitForBossDeathAnim = 1.5f;
         public string sceneName;
         public string entryGate;
         public string bossName;

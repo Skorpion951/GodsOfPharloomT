@@ -252,8 +252,8 @@ namespace Gods_Of_Pharloom
             customScenes.Add(Coral_Judge_Arena);
 
             var Greymoor_08 = new CustomScene("Greymoor_08");
-            Greymoor_08.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(32.55f, 4.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            Greymoor_08.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(27.3f, 4.57f, 0), "", "", isADoor: true, 
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Greymoor_08.isSkongScene = true;
             Greymoor_08.AfterSceneActivated += () => {Greymoor_08.isSceneActive = true;};
             customScenes.Add(Greymoor_08);
