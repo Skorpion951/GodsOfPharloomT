@@ -194,6 +194,7 @@ public class PatchedFsm
         {
             new FsmPatch("Roachkeeper Chef (1)", "Control", PatchFsm_DustChef),
             new FsmPatch("kitchen_gong", "Tink Hit Force", PatchFsm_DustChefKitchenGong),
+            new FsmPatch("Corpse Roachkeeper Chef(Clone)", "Death", PatchFsm_DustChefCorpseControl),
         }),
         new PatchedFsm("Belltown_08", new FsmPatch[]
         {
@@ -1828,7 +1829,7 @@ public class PatchedFsm
         var entryRoar = fsm.GetState("Entry Roar");
         var entryAntic = fsm.GetState("Entry Antic");
         
-        ((Wait)(entryRoar.Actions[5])).time = 0.1f;
+        // ((Wait)(entryRoar.Actions[5])).time = 0.1f;
         ((Wait)(entryAntic.Actions[3])).time = 0.1f;
         
         var customAction = new CustomLogicFsm(fsm);
@@ -1836,7 +1837,7 @@ public class PatchedFsm
         {
             var init = fsm.GetState("Init");
             var battleScene = ((GetGrandParent)(init.Actions[0])).storeResult.Value.GetComponent<BattleScene>();
-            battleScene.battleStartPause = 0f;
+            battleScene.battleStartPause = 0.25f;
 
             battleScene.battleStartEventRegister = "BATTLE LOCK";
 
@@ -1863,11 +1864,33 @@ public class PatchedFsm
                 var init = fsm.GetState("Init");
                 var battleScene = ((GetGrandParent)(init.Actions[0])).storeResult.Value.GetComponent<BattleScene>();
 
+                PlayMakerFSM.BroadcastEvent("BG CLOSE");
                 battleScene.StartBattle();
             };
         };
 
         init.Actions = InsertInArray(init.Actions, customAction, init.Actions.Length - 1);
+
+        return true;
+    }
+    public static bool PatchFsm_DustChefCorpseControl(Fsm fsm)
+    {
+        var stagger = fsm.GetState("Stagger");
+        var steam = fsm.GetState("Steam");
+        var blow = fsm.GetState("Blow");
+        var land = fsm.GetState("Land");
+        var splashIn = fsm.GetState("Splash In");
+
+        var customActionSendEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
+        SetTransitionToState(stagger, blow, 0);
+
+        splashIn.Actions = InsertInArray(splashIn.Actions, customActionSendEvent, 0);
+        // land.Transitions = new FsmTransition[0];
 
         return true;
     }

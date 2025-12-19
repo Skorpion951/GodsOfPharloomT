@@ -257,10 +257,15 @@ namespace Gods_Of_Pharloom
         }
 
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(ActivateIfPlayerdataFalse), "OnEnable")]
+        [HarmonyPatch(typeof(ActivateIfPlayerdataFalse), "Start")]
         private static bool ActivateIfPlayerdataFalse_Prefix(ActivateIfPlayerdataFalse __instance)
         {
             if(BossSequence.currentBoss == BossInfo.bosses["Savage Beastfly in Chapel of The Beast"] && __instance.gameObject.name == "Boss Control"){
+                __instance.objectToActivate.SetActive(true);
+                Destroy(__instance);
+                return false;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Disgraced Chef Lugoli"] && __instance.gameObject.name == "Battle Scene"){
                 __instance.objectToActivate.SetActive(true);
                 Destroy(__instance);
                 return false;
@@ -304,6 +309,10 @@ namespace Gods_Of_Pharloom
         {
             if(BossSequence.currentBoss == BossInfo.bosses["Broodmother"] && 
                     __instance.gameObject.name == "Battle Scene Broodmother"){
+                __instance.setPDBoolOnEnd = null;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Disgraced Chef Lugoli"] && 
+                    __instance.gameObject.name == "Battle Scene"){
                 __instance.setPDBoolOnEnd = null;
             }
         }
