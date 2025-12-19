@@ -112,13 +112,9 @@ namespace Gods_Of_Pharloom
         void Update()
         {
             keyboard = Keyboard.current;
-            if (keyboard.f8Key.wasPressedThisFrame)
+            if (keyboard.backquoteKey.wasPressedThisFrame)
             {
                 FastTeleport.Start();
-            }
-            if (keyboard.mKey.wasPressedThisFrame)
-            {
-                StartCoroutine(LoadScene());
             }
         }
 
@@ -185,6 +181,15 @@ namespace Gods_Of_Pharloom
                         break;
                     }
                 }
+
+                var cameraLock1 = CustomScene.CreateCameraLock(BossStatueInfo.hog_sceneName);
+                var go1 = cameraLock1.gameObject;
+                go1.transform.position = new Vector3(44.64f, 90f, 0);
+                cameraLock1.cameraYMin = 57f;
+                cameraLock1.cameraYMax = 400f;
+                cameraLock1.cameraXMin = 44.64f;
+                cameraLock1.cameraXMax = 44.64f;
+                go1.GetComponent<BoxCollider2D>().size = new Vector2(8f, 100f);
 
                 GG_Pharloom_HoG.isSceneActive = true;
             };
@@ -274,14 +279,14 @@ namespace Gods_Of_Pharloom
 
             var Shellwood_18 = new CustomScene("Shellwood_18");
             Shellwood_18.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(42.49f, 8.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Shellwood_18.isSkongScene = true;
             Shellwood_18.AfterSceneActivated += () => {Shellwood_18.isSceneActive = true;};
             customScenes.Add(Shellwood_18);
 
             var Bone_15 = new CustomScene("Bone_15");
             Bone_15.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(83.75f, 14.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Bone_15.isSkongScene = true;
             Bone_15.AfterSceneActivated += () => {Bone_15.isSceneActive = true;};
             customScenes.Add(Bone_15);

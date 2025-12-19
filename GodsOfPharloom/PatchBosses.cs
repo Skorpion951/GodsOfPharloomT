@@ -126,7 +126,7 @@ namespace Gods_Of_Pharloom
         }
         [HarmonyPrefix]
         [HarmonyPatch(typeof(TestGameObjectActivator), "OnEnable")]
-        private static void TestGameObjectActivatorPatch_Prefix(TestGameObjectActivator __instance)
+        private static bool TestGameObjectActivatorPatch_Prefix(TestGameObjectActivator __instance)
         {
             if(BossSequence.currentBoss == BossInfo.bosses["Lost Garmond"] && __instance.gameObject.name == "Garmond Black Threaded Scene")
             {
@@ -139,23 +139,41 @@ namespace Gods_Of_Pharloom
 
                 questTests.SetValue(__instance, new QuestTest[0]);
                 tests.SetValue(__instance, playerDataTest);
+
+                return true;
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Lost Garmond"] && __instance.gameObject.name == "Pre Garmond")
             {
                 __instance.gameObject.SetActive(false);
+                return true;
             }
             if(BossSequence.isInSequence && __instance.gameObject.name == "Gnat Corpse Ground")
             {
                 Destroy(__instance.gameObject);
+                return true;
             }
-        }
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(PersistentIntItem), "Awake")]
-        private static bool PersistentIntItemPatch_Prefix(PersistentIntItem __instance)
-        {
-            
+            if(BossSequence.currentBoss == BossInfo.bosses["Broodmother"] && 
+            __instance.gameObject.name == "Broodmother Scene Control")
+            {
+                var children = __instance.gameObject.transform;
+                children.GetChild(0).gameObject.SetActive(false);
+                children.GetChild(1).gameObject.SetActive(true);
+                GodsOfPharloomMod.Log.LogInfo("KLSJDFKLJLSKFJLKSDJFLKSDJFKL");
+                Destroy(__instance);
+            }
             return true;
         }
+        // [HarmonyPostfix]
+        // [HarmonyPatch(typeof(PersistentIntItem), "Awake")]
+        // private static bool PersistentIntItemPatch_Postfix(PersistentIntItem __instance)
+        // {
+        //     if(BossSequence.currentBoss == BossInfo.bosses["Widow"] &&
+        //     __instance.gameObject.name == "Bellshrine Sequence Bellhart")
+        //     {
+        //         __instance.ItemData.Value = -1;
+        //     }
+        //     return true;
+        // }
         [HarmonyPrefix]
         [HarmonyPatch(typeof(PersistentBoolItem), "Awake")]
         private static bool PersistentBoolItemPatch_Prefix(PersistentBoolItem __instance)
@@ -204,6 +222,12 @@ namespace Gods_Of_Pharloom
                 Destroy(__instance);
                 return false;
             }
+            if(BossSequence.currentBoss == BossInfo.bosses["Skull Tyrant"] &&
+                __instance.gameObject.name == "Skull King")
+            {
+                Destroy(__instance);
+                return false;
+            }
             return true;
         }
         [HarmonyPrefix]
@@ -211,6 +235,10 @@ namespace Gods_Of_Pharloom
         private static bool DeactivateIfPlayerdataFalse_Prefix(DeactivateIfPlayerdataFalse __instance)
         {
             if(BossSequence.currentBoss == BossInfo.bosses["Great Conchflies"] && __instance.gameObject.name == "Coral Driller Return Corpse"){
+                __instance.gameObject.SetActive(false);
+                return false;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Skull Tyrant"] && __instance.gameObject.name == "Corpse"){
                 __instance.gameObject.SetActive(false);
                 return false;
             }
@@ -238,6 +266,35 @@ namespace Gods_Of_Pharloom
                 return false;
             }
             return true;
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(PlayerDataTestResponse), "OnEnable")]
+        private static bool PlayerDataTestResponse_Prefix(PlayerDataTestResponse __instance)
+        {
+            if(BossSequence.currentBoss == BossInfo.bosses["Sister Splinter"] && __instance.gameObject.name == "Boss Scene Parent"){
+                Destroy(__instance);
+                return false;
+            }
+            return true;
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(StateChangeSequence), "CheckCompleteBool")]
+        private static bool StateChangeSequenceCheckCompleteBool_Prefix(PlayerDataTestResponse __instance, ref bool __result)
+        {
+            if(BossSequence.currentBoss == BossInfo.bosses["Widow"] && __instance.gameObject.name == "Bellshrine Sequence Bellhart"){
+                __result = true;
+                return false;
+            }
+            return true;
+        }
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(BattleScene), "Awake")]
+        private static void BattleSceneAwake_Postfix(BattleScene __instance)
+        {
+            if(BossSequence.currentBoss == BossInfo.bosses["Broodmother"] && 
+                    __instance.gameObject.name == "Battle Scene Broodmother"){
+                __instance.setPDBoolOnEnd = null;
+            }
         }
     }
 }

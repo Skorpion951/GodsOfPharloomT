@@ -15,6 +15,7 @@ public class CustomScene
     public string sceneName {get; private set;}
     private List<TransitionPointInfo> TransitionGates = new List<TransitionPointInfo>();
     public Action AfterSceneActivated;
+    public Vector2 tileMapVector = new Vector2(512, 512);
     public bool isSceneActive = false;
     public bool isPreloading = false;
     public bool isSkongScene = false;
@@ -134,6 +135,18 @@ public class CustomScene
         return tp;
     }
 
+    public static CameraLockArea CreateCameraLock(string sceneName)
+    {
+        var go = new GameObject("CameraLockArea");
+        SceneManager.MoveGameObjectToScene(go, SceneManager.GetSceneByName(sceneName));
+        var collider = go.AddComponent<BoxCollider2D>();
+        collider.isTrigger = true;
+        collider.size = new Vector2(10f, 10f);
+        var cameraLockArea = go.AddComponent<CameraLockArea>();
+
+        return cameraLockArea;
+    }
+
     public System.Collections.IEnumerator GetObjectFromSilkScene(string[] path, string sceneName, Action<GameObject> func)
     {
         string scenePath = "Scenes/" + sceneName;
@@ -210,12 +223,19 @@ public class CustomScene
         {
             CreateGate(item);
         }
-        var gm = new GameObject("TileMap");
-        gm.tag = "TileMap";
-        gm.AddComponent<tk2dTileMap>();
+
+        if (!isSkongScene)
+        {
+            // tilemap needs for max heigh and width of scene
+            var gm = new GameObject("TileMap");
+            gm.tag = "TileMap";
+            var tileMap = gm.AddComponent<tk2dTileMap>();
+            tileMap.width = (int)tileMapVector.x;
+            tileMap.height = (int)tileMapVector.y;
+            SceneManager.MoveGameObjectToScene(gm, SceneManager.GetSceneByName(this.sceneName));
+        }
         // var sm = new GameObject("_SceneManager");
         // sm.tag = "SceneManager";
-        SceneManager.MoveGameObjectToScene(gm, SceneManager.GetSceneByName(this.sceneName));
         // SceneManager.MoveGameObjectToScene(sm, SceneManager.GetSceneByName("GG_Pharloom_Atrium"));
         // var csm = sm.AddComponent<CustomSceneManager>();
         // csm.scenePools = new SceneObjectPool[0];
