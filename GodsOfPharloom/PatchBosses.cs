@@ -123,6 +123,17 @@ namespace Gods_Of_Pharloom
                 questTests.SetValue(__instance, new QuestTest[0]);
                 tests.SetValue(__instance, playerDataTest);
             }
+            if(BossSequence.currentBoss == BossInfo.bosses["Cogwork Dancers"] && 
+                __instance.gameObject.name.Contains("Boss Loader"))
+            {
+                FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo tests = __instance.GetType().GetField("tests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+                var playerDataTest = new PlayerDataTest();
+
+                questTests.SetValue(__instance, new QuestTest[0]);
+                tests.SetValue(__instance, playerDataTest);
+            }
         }
         [HarmonyPrefix]
         [HarmonyPatch(typeof(TestGameObjectActivator), "OnEnable")]

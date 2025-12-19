@@ -300,21 +300,21 @@ namespace Gods_Of_Pharloom
 
             var Slab_16b = new CustomScene("Slab_16b");
             Slab_16b.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(56.95f, 5.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Slab_16b.isSkongScene = true;
             Slab_16b.AfterSceneActivated += () => {Slab_16b.isSceneActive = true;};
             customScenes.Add(Slab_16b);
 
             var Cog_Dancers = new CustomScene("Cog_Dancers");
             Cog_Dancers.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(39.96f, 4.6f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Cog_Dancers.isSkongScene = true;
             Cog_Dancers.AfterSceneActivated += () => {Cog_Dancers.isSceneActive = true;};
             customScenes.Add(Cog_Dancers);
 
             var Dust_Chef = new CustomScene("Dust_Chef");
             Dust_Chef.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(36.67f, 35.59f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Dust_Chef.isSkongScene = true;
             Dust_Chef.AfterSceneActivated += () => {Dust_Chef.isSceneActive = true;};
             customScenes.Add(Dust_Chef);

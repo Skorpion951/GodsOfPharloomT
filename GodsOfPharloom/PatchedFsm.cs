@@ -1684,6 +1684,8 @@ public class PatchedFsm
         var returnDancers = fsm.GetState("Return Dancers");
         var dancersStunned = fsm.GetState("Dancers Stunned");
         var lightOpen = fsm.GetState("Light Open");
+        var end = fsm.GetState("End");
+        var windup4 = fsm.GetState("Windup 4");
 
         ((EaseFloat)(lightOpen.Actions[3])).time = 0.01f;
 
@@ -1698,7 +1700,50 @@ public class PatchedFsm
         ((Wait)(returnDancers.Actions[4])).time = 0.3f;
         ((Wait)(dancersStunned.Actions[6])).time = 0.3f;
 
-        
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim);
+        customActionSendBossDeadEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
+        end.Actions = new FsmStateAction[]{customActionSendBossDeadEvent};
+
+        gateClose.Actions = RemoveFromArray(gateClose.Actions, 2);
+        gateClose.Actions = RemoveFromArray(gateClose.Actions, 2);
+
+        var list = windup4.Transitions.ToList();
+        list.Add(new FsmTransition
+        {
+            FsmEvent = FsmEvent.GetFsmEvent("FINISHED"),
+            ToFsmState = windup4
+        });
+        windup4.Transitions = list.ToArray();
+
+        var customActionFinished = new CustomLogicFsm(fsm, time: 0.05f);
+        customActionFinished.action += (Fsm fsm) =>
+        {
+            fsm.FsmComponent.SendEvent("FINISHED");
+        };
+
+        var customActionCreateTrigger = new CustomLogicFsm(fsm);
+        customActionCreateTrigger.action += (Fsm fsm) =>
+        {
+            var customTrigger = CreateTrigger("Cog_Dancers_boss");
+            var triggerPos = customTrigger.transform.position;
+            customTrigger.transform.position = new Vector3(37.14f, 4.6f, 0f);
+
+            var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
+            triggerComponent.fsm = fsm;
+
+            triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
+            {
+                fsm.FsmComponent.SendEvent("ENTER");
+            };
+        };
+
+        dormant.Actions = new FsmStateAction[]{customActionCreateTrigger};
+
+        windup4.Actions = InsertInArray(windup4.Actions, customActionFinished, windup4.Actions.Length);
 
         return true;
     }
@@ -1720,10 +1765,15 @@ public class PatchedFsm
         var return2 = fsm.GetState("Return 2");
         var firstWindup = fsm.GetState("First Windup?");
         var firstWindupOB = fsm.GetState("First Windup? OB");
+        var deathBlow = fsm.GetState("Death Blow");
 
         ((IntCompare)(firstWindup.Actions[0])).integer2 = 1;
         ((IntCompare)(firstWindupOB.Actions[0])).integer2 = 1;
 
+        ((SendEventByName)deathSteam.Actions[5]).delay = 0f;
+        ((SendEventByName)deathStagger.Actions[3]).delay = 0f;
+
+        ((SetRandomAudioClipFromTable)deathSteam.Actions[7]).delay = 0f;
 
         ((AnimatePositionTo)(returnToRest.Actions[7])).speed = 10f;
         ((AnimatePositionTo)(return2.Actions[0])).speed = 10f;
@@ -1749,6 +1799,10 @@ public class PatchedFsm
         // SetTransitionToState(rest, emerge, 0);
         // SetTransitionToState(rest, emerge, 1);
 
+        deathSteam.Actions = RemoveFromArray(deathSteam.Actions, 4);
+        deathSteam.Actions = RemoveFromArray(deathSteam.Actions, 3);
+        deathSteam.Actions = RemoveFromArray(deathSteam.Actions, 2);
+
         return true;
     }
     public static bool PatchFsm_CogDancersBossScene(Fsm fsm)
@@ -1757,10 +1811,14 @@ public class PatchedFsm
         var gatesClose = fsm.GetState("Gates Close");
         var wait = fsm.GetState("Wait");
         var rotationSequence = fsm.GetState("Rotation Sequence");
+        var check = fsm.GetState("Check");
+        var undefeated = fsm.GetState("Undefeated");
         
         ((Wait)(wait.Actions[4])).time = 0.1f;
         ((Wait)(wait.Actions[7])).time = 0.1f;
         ((Wait)(gatesClose.Actions[2])).time = 0.01f;
+
+        SetTransitionToState(check, undefeated, 0);
 
         return true;
     }
