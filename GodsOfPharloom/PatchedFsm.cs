@@ -205,6 +205,7 @@ public class PatchedFsm
             new FsmPatch("First Weaver", "Control", PatchFsm_FirstSinner),
             new FsmPatch("Shrine First Weaver", "Inspection", PatchFsm_FirstSinnerInspection),
             new FsmPatch("Boss Scene", "Outro", PatchFsm_FirstSinnerBossSceneOutro),
+            new FsmPatch("Corpse First Weaver(Clone)", "Death", PatchFsm_FirstSinnerCorpseControl),
         }),
         new PatchedFsm("Dock_09", new FsmPatch[]
         {
@@ -215,6 +216,7 @@ public class PatchedFsm
         new PatchedFsm("Library_09", new FsmPatch[]
         {
             new FsmPatch("Garmond Fighter", "Control", PatchFsm_GarmondAndZaza),
+            new FsmPatch("Citadel Library NPC", "Dialogue", PatchFsm_GarmondAndZazaDestroyNPCComponent),
         }),
         new PatchedFsm("Cradle_03", new FsmPatch[]
         {
@@ -223,26 +225,38 @@ public class PatchedFsm
             new FsmPatch("Boss Title", "Title Control", PatchFsm_SilkBossTitleControl),
             new FsmPatch("Silk Boss", "Phase Control", PatchFsm_SilkBossPhaseControl),
             new FsmPatch("Challenge Region", "Challenge", PatchFsm_SilkBossChallengeControl),
+            new FsmPatch("Death Sequence", "Control", PatchFsm_SilkBossDeathSequence),
         }),
         new PatchedFsm("Shadow_18", new FsmPatch[]
         {
             new FsmPatch("Swamp Shaman", "Control", PatchFsm_GroalTheGreat),
+            new FsmPatch("Battle Gate Swamp", "BG Control", PatchFsm_GroalTheGreatCloseGate),
+            new FsmPatch("Battle Gate Swamp (1)", "BG Control", PatchFsm_GroalTheGreatCloseGate),
+            new FsmPatch("Battle Gate Swamp (2)", "BG Control", PatchFsm_GroalTheGreatCloseGate),
+            new FsmPatch("Battle Gate Swamp (3)", "BG Control", PatchFsm_GroalTheGreatCloseGate),
         }),
         new PatchedFsm("Song_Tower_01", new FsmPatch[]
         {
             new FsmPatch("door_cutsceneEndLaceTower", "Travel Control", PatchFsm_Lace2door_cutsceneEndLaceTower),
+            new FsmPatch("Lace Boss2 New", "Control", PatchFsm_Lace2BossControl),
+            new FsmPatch("Corpse Lace2(Clone)", "Control", PatchFsm_Lace2CorpseControl),
+            new FsmPatch("Lace Return Corpse", "Position", PatchFsm_Lace2ReturnCorpseDeactivate),
         }),
         new PatchedFsm("Coral_27", new FsmPatch[]
         {
             new FsmPatch("Coral Conch Driller Giant Solo", "Control", PatchFsm_RagingConchfly),
+            new FsmPatch("Corpse Coral Conch Driller Giant Solo(Clone)", "Death", PatchFsm_RagingConchflyCorpseControl),
         }),
         new PatchedFsm("Bone_East_08_Boss_Beastfly", new FsmPatch[]
         {
             new FsmPatch("Bone Flyer Giant", "Control", PatchFsm_SavageBeastfly2),
+            new FsmPatch("Corpse Giant Bone Flyer Quest(Clone)", "Death", PatchFsm_SavageBeastfly2CorpseControl),
         }),
         new PatchedFsm("Hang_17b", new FsmPatch[]
         {
             new FsmPatch("Song Knight", "Control", PatchFsm_SecondSentielControl),
+            new FsmPatch("Boss Scene - To Additive Load", "Control", PatchFsm_SecondSentielBossSceneControl),
+            new FsmPatch("Corpse Song Knight(Clone)", "Death", PatchFsm_SecondSentielCorpseControl),
         }),
         new PatchedFsm("Greymoor_08_Mapper", new FsmPatch[]
         {
@@ -258,7 +272,7 @@ public class PatchedFsm
         {
             new FsmPatch("Trobbio", "Control", PatchFsm_TrobbioControl),///////////////////////////
             new FsmPatch("Tormented Trobbio", "Control", PatchFsm_TormentedTrobbioControl),
-            new FsmPatch("Grand Stage Scene", "Control", PatchFsm_TormentedTrobbioGrandStageSceneControl),
+            new FsmPatch("Grand Stage Scene", "Control", PatchFsm_TrobbioGrandStageSceneControl),
         }),
         new PatchedFsm("Coral_29", new FsmPatch[]
         {
@@ -277,8 +291,8 @@ public class PatchedFsm
         new PatchedFsm("Room_CrowCourt_02", new FsmPatch[]
         {
             new FsmPatch("Crawfather", "Control", PatchFsm_CrawfatherControl),
-            new FsmPatch("Battle Scene", "Revisit", PatchFsm_CrawfatherBattleScene),
             new FsmPatch("Battle Start", "Battle Start", PatchFsm_CrawfatherBattleStart),
+            new FsmPatch("Corpse Crawfather(Clone)", "Death", PatchFsm_CrawfatherCorpseControl),
         }),
         new PatchedFsm("Memory_Coral_Tower", new FsmPatch[]
         {
@@ -1909,18 +1923,39 @@ public class PatchedFsm
         var intro = fsm.GetState("Intro");
         var brokenPause = fsm.GetState("Broken Pause");
         var flareUp = fsm.GetState("Flare Up");
+        var bodyBurn = fsm.GetState("Body Burn");
+        var coreLand = fsm.GetState("Core Land");
+        var coreSteam = fsm.GetState("Core Steam");
+        var coreExplode = fsm.GetState("Core Explode");
+        var award = fsm.GetState("Award");
         
 
-        ((Wait)(init.Actions[40])).time = 0.01f;
+        // ((Wait)(init.Actions[40])).time = 0.01f;
         ((Wait)(setHp.Actions[9])).time = 0f;
-        ((Wait)(intro.Actions[3])).time = 0f;
-        ((Wait)(intro.Actions[6])).time = 0f;
-        ((Wait)(intro.Actions[17])).time = 0f;
+        ((Wait)(intro.Actions[3])).time = 0.5f;
+        ((Wait)(intro.Actions[6])).time = 0.1f;
+        ((Wait)(intro.Actions[17])).time = 0.1f;
         ((Wait)(intro.Actions[20])).time = 0.1f;
-        ((Wait)(brokenPause.Actions[0])).time = 0.01f;
-        ((Wait)(brokenPause.Actions[3])).time = 0.01f;
+        // ((Wait)(brokenPause.Actions[0])).time = 0.01f;
+        // ((Wait)(brokenPause.Actions[3])).time = 0.01f;
         ((Wait)(flareUp.Actions[11])).time = 0.5f;
 
+        var customActionSendEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
+        init.Actions = RemoveFromArray(init.Actions, 40);
+        bodyBurn.Actions = RemoveFromArray(bodyBurn.Actions, 9);
+        coreLand.Actions = RemoveFromArray(coreLand.Actions, 3);
+        coreSteam.Actions = RemoveFromArray(coreSteam.Actions, 4);
+        coreExplode.Actions = RemoveFromArray(coreExplode.Actions, 13);
+
+        award.Actions = new FsmStateAction[]{customActionSendEvent};
+        award.Transitions = new FsmTransition[0];
+
+        SetTransitionToState(init, setHp, 1);
 
         return true;
     }
@@ -1996,9 +2031,32 @@ public class PatchedFsm
 
         return true;
     }
+    public static bool PatchFsm_FirstSinnerCorpseControl(Fsm fsm)
+    {
+        var stagger = fsm.GetState("Stagger");
+        var steam = fsm.GetState("Steam");
+        var blow = fsm.GetState("Blow");
+        var activateSpireNPC = fsm.GetState("Activate Spire NPC");
+
+        var customActionSendEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
+        SetTransitionToState(stagger, blow, 0);
+
+        blow.Actions = RemoveFromArray(blow.Actions, 6); // screen fader
+
+        activateSpireNPC.Actions = new FsmStateAction[]{customActionSendEvent};
+        activateSpireNPC.Transitions = new FsmTransition[0];
+
+        return true;
+    }
     public static bool PatchFsm_ForebrothersSignisAndGronBossScene(Fsm fsm)
     {
         var init = fsm.GetState("Init");
+        var battleReady = fsm.GetState("Battle Ready");
 
         var customAction = new CustomLogicFsm(fsm);
         customAction.action += (Fsm fsm) =>
@@ -2009,6 +2067,8 @@ public class PatchedFsm
 
         init.Actions = InsertInArray(init.Actions, customAction, init.Actions.Length - 1);
 
+        SetTransitionToState(init, battleReady, 1);
+
         return true;
     }
     public static bool PatchFsm_ForebrothersSignisAndGronSlasher(Fsm fsm)
@@ -2016,6 +2076,9 @@ public class PatchedFsm
         var init = fsm.GetState("Init");
         var startRangeCheck = fsm.GetState("Start Range Check");
         var roar = fsm.GetState("Roar");
+
+        var size = fsm.GameObject.transform.localScale;
+        fsm.GameObject.transform.localScale = new Vector3(1, size.y, size.z);
 
         var customAction = new CustomLogicFsm(fsm);
         customAction.action += (Fsm fsm) =>
@@ -2026,7 +2089,7 @@ public class PatchedFsm
             if(HeroController.instance.transform.position.x < gate2.transform.position.x)
             {
                 var pos = fsm.GameObject.transform.position;
-                fsm.GameObject.transform.position = new Vector3(41.5f, pos.y, pos.z);
+                fsm.GameObject.transform.position = new Vector3(39f, pos.y, pos.z);
 
                 var children = fsm.GameObject.transform;
                 foreach(Transform child in children)
@@ -2052,15 +2115,24 @@ public class PatchedFsm
     public static bool PatchFsm_ForebrothersSignisAndGronThrower(Fsm fsm)
     {
         var init = fsm.GetState("Init");
-        
+        var deathStagger = fsm.GetState("Death Stagger");
+        var deathFly = fsm.GetState("Death Fly");
+        var lavaBurst = fsm.GetState("Lava Burst");
 
-        
+        var customActionSendEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
+        deathFly.Actions = InsertInArray(deathFly.Actions, customActionSendEvent, 0);
+
+        lavaBurst.Actions = RemoveFromArray(lavaBurst.Actions, 2);
 
         return true;
     }
     public static bool PatchFsm_GarmondAndZaza(Fsm fsm)
     {
-        PlayerData.instance.garmondInLibrary = true;
         var init = fsm.GetState("Init");
         var roarAntic = fsm.GetState("Roar Antic");
         var autoTarget = fsm.GetState("Auto Target?");
@@ -2070,17 +2142,11 @@ public class PatchedFsm
         var enemyRoar = fsm.GetState("Enemy Roar");
         var setup1 = fsm.GetState("Setup 1");
         var setup2 = fsm.GetState("Setup 2");
+        var deathLand = fsm.GetState("Death Land");
 
-        ((Wait)(setup1.Actions[15])).time = 0.001f;
+        // ((Wait)(setup1.Actions[15])).time = 0.001f;
         ((Wait)(setup2.Actions[3])).time = 0.001f;
         ((Wait)(enemyRoar.Actions[3])).time = 0.1f;
-        
-        var customInit = new CustomLogicFsm(fsm);
-        customInit.action += (Fsm fsm) =>
-        {
-            var citadelLibraryNPC = ((FindNamedChild)init.Actions[13]).storeResult.Value;
-            citadelLibraryNPC.SetActive(false);
-        };
 
         var customAction = new CustomLogicFsm(fsm);
         customAction.action += (Fsm fsm) =>
@@ -2101,8 +2167,21 @@ public class PatchedFsm
             };
         };
 
+        var customActionSendEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
         citNPC.Actions = InsertInArray(citNPC.Actions, customAction, citNPC.Actions.Length - 1);
-        init.Actions = InsertInArray(init.Actions, customAction, init.Actions.Length - 1);
+
+        deathLand.Actions = InsertInArray(deathLand.Actions, customActionSendEvent, 0);
+
+        return true;
+    }
+    public static bool PatchFsm_GarmondAndZazaDestroyNPCComponent(Fsm fsm)
+    {
+        GameObject.Destroy(fsm.GameObject);
 
         return true;
     }
@@ -2133,18 +2212,105 @@ public class PatchedFsm
         var introShake = fsm.GetState("Intro Shake");
         var quickStart = fsm.GetState("Quick Start");
         
-        ((Wait)(waitForBeatEnd.Actions[2])).time = 0.002f;
-        ((SendEventByName)(waitForBeatEnd.Actions[1])).delay = 0.001f;
+        ((SendEventByName)(waitForBeatEnd.Actions[1])).delay = 0f;
         ((Wait)(readyWait.Actions[1])).time = 0.1f;
         ((Wait)(introShake.Actions[1])).time = 0.1f;
 
-        // var pos = fsm.GameObject.transform.position;
-        // fsm.GameObject.transform.position = new Vector3(pos.x + 3, pos.y, pos.z);
+        var customActionSpeedUpCocoonAnimation = new CustomLogicFsm(fsm);
+        customActionSpeedUpCocoonAnimation.action += (Fsm fsm) =>
+        {
+            var animatorGO = ((FindNamedChild)init.Actions[5]).storeResult.Value;
+            var animatorComponent = animatorGO.GetComponent<Animator>();
+            animatorComponent.speed = 10;
+            animatorGO.SetActive(false);
+        };
 
-        burstAnim.Actions = RemoveFromArray(burstAnim.Actions, 0);
-        burstAnim.Actions = RemoveFromArray(burstAnim.Actions, 0);
+        init.Actions = InsertInArray(init.Actions, customActionSpeedUpCocoonAnimation, init.Actions.Length);
 
+        waitForBeatEnd.Actions = RemoveFromArray(waitForBeatEnd.Actions, 2);
+        
         SetTransitionToState(waitForBeatEnd, quickStart, 0);
+
+        // readyWait.Actions = RemoveFromArray(readyWait.Actions, 2);
+        // readyWait.Actions = RemoveFromArray(readyWait.Actions, 1);
+        
+        return true;
+    }
+    public static bool PatchFsm_SilkBossDeathSequence(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var bindOrNeedolin = fsm.GetState("Bind Or Needolin");
+        var ready1 = fsm.GetState("Ready 1");
+        var ready2 = fsm.GetState("Ready 2");
+        var ready3 = fsm.GetState("Ready 3");
+        var ready4 = fsm.GetState("Ready 4");
+        var bind1 = fsm.GetState("Bind 1");
+        var bind2 = fsm.GetState("Bind 2");
+        var bind3 = fsm.GetState("Bind 3");
+        var bind4 = fsm.GetState("Bind 4");
+        var bindBurst1 = fsm.GetState("Bind Burst 1");
+        var bindBurst2 = fsm.GetState("Bind Burst 2");
+        var bindBurst3 = fsm.GetState("Bind Burst 3");
+        var bindBurst4 = fsm.GetState("Bind Burst 4");
+        var finalBind = fsm.GetState("Final Bind");
+        var toBind2 = fsm.GetState("To Bind 2");
+        var hornetAttach = fsm.GetState("Hornet Attach");
+        var preBindable = fsm.GetState("Pre Bindable");
+
+        // {
+        //     // ((IntCompare)bind1.Actions[5]).integer2 = 1;
+        //     // ((IntCompare)bind2.Actions[1]).integer2 = 3;
+        //     ((IntCompare)bind3.Actions[1]).integer2 = 3;
+        //     ((IntCompare)bind4.Actions[1]).integer2 = 5;
+        // }
+
+        ((Wait)hornetAttach.Actions[1]).time = 0f;
+
+        ((SendEventToRegister)bindBurst2.Actions[12]).eventName = "";
+        ((SendEventToRegister)bindBurst3.Actions[10]).eventName = "";
+        ((SendEventToRegister)bindBurst4.Actions[12]).eventName = "";
+
+        ((SendEventToRegister)bindBurst2.Actions[14]).eventName = "";
+        ((SendEventToRegister)finalBind.Actions[9]).eventName = "";
+
+        var customActionSendEventBind = new CustomLogicFsm(fsm);
+        customActionSendEventBind.action += (Fsm fsm) =>
+        {
+            fsm.FsmComponent.SendEvent("BIND");
+        };
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        customActionSendBossDeadEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
+        bindOrNeedolin.Actions = InsertInArray(bindOrNeedolin.Actions, customActionSendEventBind, 
+                                                bindOrNeedolin.Actions.Length);
+        ready2.Actions = InsertInArray(ready2.Actions, customActionSendEventBind, 
+                                        ready2.Actions.Length);
+        ready3.Actions = InsertInArray(ready3.Actions, customActionSendEventBind, 
+                                        ready3.Actions.Length);
+        ready4.Actions = InsertInArray(ready4.Actions, customActionSendEventBind, 
+                                        ready4.Actions.Length);
+        
+        finalBind.Actions = InsertInArray(finalBind.Actions, customActionSendBossDeadEvent, 0);
+
+        ///remove add silk
+        bindBurst1.Actions = RemoveFromArray(bindBurst1.Actions, 10);
+        bindBurst2.Actions = RemoveFromArray(bindBurst2.Actions, 11);
+        bindBurst3.Actions = RemoveFromArray(bindBurst3.Actions, 9);
+        bindBurst4.Actions = RemoveFromArray(bindBurst4.Actions, 11);
+        
+        //remove waits
+        preBindable.Actions = RemoveFromArray(preBindable.Actions, 1);
+        bindBurst1.Actions = RemoveFromArray(bindBurst1.Actions, 5);
+        bindBurst2.Actions = RemoveFromArray(bindBurst2.Actions, 6);
+        bindBurst3.Actions = RemoveFromArray(bindBurst3.Actions, 5);
+        bindBurst4.Actions = RemoveFromArray(bindBurst4.Actions, 7);
+
+        toBind2.Actions = RemoveFromArray(toBind2.Actions, 10); //remove set UnlockSilkFinalCutscene = true
+
+        finalBind.Transitions = new FsmTransition[0];
         
         return true;
     }
@@ -2177,14 +2343,24 @@ public class PatchedFsm
         var idle = fsm.GetState("Idle");
         var hornetVoice = fsm.GetState("Hornet Voice");
         var inRegion = fsm.GetState("In Region");
+        var straightBack = fsm.GetState("Straight Back?");
 
-        var customAction = new CustomLogicFsm(fsm);
-        customAction.action += (Fsm fsm) =>
+        idle.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent("START CHALLENGE MOD"),
+                ToFsmState = inRegion
+            }
+        };
+
+        var customActionSendEvent = new CustomLogicFsm(fsm);
+        customActionSendEvent.action += (Fsm fsm) =>
         {
             fsm.FsmComponent.SendEvent("SPECIAL CHALLENGE");
         };
 
-        inRegion.Actions = InsertInArray(inRegion.Actions, customAction, inRegion.Actions.Length - 1);
+        inRegion.Actions[1] = customActionSendEvent;
 
         return true;
     }
@@ -2195,55 +2371,144 @@ public class PatchedFsm
         var entryAntic = fsm.GetState("Entry Antic");
         var entryRoar = fsm.GetState("Entry Roar");
         var dormant = fsm.GetState("Dormant");
+        var deathHit = fsm.GetState("Death Hit");
+        var vomitHornet = fsm.GetState("Vomit Hornet");
+        var blow = fsm.GetState("Blow");
         
         ((Wait)(entryRoar.Actions[2])).time = 0.1f;
         ((Wait)(entryAntic.Actions[1])).time = 0.01f;
 
-        var customAction = new CustomLogicFsm(fsm);
-        customAction.action += (Fsm fsm) =>
+        var customActionCreateTriggerAndSetupBattleScene = new CustomLogicFsm(fsm);
+        customActionCreateTriggerAndSetupBattleScene.action += (Fsm fsm) =>
         {
-            if(PlayerData.instance.DefeatedSwampShaman) return;
             var battleScene = ((GetGrandparent)init.Actions[5]).storeResult.Value;
             var battleSceneComponent = battleScene.GetComponent<BattleScene>();
             var collider = battleScene.GetComponent<BoxCollider2D>();
 
-            battleSceneComponent.battleStartPause = 0f;
+            battleSceneComponent.battleStartPause = 0.25f;
             battleSceneComponent.waves.RemoveRange(0, 5);
 
             collider.size = new Vector2(29.5f, collider.size.y);
+
+
+            var pos = fsm.GameObject.transform.position;
+
+            var customTrigger = CreateTrigger("Shadow_18");
+            var triggerPos = customTrigger.transform.position;
+            customTrigger.transform.position = new Vector3(55.8f, 10.8f, 0);
+
+            var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
+            triggerComponent.fsm = fsm;
+
+            triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
+            {
+                var battleScene = fsm.GameObject.transform.parent.parent.gameObject;
+                var battleSceneComponent = battleScene.GetComponent<BattleScene>();
+                battleSceneComponent.StartBattle();
+            };
         };
 
-        init.Actions = InsertInArray(init.Actions, customAction, init.Actions.Length - 1);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        customActionSendBossDeadEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
+        init.Actions = InsertInArray(init.Actions, customActionCreateTriggerAndSetupBattleScene, 
+            init.Actions.Length - 1);
+        
+        blow.Actions = InsertInArray(blow.Actions, customActionSendBossDeadEvent, 0);
 
         SetTransitionToState(dormant, entryAntic, 0);
+        SetTransitionToState(deathHit, vomitHornet, 0);
+
+        blow.Transitions = new FsmTransition[0];
+
+        return true;
+    }
+    public static bool PatchFsm_GroalTheGreatCloseGate(Fsm fsm)
+    {
+        var pause = fsm.GetState("Pause");
+        var close1 = fsm.GetState("Close 1");
+        
+        SetTransitionToState(pause, close1, 0);
+
         return true;
     }
     public static bool PatchFsm_Lace2door_cutsceneEndLaceTower(Fsm fsm)
     {
-        PlayerData.instance.encounteredLaceTower = false;
+        fsm.GameObject.SetActive(false);
+        // var init = fsm.GetState("Init");
+        // var liftArrive = fsm.GetState("Lift Arrive?");
+        // var liftAlreadyHere = fsm.GetState("Lift Already Here");
+        // var setHeroPos = fsm.GetState("Set Hero Pos");
+        // var startCinematic = fsm.GetState("Start Cinematic");
+        // var doorEntry = fsm.GetState("Door Entry");
+
+        // startCinematic.Actions = RemoveFromArray(startCinematic.Actions, 0);
+
+        // var customAction = new CustomLogicFsm(fsm);
+        // customAction.action += (Fsm fsm) =>
+        // {
+        //     fsm.FsmComponent.SendEvent("CINEMATIC END");
+        // };
+
+        // startCinematic.Actions = InsertInArray(startCinematic.Actions, customAction, startCinematic.Actions.Length);
+
+
+        return true;
+    }
+    public static bool PatchFsm_Lace2BossControl(Fsm fsm)
+    {
         var init = fsm.GetState("Init");
-        var liftArrive = fsm.GetState("Lift Arrive?");
-        var liftAlreadyHere = fsm.GetState("Lift Already Here");
-        var setHeroPos = fsm.GetState("Set Hero Pos");
-        var startCinematic = fsm.GetState("Start Cinematic");
-        var doorEntry = fsm.GetState("Door Entry");
+        var startBattleWait = fsm.GetState("Start Battle Wait");
+        var startBattle = fsm.GetState("Start Battle");
 
-        startCinematic.Actions = RemoveFromArray(startCinematic.Actions, 0);
-
-        var customAction = new CustomLogicFsm(fsm);
-        customAction.action += (Fsm fsm) =>
+        startBattleWait.Transitions = new FsmTransition[]
         {
-            fsm.FsmComponent.SendEvent("CINEMATIC END");
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent(TransitionPointInfo.eventName),
+                ToFsmState = startBattle
+            }
         };
 
-        startCinematic.Actions = InsertInArray(startCinematic.Actions, customAction, startCinematic.Actions.Length);
+        SetTransitionToState(init, startBattleWait, 1);
 
+        return true;
+    }
+    public static bool PatchFsm_Lace2CorpseControl(Fsm fsm)
+    {
+        var stagger = fsm.GetState("Stagger");
+        var steam = fsm.GetState("Steam");
+        var blow = fsm.GetState("Blow");
+        var setTalkPos = fsm.GetState("Set Talk Pos");
+        var land = fsm.GetState("Land");
+
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        customActionSendBossDeadEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
+        SetTransitionToState(stagger, blow, 0);
+
+        land.Actions = InsertInArray(land.Actions, customActionSendBossDeadEvent, 0);
+
+        land.Transitions = new FsmTransition[0];
+
+        return true;
+    }
+    public static bool PatchFsm_Lace2ReturnCorpseDeactivate(Fsm fsm)
+    {
+        fsm.GameObject.SetActive(false);
 
         return true;
     }
     public static bool PatchFsm_RagingConchfly(Fsm fsm)
     {
         var init = fsm.GetState("Init");
+        var dormant = fsm.GetState("Dormant");
         var startPause = fsm.GetState("Start Pause");
         var introL = fsm.GetState("Intro L");
         var intro2 = fsm.GetState("Intro 2");
@@ -2255,16 +2520,66 @@ public class PatchedFsm
         ((AnimatePositionBy)(introL.Actions[9])).time = 0.01f;
         ((Wait)(roar.Actions[1])).time = 0.1f;
 
+        var customActionCreateTriggerAndSetupBattleScene = new CustomLogicFsm(fsm);
+        customActionCreateTriggerAndSetupBattleScene.action += (Fsm fsm) =>
+        {
+            var battleScene = fsm.GameObject.transform.parent.parent.gameObject;
+            var battleSceneComponent = battleScene.GetComponent<BattleScene>();
+            var collider = battleScene.GetComponent<BoxCollider2D>();
+
+            battleSceneComponent.battleStartPause = 0f;
+
+
+            var customTrigger = CreateTrigger("Coral_27");
+            var triggerPos = customTrigger.transform.position;
+            customTrigger.transform.position = new Vector3(18.09f, 39f, 0);
+
+            var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
+            triggerComponent.fsm = fsm;
+
+            triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
+            {
+                battleSceneComponent.StartBattle();
+            };
+        };
+
+        dormant.Actions = InsertInArray(dormant.Actions, customActionCreateTriggerAndSetupBattleScene, dormant.Actions.Length);
+
+        init.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent(TransitionPointInfo.eventName),
+                ToFsmState = dormant
+            }
+        };
+
         var pos = fsm.GameObject.transform.position;
         fsm.GameObject.transform.position = new Vector3(pos.x + 3, pos.y, pos.z);
 
         return true;
     }
+    public static bool PatchFsm_RagingConchflyCorpseControl(Fsm fsm)
+    {
+        var stagger = fsm.GetState("Stagger");
+        var steam = fsm.GetState("Steam");
+        var blow = fsm.GetState("Blow");
+        var land = fsm.GetState("Land");
+
+        var customActionSendEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
+        SetTransitionToState(stagger, blow, 0);
+
+        land.Actions = InsertInArray(land.Actions, customActionSendEvent, 0);
+
+        return true;
+    }
     public static bool PatchFsm_SavageBeastfly2(Fsm fsm)
     {
-        PlayerData.instance.defeatedBoneFlyerGiant = true;
-        PlayerData.instance.visitedEnclave = true;
-
         var go = fsm.GameObject;
         var children = go.transform;
         foreach(Transform child in children)
@@ -2289,16 +2604,75 @@ public class PatchedFsm
 
         return true;
     }
+    public static bool PatchFsm_SavageBeastfly2CorpseControl(Fsm fsm)
+    {
+        var stagger = fsm.GetState("Stagger");
+        var steam = fsm.GetState("Steam");
+        var blow = fsm.GetState("Blow");
+
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim);
+        customActionSendBossDeadEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
+        blow.Actions = InsertInArray(blow.Actions, customActionSendBossDeadEvent, blow.Actions.Length);
+
+        // SetTransitionToState(stagger, blow, 0);
+
+        return true;
+    }
     public static bool PatchFsm_SecondSentielControl(Fsm fsm)
     {
-        PlayerData.instance.encounteredSongChevalierBoss = true;
-
         var init = fsm.GetState("Init");
+        var encountered = fsm.GetState("Encountered");
         var encWake = fsm.GetState("Enc Wake");
         var becomeActive = fsm.GetState("Become Active");
 
         ((Wait)(encWake.Actions[3])).time = 0f;
         ((Wait)(becomeActive.Actions[2])).time = 0.01f;
+
+        SetTransitionToState(init, encountered, 1);
+        SetTransitionToState(init, encountered, 2);
+
+        return true;
+    }
+    public static bool PatchFsm_SecondSentielBossSceneControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var idle = fsm.GetState("Idle");
+        var arenaStart = fsm.GetState("Arena Start");
+        var skipArena = fsm.GetState("Skip Arena");
+
+        idle.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent(TransitionPointInfo.eventName),
+                ToFsmState = skipArena
+            }
+        };
+
+        return true;
+    }
+    public static bool PatchFsm_SecondSentielCorpseControl(Fsm fsm)
+    {
+        var deathHit = fsm.GetState("Death Hit");
+        var steam = fsm.GetState("Steam");
+        var blow = fsm.GetState("Blow");
+        var land = fsm.GetState("Land");
+
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        customActionSendBossDeadEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
+        land.Actions = InsertInArray(land.Actions, customActionSendBossDeadEvent, land.Actions.Length);
+
+        SetTransitionToState(deathHit, blow, 0);
+
+        land.Transitions = new FsmTransition[0];
 
         return true;
     }
@@ -2315,6 +2689,10 @@ public class PatchedFsm
         var battleCry1 = fsm.GetState("Battle Cry 1");
         var setFightingHero = fsm.GetState("Set Fighting Hero");
         var endBattle = fsm.GetState("End Battle");
+        var defeatStart = fsm.GetState("Defeat Start");
+        var defeatLand = fsm.GetState("Defeat Land");
+        var defeatShout1 = fsm.GetState("Defeat Shout 1");
+        var defeatShout2 = fsm.GetState("Defeat Shout 2");
 
         var customActionEndState = new CustomLogicFsm(fsm);
         customActionEndState.action += (Fsm fsm) =>
@@ -2340,7 +2718,18 @@ public class PatchedFsm
             };
         };
 
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        customActionSendBossDeadEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
+        // defeatStart.Actions = RemoveFromArray(defeatStart.Actions, 26);
+        defeatLand.Actions = RemoveFromArray(defeatLand.Actions, 5);
+        defeatShout2.Actions = RemoveFromArray(defeatShout2.Actions, 3);
+
         mapperEnter.Actions = InsertInArray(mapperEnter.Actions, customActionEndState, 1);
+        defeatLand.Actions = InsertInArray(defeatLand.Actions, customActionSendBossDeadEvent, 0);
         startAway.Actions = InsertInArray(startAway.Actions, customActionCreateTrigger, startAway.Actions.Length);
 
         ((Wait)(init.Actions[38])).time = 0f;
@@ -2352,6 +2741,17 @@ public class PatchedFsm
         SetTransitionToState(reset, setFightingHero, 0);
         // SetTransitionToState(endBattle, startAwayPause, 0);
         SetTransitionToState(battleCryStart, battleCry1, 1);
+
+        startAwayPause.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent(TransitionPointInfo.eventName),
+                ToFsmState = startAway
+            }
+        };
+
+        defeatShout2.Transitions = new FsmTransition[0];
 
         endBattle.Actions = new FsmStateAction[0];
         endBattle.Transitions = new FsmTransition[0];
@@ -2378,6 +2778,7 @@ public class PatchedFsm
         var headpieceAntic = fsm.GetState("Headpiece Antic");
         var headpiecePause = fsm.GetState("Headpiece Pause");
         var headpieceSuck = fsm.GetState("Headpiece Suck");
+        var deathExplode = fsm.GetState("Death Explode");
 
         ((Wait)arenaStart.Actions[4]).time = 0f;
         ((Wait)encounteredStart.Actions[1]).time = 0f;
@@ -2394,6 +2795,8 @@ public class PatchedFsm
         SetTransitionToState(arenaStart, encounteredStart, 0);
         SetTransitionToState(encounteredStart, p3Shake, 0);
 
+        deathExplode.Transitions = new FsmTransition[0];
+
         return true;
     }
     public static bool PatchFsm_TheUnravelledControl(Fsm fsm)
@@ -2401,9 +2804,21 @@ public class PatchedFsm
         var init = fsm.GetState("Init");
         var introRoar = fsm.GetState("Intro Roar");
         var teleAnticIntro = fsm.GetState("Tele Antic Intro");
+        var die = fsm.GetState("Die");
+        var deathBlow = fsm.GetState("Death Blow");
 
         ((Wait)introRoar.Actions[2]).time = 0.1f;
         ((Wait)teleAnticIntro.Actions[3]).time = 0f;
+
+        SetTransitionToState(die, deathBlow, 0);
+
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        customActionSendBossDeadEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
+        deathBlow.Actions = InsertInArray(deathBlow.Actions, customActionSendBossDeadEvent, 0);
 
         return true;
     }
@@ -2416,53 +2831,170 @@ public class PatchedFsm
         var quickEntrance1 = fsm.GetState("Quick Entrance 1");
         var quickEntrance2 = fsm.GetState("Quick Entrance 2");
         var quickEntrance3 = fsm.GetState("Quick Entrance 3");
+        var stopStream = fsm.GetState("Stop Stream");
+        var deathAir = fsm.GetState("Death Air");
+        var deathPose = fsm.GetState("Death Pose");
+        var finalPose1 = fsm.GetState("Final Pose 1");
+        var finalPose2 = fsm.GetState("Final Pose 2");
+        var finalFireworks = fsm.GetState("Final Fireworks");
+        var collapse = fsm.GetState("Collapse");
 
         ((Wait)quickEntrance1.Actions[0]).time = 0f;
         ((Wait)quickEntrance2.Actions[3]).time = 0.1f;
         ((Wait)quickEntrance3.Actions[2]).time = 0.1f;
+        ((Wait)finalFireworks.Actions[1]).time = 0.5f;
+
+        var customActionSendEvent = new CustomLogicFsm(fsm);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            fsm.FsmComponent.SendEvent("END");
+        };
+
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        customActionSendBossDeadEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
 
         SetTransitionToState(state, waitRefight, 0);
         SetTransitionToState(startPause, quickEntrance1, 0);
+        SetTransitionToState(deathPose, finalPose1, 0);
+
+        deathPose.Actions = InsertInArray(deathPose.Actions, customActionSendEvent, deathPose.Actions.Length);
+        
+        collapse.Actions = InsertInArray(collapse.Actions, customActionSendBossDeadEvent, 0);
 
         startPause.Actions = RemoveFromArray(startPause.Actions, 0);
+        finalPose1.Actions = RemoveFromArray(finalPose1.Actions, 8);
+        finalPose2.Actions = RemoveFromArray(finalPose2.Actions, 1);
+
+        collapse.Transitions = new FsmTransition[0];
+
+        waitRefight.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent(TransitionPointInfo.eventName),
+                ToFsmState = startPause
+            }
+        };
+
+        return true;
+    }
+    public static bool PatchFsm_TrobbioGrandStageSceneControl(Fsm fsm)
+    {
+        var act2 = fsm.GetState("Act 2");
+        var act3 = fsm.GetState("Act 3");
+        var trobbioReady = fsm.GetState("Trobbio Ready");
+        var trobbioReady2 = fsm.GetState("Trobbio Ready 2");
+
+        SetTransitionToState(act2, trobbioReady, 1);
+        SetTransitionToState(act3, trobbioReady2, 1);
+        SetTransitionToState(act3, trobbioReady2, 2);
+
+        trobbioReady2.Transitions = new FsmTransition[0];
 
         return true;
     }
     public static bool PatchFsm_VoltvyrmControl(Fsm fsm)
     {
         var init = fsm.GetState("Init");
+        var dormant = fsm.GetState("Dormant");
         var introPause = fsm.GetState("Intro Pause");
         var introAntic = fsm.GetState("Intro Antic");
         var roar = fsm.GetState("Roar");
+        var deathHit = fsm.GetState("Death Hit");
+        var blow = fsm.GetState("Blow");
 
         ((Wait)introPause.Actions[0]).time = 0f;
         ((Wait)introAntic.Actions[1]).time = 0f;
         ((Wait)roar.Actions[13]).time = 0.1f;
+
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        customActionSendBossDeadEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
+        SetTransitionToState(deathHit, blow, 0);
+
+        blow.Actions = InsertInArray(blow.Actions, customActionSendBossDeadEvent, 0);
+
+        blow.Transitions = new FsmTransition[0];
+
+        dormant.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent(TransitionPointInfo.eventName),
+                ToFsmState = introPause
+            }
+        };
 
         return true;
     }
     public static bool PatchFsm_BellEaterControl(Fsm fsm)
     {
         var init = fsm.GetState("Init");
+        var dormant = fsm.GetState("Dormant");
+        var setHp = fsm.GetState("Set HP");
         var bodyRUp = fsm.GetState("Body R Up");
         var introCam = fsm.GetState("Intro Cam");
         var bodyLDown = fsm.GetState("Body L Down");
         var introRoar = fsm.GetState("Intro Roar");
+        var deathPause = fsm.GetState("Death Pause");
+        var deathHeadAntic = fsm.GetState("Death Head Antic");
+        var deathHeadRoar = fsm.GetState("Death Head Roar");
+        var bellbeastJumpsIn = fsm.GetState("Bellbeast Jumps In");
+        var bellBeastConnect = fsm.GetState("Bell Beast Connect");
+        var yankWallL = fsm.GetState("Yank Wall L");
+        var shakeSequence = fsm.GetState("Shake Sequence");
+        var spitHeadOut = fsm.GetState("Spit Head Out");
 
         ((Wait)bodyRUp.Actions[11]).time = 0.01f;
         ((Wait)introCam.Actions[0]).time = 0.01f;
         ((Wait)bodyLDown.Actions[6]).time = 0.01f;
         ((Wait)introRoar.Actions[3]).time = 0.1f;
+        ((Wait)introRoar.Actions[3]).time = 0.1f;
+        ((Wait)deathPause.Actions[0]).time = 0f;
+        ((Wait)deathHeadAntic.Actions[5]).time = 0f;
+        ((Wait)deathHeadRoar.Actions[1]).time = 0.1f;
+        ((Wait)bellbeastJumpsIn.Actions[8]).time = 0.5f;
+        ((Wait)bellBeastConnect.Actions[9]).time = 0.1f;
+        ((Wait)yankWallL.Actions[1]).time = 0.1f;
 
-        var customActionReplaceStartRage = new CustomLogicFsm(fsm);
-        customActionReplaceStartRage.action += (Fsm fsm) =>
+        // var customActionReplaceStartRage = new CustomLogicFsm(fsm);
+        // customActionReplaceStartRage.action += (Fsm fsm) =>
+        // {
+        //     var startRange = ((FindNamedChild)init.Actions[8]).storeResult.Value;
+        //     var pos = startRange.transform.position;
+        //     startRange.transform.position = new Vector3(pos.x - 10f, pos.y, pos.z);
+        // };
+
+        // init.Actions = InsertInArray(init.Actions, customActionReplaceStartRage, init.Actions.Length - 1);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
-            var startRange = ((FindNamedChild)init.Actions[8]).storeResult.Value;
-            var pos = startRange.transform.position;
-            startRange.transform.position = new Vector3(pos.x - 10f, pos.y, pos.z);
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
         };
 
-        init.Actions = InsertInArray(init.Actions, customActionReplaceStartRage, init.Actions.Length - 1);
+        spitHeadOut.Actions = InsertInArray(spitHeadOut.Actions, customActionSendBossDeadEvent, 0);
+
+        shakeSequence.Actions = RemoveFromArray(shakeSequence.Actions, 33);
+        shakeSequence.Actions = RemoveFromArray(shakeSequence.Actions, 23);
+        shakeSequence.Actions = RemoveFromArray(shakeSequence.Actions, 13);
+        shakeSequence.Actions = RemoveFromArray(shakeSequence.Actions, 3);
+
+        dormant.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent(TransitionPointInfo.eventName),
+                ToFsmState = setHp
+            }
+        };
+
+        spitHeadOut.Transitions = new FsmTransition[0];
 
         return true;
     }
@@ -2532,37 +3064,73 @@ public class PatchedFsm
 
         return true;
     }
-    public static bool PatchFsm_CrawfatherBattleScene(Fsm fsm)
-    {
-        var init = fsm.GetState("Init");
-        
-        var battleSceneObj = fsm.GameObject;
-        var battleSceneComponent = battleSceneObj.GetComponent<BattleScene>();
-
-        var waves = battleSceneComponent.waves;
-        var wave6 = waves[waves.Count - 1];
-
-        battleSceneComponent.waves = new List<BattleWave>{waves[waves.Count - 1]};
-        wave6.startDelay = 0f;
-
-        return true;
-    }
     public static bool PatchFsm_CrawfatherBattleStart(Fsm fsm)
     {
         var init = fsm.GetState("Init");
+        var idle = fsm.GetState("Idle");
         var enter = fsm.GetState("Enter");
         var startWipeAudio = fsm.GetState("Start Wipe Audio");
         var lightsUp = fsm.GetState("Lights Up");
         var crowdRoar = fsm.GetState("Crowd Roar");
         var crowdIdle = fsm.GetState("Crowd Idle");
 
-        ((Wait)enter.Actions[3]).time = 0.01f;
-        ((Wait)startWipeAudio.Actions[1]).time = 0.01f;
+        ((Wait)enter.Actions[3]).time = 0f;
+        ((Wait)startWipeAudio.Actions[1]).time = 0f;
+        ((SendEventToRegisterDelay)lightsUp.Actions[8]).delay = 0f;
         ((EaseSpriteColor)lightsUp.Actions[2]).time = 0.001f;
         ((EaseFloat)lightsUp.Actions[4]).time = 0.001f;
         ((Wait)lightsUp.Actions[6]).time = 0.01f;
         ((Wait)crowdRoar.Actions[4]).time = 0f;
         ((Wait)crowdIdle.Actions[1]).time = 0.05f;
+
+        var customActionSetupBattle = new CustomLogicFsm(fsm);
+        customActionSetupBattle.action += (Fsm fsm) =>
+        {
+            var battleSceneComponent = fsm.GameObject.transform.parent.gameObject.GetComponent<BattleScene>();
+            battleSceneComponent.battleStartPause = 0.25f;
+            var waves = battleSceneComponent.waves;
+            var wave6 = waves[waves.Count - 1];
+
+            battleSceneComponent.waves = new List<BattleWave>{waves[waves.Count - 1]};
+            wave6.startDelay = 0f;
+            fsm.FsmComponent.SendEvent("ENTER");
+        };
+
+        idle.Actions = InsertInArray(idle.Actions, customActionSetupBattle, 0);
+
+        // init.Transitions = new FsmTransition[]
+        // {
+        //     new FsmTransition
+        //     {
+        //         FsmEvent = FsmEvent.GetFsmEvent(TransitionPointInfo.eventName),
+        //         ToFsmState = idle
+        //     }
+        // };
+
+        SetTransitionToState(idle, enter, 1);
+
+        lightsUp.Actions = RemoveFromArray(lightsUp.Actions, 8);
+        lightsUp.Actions = RemoveFromArray(lightsUp.Actions, 7);
+        crowdIdle.Actions = RemoveFromArray(crowdIdle.Actions, 1);
+
+        return true;
+    }
+    public static bool PatchFsm_CrawfatherCorpseControl(Fsm fsm)
+    {
+        var stagger = fsm.GetState("Stagger");
+        var steam = fsm.GetState("Steam");
+        var blow = fsm.GetState("Blow");
+        var land = fsm.GetState("Land");
+
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        customActionSendBossDeadEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
+        land.Actions = InsertInArray(land.Actions, customActionSendBossDeadEvent, 0);
+
+        SetTransitionToState(stagger, blow, 0);
 
         return true;
     }
@@ -2969,18 +3537,6 @@ public class PatchedFsm
         riseEnd.Actions = RemoveFromArray(riseEnd.Actions, 3);
 
         SetTransitionToState(state, startPause, 0);
-
-        return true;
-    }
-    public static bool PatchFsm_TormentedTrobbioGrandStageSceneControl(Fsm fsm)
-    {
-        var act3 = fsm.GetState("Act 3");
-        var trobbioReady2 = fsm.GetState("Trobbio Ready 2");
-        var spawnTormentedItem = fsm.GetState("Spawn Tormented Item");
-        var endBattle = fsm.GetState("End Battle");
-        
-        SetTransitionToState(act3, trobbioReady2, 2);
-        SetTransitionToState(trobbioReady2, endBattle, 0);
 
         return true;
     }

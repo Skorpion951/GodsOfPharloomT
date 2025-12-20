@@ -94,6 +94,7 @@ public class CustomScene
         {
             if(item.forceMemoryZone) GameManager.instance.ForceCurrentSceneIsMemory(true);
             if(item.noInputOnStart) HeroController.instance.hero_state = GlobalEnums.ActorStates.no_input;
+            if(item.doSendEventAfterTransition) PlayMakerFSM.BroadcastEvent(TransitionPointInfo.eventName);
             item.afterTransition?.Invoke();
         };
 

@@ -320,14 +320,14 @@ namespace Gods_Of_Pharloom
             customScenes.Add(Dust_Chef);
 
             var Belltown_08 = new CustomScene("Belltown_08");
-            Belltown_08.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(56.11f, 11.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            Belltown_08.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(53.11f, 11.57f, 0), "", "", isADoor: true, 
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Belltown_08.isSkongScene = true;
             Belltown_08.AfterSceneActivated += () => {Belltown_08.isSceneActive = true;};
             customScenes.Add(Belltown_08);
 
             var Slab_10b = new CustomScene("Slab_10b");
-            Slab_10b.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(38.34f, 9.57f, 0), "", "", isADoor: true, 
+            Slab_10b.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(41f, 9.57f, 0), "", "", isADoor: true, 
             isOneTimeTransition: true, dontWalkOutOfDoor : true));
             Slab_10b.isSkongScene = true;
             Slab_10b.AfterSceneActivated += () => {Slab_10b.isSceneActive = true;};
@@ -335,7 +335,7 @@ namespace Gods_Of_Pharloom
 
             var Dock_09 = new CustomScene("Dock_09");
             Dock_09.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(24.766f, 7.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Dock_09.isSkongScene = true;
             Dock_09.AfterSceneActivated += () => {Dock_09.isSceneActive = true;};
             customScenes.Add(Dock_09);
@@ -349,56 +349,59 @@ namespace Gods_Of_Pharloom
 
             var Cradle_03 = new CustomScene("Cradle_03");
             Cradle_03.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(39.7f, 133.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false, afterTransition: () =>
+            {
+                PlayMakerFSM.BroadcastEvent("START CHALLENGE MOD");
+            }));
             Cradle_03.isSkongScene = true;
             Cradle_03.AfterSceneActivated += () => {Cradle_03.isSceneActive = true;};
             customScenes.Add(Cradle_03);
 
             var Shadow_18 = new CustomScene("Shadow_18");
             Shadow_18.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(56.5236f, 11.443f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Shadow_18.isSkongScene = true;
             Shadow_18.AfterSceneActivated += () => {Shadow_18.isSceneActive = true;};
             customScenes.Add(Shadow_18);
 
             var Song_Tower_01 = new CustomScene("Song_Tower_01");
-            Song_Tower_01.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(50f, 100.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            Song_Tower_01.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(49.27f, 100.01f, 0), "", "", isADoor: true, 
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Song_Tower_01.isSkongScene = true;
             Song_Tower_01.AfterSceneActivated += () => {Song_Tower_01.isSceneActive = true;};
             customScenes.Add(Song_Tower_01);
 
             var Coral_27 = new CustomScene("Coral_27");
             Coral_27.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(12f, 33.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Coral_27.isSkongScene = true;
             Coral_27.AfterSceneActivated += () => {Coral_27.isSceneActive = true;};
             customScenes.Add(Coral_27);
 
             var Hang_17b = new CustomScene("Hang_17b");
             Hang_17b.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(36.4f, 4.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Hang_17b.isSkongScene = true;
             Hang_17b.AfterSceneActivated += () => {Hang_17b.isSceneActive = true;};
             customScenes.Add(Hang_17b);
 
             var Ward_02 = new CustomScene("Ward_02");
-            Ward_02.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(54.1f, 6.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            Ward_02.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(51.26f, 6.57f, 0), "", "", isADoor: true, 
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Ward_02.isSkongScene = true;
             Ward_02.AfterSceneActivated += () => {Ward_02.isSceneActive = true;};
             customScenes.Add(Ward_02);
 
             var Library_13 = new CustomScene("Library_13");
             Library_13.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(69.5f, 14.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Library_13.isSkongScene = true;
             Library_13.AfterSceneActivated += () => {Library_13.isSceneActive = true;};
             customScenes.Add(Library_13);
 
             var Coral_29 = new CustomScene("Coral_29");
             Coral_29.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(172.76f, 24.573f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Coral_29.isSkongScene = true;
             Coral_29.AfterSceneActivated += () => {Coral_29.isSceneActive = true;};
             customScenes.Add(Coral_29);
@@ -426,9 +429,20 @@ namespace Gods_Of_Pharloom
 
             var Memory_Coral_Tower = new CustomScene("Memory_Coral_Tower");
             Memory_Coral_Tower.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(54.93f, 550.7f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, afterTransition: () =>
+            {
+                GameObject.Find("Temp plat").SetActive(false);
+            }));
             Memory_Coral_Tower.isSkongScene = true;
-            Memory_Coral_Tower.AfterSceneActivated += () => {Memory_Coral_Tower.isSceneActive = true;};
+            Memory_Coral_Tower.AfterSceneActivated += () => {
+                var go = new GameObject("Temp plat");
+                SceneManager.MoveGameObjectToScene(go, SceneManager.GetSceneByName("Memory_Coral_Tower"));
+                go.AddComponent<BoxCollider2D>();
+                go.layer = 8;
+                go.transform.position = new Vector3(54.93f, 547.7f, 0);
+
+                Memory_Coral_Tower.isSceneActive = true;
+                };
             customScenes.Add(Memory_Coral_Tower);
 
             var Bone_East_18b = new CustomScene("Bone_East_18b");

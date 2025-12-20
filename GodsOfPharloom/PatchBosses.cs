@@ -59,8 +59,6 @@ namespace Gods_Of_Pharloom
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Savage Beastfly in Far Fields"] && __instance.gameObject.name.Contains("Boss Beastfly Loader"))
             {
-                PlayerData.instance.defeatedBoneFlyerGiantGolemScene = false;
-
                 FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo tests = __instance.GetType().GetField("tests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -169,7 +167,14 @@ namespace Gods_Of_Pharloom
                 var children = __instance.gameObject.transform;
                 children.GetChild(0).gameObject.SetActive(false);
                 children.GetChild(1).gameObject.SetActive(true);
-                GodsOfPharloomMod.Log.LogInfo("KLSJDFKLJLSKFJLKSDJFLKSDJFKL");
+                Destroy(__instance);
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Savage Beastfly in Far Fields"] && 
+            __instance.gameObject.name == "Beastfly States")
+            {
+                var children = __instance.gameObject.transform;
+                children.GetChild(0).gameObject.SetActive(true);
+                children.GetChild(1).gameObject.SetActive(false);
                 Destroy(__instance);
             }
             return true;
@@ -239,6 +244,42 @@ namespace Gods_Of_Pharloom
                 Destroy(__instance);
                 return false;
             }
+            if(BossSequence.currentBoss == BossInfo.bosses["First Sinner"] &&
+                __instance.gameObject.name == "Boss Scene")
+            {
+                Destroy(__instance);
+                return false;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Lace in the Cradle"] &&
+                __instance.gameObject.name == "Lace Return Corpse")
+            {
+                Destroy(__instance);
+                return false;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Second Sentiel"] &&
+                __instance.gameObject.name == "Boss Scene - To Additive Load")
+            {
+                Destroy(__instance);
+                return false;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["The Unravelled"] &&
+                __instance.gameObject.name == "Boss Scene")
+            {
+                Destroy(__instance);
+                return false;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Voltvyrm"] &&
+                __instance.gameObject.name == "boss_eggshell")
+            {
+                Destroy(__instance);
+                return false;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Voltvyrm"] &&
+                __instance.gameObject.name == "Zap Core Enemy")
+            {
+                Destroy(__instance);
+                return false;
+            }
             return true;
         }
         [HarmonyPrefix]
@@ -250,6 +291,10 @@ namespace Gods_Of_Pharloom
                 return false;
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Skull Tyrant"] && __instance.gameObject.name == "Corpse"){
+                __instance.gameObject.SetActive(false);
+                return false;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Raging Conchfly"] &&__instance.gameObject.name == "Boss Corpse Scene"){
                 __instance.gameObject.SetActive(false);
                 return false;
             }
@@ -281,13 +326,30 @@ namespace Gods_Of_Pharloom
                 Destroy(__instance);
                 return false;
             }
+            if(BossSequence.currentBoss == BossInfo.bosses["Father of the Flame"] && 
+                __instance.gameObject.name == "Boss Scene"){
+                __instance.objectToActivate.SetActive(false);
+                Destroy(__instance);
+                return false;
+            }
             return true;
         }
         [HarmonyPrefix]
         [HarmonyPatch(typeof(PlayerDataTestResponse), "OnEnable")]
         private static bool PlayerDataTestResponse_Prefix(PlayerDataTestResponse __instance)
         {
-            if(BossSequence.currentBoss == BossInfo.bosses["Sister Splinter"] && __instance.gameObject.name == "Boss Scene Parent"){
+            if(BossSequence.currentBoss == BossInfo.bosses["Sister Splinter"] && 
+                    __instance.gameObject.name == "Boss Scene Parent"){
+                Destroy(__instance);
+                return false;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Garmond & Zaza"] && 
+                    __instance.gameObject.name == "Scene Control"){
+                Destroy(__instance);
+                return false;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Lace in the Cradle"] && 
+                    __instance.gameObject.name == "Boss Scene"){
                 Destroy(__instance);
                 return false;
             }
@@ -314,6 +376,19 @@ namespace Gods_Of_Pharloom
             if(BossSequence.currentBoss == BossInfo.bosses["Disgraced Chef Lugoli"] && 
                     __instance.gameObject.name == "Battle Scene"){
                 __instance.setPDBoolOnEnd = null;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Groal the Great"] && 
+                    __instance.gameObject.name == "Battle Scene"){
+                __instance.setPDBoolOnEnd = null;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Raging Conchfly"] && 
+                    __instance.gameObject.name == "Battle Scene"){
+                __instance.setPDBoolOnEnd = null;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Crawfather"] && 
+                    __instance.gameObject.name == "Battle Scene"){
+                __instance.setPDBoolOnEnd = null;
+                __instance.activeAfterBattle = null;
             }
         }
     }
