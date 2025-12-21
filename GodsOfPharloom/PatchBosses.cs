@@ -177,6 +177,19 @@ namespace Gods_Of_Pharloom
                 children.GetChild(1).gameObject.SetActive(false);
                 Destroy(__instance);
             }
+            if(BossSequence.currentBoss == BossInfo.bosses["Gurr the Outcast"] && 
+            __instance.gameObject.name == "Boss Scene")
+            {
+                Destroy(__instance);
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Plasmified Zango"] && 
+            __instance.gameObject.name == "Area_States")
+            {
+                var children = __instance.gameObject.transform;
+                children.GetChild(0).gameObject.SetActive(false);
+                children.GetChild(1).gameObject.SetActive(true);
+                Destroy(__instance);
+            }
             return true;
         }
         // [HarmonyPostfix]
@@ -205,6 +218,16 @@ namespace Gods_Of_Pharloom
                 return false;
             }
             if(BossSequence.currentBoss == BossInfo.bosses["The Last Judge"] && __instance.gameObject.name == "Last Judge")
+            {
+                GameObject.Destroy(__instance);
+                return false;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Plasmified Zango"] && __instance.gameObject.name == "Blue Assistant")
+            {
+                GameObject.Destroy(__instance);
+                return false;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Clover Dancers"] && __instance.gameObject.name == "Dancer A")
             {
                 GameObject.Destroy(__instance);
                 return false;
@@ -280,6 +303,18 @@ namespace Gods_Of_Pharloom
                 Destroy(__instance);
                 return false;
             }
+            if(BossSequence.currentBoss == BossInfo.bosses["Palestag"] &&
+                __instance.gameObject.name == "Cloverstag White Boss")
+            {
+                Destroy(__instance);
+                return false;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Shrine Guardian Seth"] &&
+                __instance.gameObject.name == "Seth" || __instance.gameObject.name == "Flower Gate")
+            {
+                Destroy(__instance);
+                return false;
+            }
             return true;
         }
         [HarmonyPrefix]
@@ -296,6 +331,10 @@ namespace Gods_Of_Pharloom
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Raging Conchfly"] &&__instance.gameObject.name == "Boss Corpse Scene"){
                 __instance.gameObject.SetActive(false);
+                return false;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Watcher at the Edge"] &&__instance.gameObject.name == "Collectable Item Pickup"){
+                Destroy(__instance.gameObject);
                 return false;
             }
             return true;

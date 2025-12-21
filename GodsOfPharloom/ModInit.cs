@@ -439,7 +439,7 @@ namespace Gods_Of_Pharloom
                 SceneManager.MoveGameObjectToScene(go, SceneManager.GetSceneByName("Memory_Coral_Tower"));
                 go.AddComponent<BoxCollider2D>();
                 go.layer = 8;
-                go.transform.position = new Vector3(54.93f, 547.7f, 0);
+                go.transform.position = new Vector3(54.93f, 548.7f, 0);
 
                 Memory_Coral_Tower.isSceneActive = true;
                 };
@@ -467,7 +467,7 @@ namespace Gods_Of_Pharloom
             customScenes.Add(AbyssCocoon);
 
             var Shellwood_11b_Memory = new CustomScene("Shellwood_11b_Memory");
-            Shellwood_11b_Memory.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(14f, 113f, 0), "", "", isADoor: true, 
+            Shellwood_11b_Memory.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(18f, 96f, 0), "", "", isADoor: true, 
             isOneTimeTransition: true, dontWalkOutOfDoor : true));
             Shellwood_11b_Memory.isSkongScene = true;
             Shellwood_11b_Memory.AfterSceneActivated += () => {Shellwood_11b_Memory.isSceneActive = true;};
@@ -482,7 +482,7 @@ namespace Gods_Of_Pharloom
 
             var Peak_07 = new CustomScene("Peak_07");
             Peak_07.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(34.65f, 88.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: true));
             Peak_07.isSkongScene = true;
             Peak_07.AfterSceneActivated += () => {Peak_07.isSceneActive = true;};
             customScenes.Add(Peak_07);
@@ -503,7 +503,7 @@ namespace Gods_Of_Pharloom
 
             var Memory_Ant_Queen = new CustomScene("Memory_Ant_Queen");
             Memory_Ant_Queen.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(148.4f, 19.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: true));
             Memory_Ant_Queen.isSkongScene = true;
             Memory_Ant_Queen.AfterSceneActivated += () => {Memory_Ant_Queen.isSceneActive = true;};
             customScenes.Add(Memory_Ant_Queen);

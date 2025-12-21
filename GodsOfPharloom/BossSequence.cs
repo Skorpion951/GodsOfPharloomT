@@ -72,6 +72,7 @@ namespace Gods_Of_Pharloom
                 new BossInfo("Library_13", "start_battle_entry", "Trobbio", new float[][]{new float[]{250f, 2f, 1.5f}}),
                 new BossInfo("Coral_29", "start_battle_entry", "Voltvyrm", new float[][]{new float[]{250f, 2f, 1.5f}}),
                 new BossInfo("Bellway_Centipede_Arena", "start_battle_entry", "Bell Eater", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
+                new BossInfo("Clover_10", "start_battle_entry", "Clover Dancers", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
                 new BossInfo("Room_CrowCourt_02", "start_battle_entry", "Crawfather", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
                 new BossInfo("Memory_Coral_Tower", "start_battle_entry", "Crust King Khann", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
                 new BossInfo("Bone_East_18b", "start_battle_entry", "Gurr the Outcast", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
@@ -83,6 +84,7 @@ namespace Gods_Of_Pharloom
                 new BossInfo("Crawl_10", "start_battle_entry", "Plasmified Zango", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
                 new BossInfo("Shellwood_22", "start_battle_entry", "Shrine Guardian Seth", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
                 new BossInfo("Memory_Ant_Queen", "start_battle_entry", "Skarrsinger Karmelita", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
+                new BossInfo("Library_13", "start_battle_entry", "Tormented Trobbio", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
                 new BossInfo("Coral_39", "start_battle_entry", "Watcher at the Edge", new float[][]{new float[]{250f, 2f, 1.5f}}, is3ActBoss: true),
             };
 
