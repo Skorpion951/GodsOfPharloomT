@@ -10,6 +10,7 @@ namespace Gods_Of_Pharloom
 {
     public partial class GodsOfPharloomMod : BaseUnityPlugin
     {
+        //Patch Bosses Logic
         [HarmonyPostfix]
         [HarmonyPatch(typeof(PlayMakerFSM), "Awake")]
         private static void PlayMakerPatch_Postfix(PlayMakerFSM __instance)
@@ -35,6 +36,36 @@ namespace Gods_Of_Pharloom
                     Log.LogInfo(__instance.FsmName + "YAAAAAAAAAAAAAAAAAY");
                     item.method(__instance.Fsm);
                     return;
+                }
+            }
+        }
+
+        //Set Custom Bosses Hp
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(HealthManager), "Awake")]
+        private static void HealthManagerPatch_Postfix(HealthManager __instance)
+        {
+            if(!BossSequence.isInSequence) return;
+            if(BossSequence.currentBoss == BossInfo.bosses["Father of the Flame"]) return;
+
+            bool hasValue;
+            BossInfo boss;
+
+            if(BossStatueInfo.currentDifficultMode == "Ascended" || BossStatueInfo.currentDifficultMode == "Radiant" && BossSequence.currentBoss.ascendedVersion != null) 
+                boss = BossSequence.currentBoss.ascendedVersion;
+            else boss = BossSequence.currentBoss;
+
+            hasValue = boss.bossesGOsInfo.TryGetValue(__instance.gameObject.name, out var bossObj);
+            if(hasValue)
+            {
+                if (BossSequence.isHoG)
+                {
+                    __instance.hp = (int)((float)bossObj[BossStatueInfo.currentDifficultMode] * __instance.hp);
+                }
+                if (BossSequence.isPantheon)
+                {
+                    __instance.hp = (int)((float)bossObj["Attuned"] * __instance.hp);
                 }
             }
         }
@@ -139,8 +170,6 @@ namespace Gods_Of_Pharloom
         {
             if(BossSequence.currentBoss == BossInfo.bosses["Lost Garmond"] && __instance.gameObject.name == "Garmond Black Threaded Scene")
             {
-                PlayerData.instance.garmondBlackThreadDefeated = false;
-
                 FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo tests = __instance.GetType().GetField("playerDataTest", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
