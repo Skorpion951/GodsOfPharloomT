@@ -61,11 +61,21 @@ namespace Gods_Of_Pharloom
             {
                 if (BossSequence.isHoG)
                 {
-                    __instance.hp = (int)((float)bossObj[BossStatueInfo.currentDifficultMode] * __instance.hp);
+                    var origHp = (int)__instance.GetType().GetField("initHp", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
+
+                    var newHp = (int)((float)bossObj[BossStatueInfo.currentDifficultMode] * origHp);
+
+                    __instance.GetType().GetField("initHp", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, newHp);
+                    __instance.hp = newHp;
                 }
                 if (BossSequence.isPantheon)
                 {
-                    __instance.hp = (int)((float)bossObj["Attuned"] * __instance.hp);
+                    var origHp = (int)__instance.GetType().GetField("initHp", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
+
+                    var newHp = (int)((float)bossObj["Attuned"] * origHp);
+
+                    __instance.GetType().GetField("initHp", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, newHp);
+                    __instance.hp = newHp;
                 }
             }
         }

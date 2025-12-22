@@ -102,7 +102,8 @@ public class PatchedFsm
             new FsmPatch("Mossbone Mother A", "Control", PatchFsm_MossMotherDoubleA),
             new FsmPatch("Mossbone Mother B", "Control", PatchFsm_MossMotherDoubleB),
             new FsmPatch("Moss Vine Cluster (2)", "Control", PatchFsm_MossMotherMossVineCluster),
-            new FsmPatch("Mossbone Mother B Ambient Corpse(Clone)", "Death", PatchFsm_MossMotherBCorpseControl),
+            new FsmPatch("Mossbone Mother Ambient Corpse(Clone)", "Death", PatchFsm_MossMotherDoubleCorpseControl),
+            new FsmPatch("Mossbone Mother B Ambient Corpse(Clone)", "Death", PatchFsm_MossMotherDoubleCorpseControl),
         }),
         new PatchedFsm("Bone_05_Boss", new FsmPatch[]
         {
@@ -286,6 +287,7 @@ public class PatchedFsm
         new PatchedFsm("Clover_10", new FsmPatch[]
         {
             new FsmPatch("Dancer A", "Control", PatchFsm_CloverDancersDancerAB),
+            new FsmPatch("Dancer B", "Control", PatchFsm_CloverDancersDancerAB),
             new FsmPatch("Green Prince Boss NPC", "Dialogue", PatchFsm_CloverDancersGreenPrinceBossNPC),
             new FsmPatch("Dancer Control", "Control", PatchFsm_CloverDancersDancerControl),
             new FsmPatch("Corpse Green Prince(Clone)", "Death", PatchFsm_CloverDancersCorpseControl),
@@ -623,6 +625,36 @@ public class PatchedFsm
         };
 
         blow.Transitions[0].ToFsmState = customState1;
+
+        SetTransitionToState(stagger, blow, 0);
+
+        return true;
+    }
+    public static bool PatchFsm_MossMotherDoubleCorpseControl(Fsm fsm)
+    {
+        var steam = fsm.GetState("Steam");
+        var blow = fsm.GetState("Blow");
+        var waitFrame = fsm.GetState("Wait Frame");
+        var stagger = fsm.GetState("Stagger");
+
+        var children = GameObject.Find("Bosses").transform;
+        var countOfActiveBosses = 0;
+        foreach(Transform child in children)
+        {
+            if(child.gameObject.activeSelf) countOfActiveBosses++;
+        }
+        if(countOfActiveBosses > 1)
+        {
+            return false;
+        }
+
+        var customActionSendEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
+        blow.Actions = InsertInArray(blow.Actions, customActionSendEvent, 0);
 
         SetTransitionToState(stagger, blow, 0);
 
@@ -2120,6 +2152,30 @@ public class PatchedFsm
 
         init.Actions = InsertInArray(init.Actions, customAction, init.Actions.Length - 1);
 
+
+        var deathStagger = fsm.GetState("Death Stagger");
+        var deathFly = fsm.GetState("Death Fly");
+        var lavaBurst = fsm.GetState("Lava Burst");
+
+        var customActionSendEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            var children = fsm.GameObject.transform.parent;
+            foreach(Transform child in children)
+            {
+                if(child.name == "Dock Guard Thrower")
+                {
+                    var thrower = child.gameObject.GetComponent<HealthManager>();
+                    if(thrower.hp < 1) PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+                    return;
+                }
+            }
+        };
+
+        deathFly.Actions = InsertInArray(deathFly.Actions, customActionSendEvent, 0);
+
+        // lavaBurst.Actions = RemoveFromArray(lavaBurst.Actions, 2);
+
         return true;
     }
     public static bool PatchFsm_ForebrothersSignisAndGronThrower(Fsm fsm)
@@ -2132,12 +2188,21 @@ public class PatchedFsm
         var customActionSendEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
         customActionSendEvent.action += (Fsm fsm) =>
         {
-            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+            var children = fsm.GameObject.transform.parent;
+            foreach(Transform child in children)
+            {
+                if(child.name == "Dock Guard Slasher")
+                {
+                    var slasher = child.gameObject.GetComponent<HealthManager>();
+                    if(slasher.hp < 1) PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+                    return;
+                }
+            }
         };
 
         deathFly.Actions = InsertInArray(deathFly.Actions, customActionSendEvent, 0);
 
-        lavaBurst.Actions = RemoveFromArray(lavaBurst.Actions, 2);
+        // lavaBurst.Actions = RemoveFromArray(lavaBurst.Actions, 2);
 
         return true;
     }
@@ -3527,6 +3592,15 @@ public class PatchedFsm
             }
         };
 
+        var customActionDisableTerrainIntro = new CustomLogicFsm(fsm);
+        customActionDisableTerrainIntro.action += (Fsm fsm) =>
+        {
+            var terrainIntroObj = fsm.Variables.FindFsmGameObject("Terrain Intro").Value;
+            terrainIntroObj.SetActive(false);
+        };
+
+        init.Actions = InsertInArray(init.Actions, customActionDisableTerrainIntro, 5);
+
         return true;
     }
     public static bool PatchFsm_NylethCorpseControl(Fsm fsm)
@@ -3542,7 +3616,7 @@ public class PatchedFsm
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
         };
 
-        land.Actions = InsertInArray(land.Actions, customActionSendBossDeadEvent, 0);
+        blow.Actions = InsertInArray(blow.Actions, customActionSendBossDeadEvent, 0);
 
         SetTransitionToState(stagger, blow, 0);
 
