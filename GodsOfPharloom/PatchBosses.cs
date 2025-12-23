@@ -82,19 +82,19 @@ namespace Gods_Of_Pharloom
 
         //if is in sequence - multiply self damage
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(HeroController), "TakeDamage")]
-        private static bool TakeDamagePatch_Prefix(HeroController __instance, ref int damageAmount)
+        [HarmonyPatch(typeof(PlayerData), "TakeHealth")]
+        private static bool TakeDamagePatch_Prefix(PlayerData __instance, ref int amount)
         {
             if(!BossSequence.isInSequence) return true;
 
             if(BossStatueInfo.currentDifficultMode == "Ascended")
             {
-                damageAmount *= 2;
+                amount *= 2;
                 return true;
             }
             if(BossStatueInfo.currentDifficultMode == "Radiant")
             {
-                damageAmount = int.MaxValue;
+                amount = int.MaxValue;
                 return true;
             }
 

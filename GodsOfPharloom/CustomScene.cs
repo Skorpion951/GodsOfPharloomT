@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Diagnostics.Eventing.Reader;
+using System.Drawing.Drawing2D;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms.VisualStyles;
 using Gods_Of_Pharloom;
@@ -93,7 +94,7 @@ public class CustomScene
         actionAfter.action = (Fsm fsm) =>
         {
             if(item.forceMemoryZone) GameManager.instance.ForceCurrentSceneIsMemory(true);
-            if(item.noInputOnStart) GodsOfPharloomMod.SetHeroState(GlobalEnums.ActorStates.no_input);//HeroController.instance.StartRoarLockNoRecoil();
+            if(item.noInputOnStart) HeroController.instance.hero_state = GlobalEnums.ActorStates.no_input; //GodsOfPharloomMod.SetHeroState(GlobalEnums.ActorStates.no_input);//HeroController.instance.StartRoarLockNoRecoil();
             if(item.doSendEventAfterTransition) PlayMakerFSM.BroadcastEvent(TransitionPointInfo.eventName);
             item.afterTransition?.Invoke();
         };
@@ -112,6 +113,46 @@ public class CustomScene
         fsm.States = new FsmState[]{init, afterEntry};
 
         fsm.FsmComponent.enabled = true;
+
+
+
+
+        //do fade in on event
+        var fsmAfterDeath = go.AddComponent<PlayMakerFSM>();
+        fsmAfterDeath.enabled = false;
+
+        var fsmFadeIn = fsmAfterDeath.Fsm;
+        fsmFadeIn.StartState = "Idle";
+
+        var idle = new FsmState(fsmFadeIn);
+        idle.Name = "Idle";
+
+        var afterDeath = new FsmState(fsmFadeIn);
+        afterDeath.Name = "After Death";
+
+        var customActionAfterDeath = new PatchedFsm.CustomLogicFsm(fsmFadeIn);
+        customActionAfterDeath.action += (Fsm fsm) =>
+        {
+            var color = new Color(0, 0, 0, 0);
+            var endColor = new Color(0, 0, 0, 0);
+            ScreenFaderUtils.Fade(color, endColor, 0.01f);
+            GameCameras.instance.HUDIn();
+        };
+
+        afterDeath.Actions = new FsmStateAction[]{customActionAfterDeath};
+
+        idle.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent("HERO RESPAWNING HERE"),
+                ToFsmState = afterDeath
+            }
+        };
+        fsmFadeIn.States = new FsmState[]{idle, afterDeath};
+        fsmAfterDeath.enabled = true;
+        //////////////////////////
+
         if (item.alwaysEnterRight)
         {
             tp.alwaysEnterRight = true;
@@ -125,7 +166,8 @@ public class CustomScene
         if(item.doCreateRespawnMarker){
             var respawnMarker = go.AddComponent<RespawnMarker>();
             var mapZone = respawnMarker.overrideMapZone = new OverrideMapZone();
-            respawnMarker.customFadeDuration = new TeamCherry.SharedUtils.OverrideFloat();
+            // respawnMarker.customFadeDuration = new TeamCherry.SharedUtils.OverrideFloat();
+            respawnMarker.customWakeUp = true;
             tp.gameObject.tag = "RespawnPoint";
 
             var teleportMap = SceneTeleportMap.GetTeleportMap();

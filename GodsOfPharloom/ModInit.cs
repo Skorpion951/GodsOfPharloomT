@@ -355,7 +355,7 @@ namespace Gods_Of_Pharloom
 
             var Slab_10b = new CustomScene("Slab_10b");
             Slab_10b.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(41f, 9.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: true));
             Slab_10b.isSkongScene = true;
             Slab_10b.AfterSceneActivated += () => {Slab_10b.isSceneActive = true;};
             customScenes.Add(Slab_10b);
