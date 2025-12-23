@@ -7,6 +7,8 @@ using System.Reflection;
 using HarmonyLib;
 using Unity.Mathematics;
 using Newtonsoft.Json;
+using GlobalEnums;
+using System.Collections;
 
 namespace Gods_Of_Pharloom
 {
@@ -14,7 +16,7 @@ namespace Gods_Of_Pharloom
     public partial class GodsOfPharloomMod : BaseUnityPlugin
     {
         public static GodsOfPharloomMod instance;
-        string pathToModData = BepInEx.Paths.ConfigPath + "/" +"GodsOfPharloomData.bin";
+        string pathToModData = BepInEx.Paths.ConfigPath + "/" +"GodsOfPharloomData.dat";
         public static object obj;
         private static string[] assetBundleNames =
         {
@@ -24,6 +26,7 @@ namespace Gods_Of_Pharloom
         public static List<CustomScene> customScenes = new List<CustomScene>();
         public static BepInEx.Logging.ManualLogSource Log;
         Keyboard keyboard;
+        public static MethodInfo HeroController_SetState = AccessTools.Method(typeof(HeroController), "SetState");
         public void LoadBundle(string bundleName)
         {
             Assembly asm = Assembly.GetExecutingAssembly();
@@ -102,12 +105,28 @@ namespace Gods_Of_Pharloom
             Log.LogInfo("cleared OnPositionedAtHero");
             return false;
         }
-        public System.Collections.IEnumerator LoadScene()
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(GameManager), "PlayerDead")]
+        public static bool PlayerDead_Prefix(ref float waitTime)
         {
-            var op = UnityEngine.AddressableAssets.Addressables.LoadSceneAsync("Scenes/Bone_East_08_Boss_Beastfly", UnityEngine.SceneManagement.LoadSceneMode.Additive);
-            GodsOfPharloomMod.Log.LogInfo("000000000000000000");
-            yield return op;
+            if(!BossSequence.isInSequence) return true;
+            waitTime = 0f;
+            return true;
         }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ScenePreloader), "SpawnPreloader")]
+        public static bool ScenePreloader_Prefix(string sceneName, LoadSceneMode mode)
+        {
+            if(BossSequence.isInSequence) return false;
+            return true;
+        }
+        // [HarmonyPrefix]
+        // [HarmonyPatch(typeof(GameManager), "FinishedEnteringScene")]
+        // public static bool FinishedEnteringScene_Prefix(GameManager __instance)
+        // {
+        //     HeroController.instance.StartAnimationControlToIdleForcePlay();
+        //     return true;
+        // }
 
         void Update()
         {
@@ -157,6 +176,12 @@ namespace Gods_Of_Pharloom
             }
         }
 
+        public static void SetHeroState(ActorStates state)
+        {
+            Func<MethodInfo, object[], object> InvokeMethod = (method, obj) => method.Invoke(HeroController.instance, obj);
+            InvokeMethod(HeroController_SetState, new object[] {state});
+        }
+
         void InitCustomScenes()
         {
             var GG_Pharloom_Atrium = new CustomScene("GG_Pharloom_Atrium");
@@ -190,6 +215,8 @@ namespace Gods_Of_Pharloom
                 cameraLock1.cameraXMin = 44.64f;
                 cameraLock1.cameraXMax = 44.64f;
                 go1.GetComponent<BoxCollider2D>().size = new Vector2(8f, 100f);
+
+                HeroController.instance.StartAnimationControlToIdle();
 
                 GG_Pharloom_HoG.isSceneActive = true;
             };
@@ -237,7 +264,7 @@ namespace Gods_Of_Pharloom
 
             var Coral_11 = new CustomScene("Coral_11");
             Coral_11.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(52.6f, 14.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: true));
             Coral_11.isSkongScene = true;
             Coral_11.AfterSceneActivated += () => {Coral_11.isSceneActive = true;};
             customScenes.Add(Coral_11);
@@ -251,7 +278,7 @@ namespace Gods_Of_Pharloom
 
             var Coral_Judge_Arena = new CustomScene("Coral_Judge_Arena");
             Coral_Judge_Arena.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(34.1932f, 24.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: true));
             Coral_Judge_Arena.isSkongScene = true;
             Coral_Judge_Arena.AfterSceneActivated += () => {Coral_Judge_Arena.isSceneActive = true;};
             customScenes.Add(Coral_Judge_Arena);
@@ -293,7 +320,7 @@ namespace Gods_Of_Pharloom
 
             var Belltown_Shrine = new CustomScene("Belltown_Shrine");
             Belltown_Shrine.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(52.86f, 8.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: true));
             Belltown_Shrine.isSkongScene = true;
             Belltown_Shrine.AfterSceneActivated += () => {Belltown_Shrine.isSceneActive = true;};
             customScenes.Add(Belltown_Shrine);
@@ -342,7 +369,7 @@ namespace Gods_Of_Pharloom
 
             var Library_09 = new CustomScene("Library_09");
             Library_09.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(75.39f, 15.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: true));
             Library_09.isSkongScene = true;
             Library_09.AfterSceneActivated += () => {Library_09.isSceneActive = true;};
             customScenes.Add(Library_09);
@@ -461,7 +488,7 @@ namespace Gods_Of_Pharloom
 
             var AbyssCocoon = new CustomScene("Abyss_Cocoon");
             AbyssCocoon.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(29.16f, 5.65f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: true));
             AbyssCocoon.isSkongScene = true;
             AbyssCocoon.AfterSceneActivated += () => {AbyssCocoon.isSceneActive = true;};
             customScenes.Add(AbyssCocoon);
@@ -475,7 +502,7 @@ namespace Gods_Of_Pharloom
 
             var Clover_19 = new CustomScene("Clover_19");
             Clover_19.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(25.64f, 12.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: true));
             Clover_19.isSkongScene = true;
             Clover_19.AfterSceneActivated += () => {Clover_19.isSceneActive = true;};
             customScenes.Add(Clover_19);

@@ -16,13 +16,14 @@ public class TransitionPointInfo
     public bool forceMemoryZone;
     public Action afterTransition;
     public bool doSendEventAfterTransition;
+    public bool doCreateRespawnMarker;
     public static string eventName = "HORNET TRANSITION DONE MOD";
 
     public TransitionPointInfo(string gateName, Vector3 position, string targetScene, string entryPoint,
                 InteractableBase.PromptLabels InteractLabel = InteractableBase.PromptLabels.Enter, bool isADoor = false,
                 bool isOneTimeTransition = false, bool dontWalkOutOfDoor = false, bool hardLandOnExit = false,
                 bool noInputOnStart = false, bool alwaysEnterRight = true, bool forceMemoryZone = true,
-                Action afterTransition = null, bool doSendEventAfterTransition = true)
+                Action afterTransition = null, bool doSendEventAfterTransition = true, bool doCreateRespawnMarker = true)
     {
         this.gateName = gateName;
         this.position = position;
@@ -38,5 +39,6 @@ public class TransitionPointInfo
         this.forceMemoryZone = forceMemoryZone;
         this.afterTransition = afterTransition;
         this.doSendEventAfterTransition = doSendEventAfterTransition;
+        this.doCreateRespawnMarker = doCreateRespawnMarker;
     }
 }

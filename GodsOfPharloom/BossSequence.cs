@@ -2,6 +2,11 @@ using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using BepInEx;
+using UnityEngine.InputSystem;
+using System.Reflection;
+using UnityEngine.AddressableAssets;
+using HarmonyLib;
 
 namespace Gods_Of_Pharloom
 {
@@ -123,6 +128,7 @@ namespace Gods_Of_Pharloom
             difficultMode = "";
             isPantheon = false;
             isHoG = false;
+            
 
             sequenceController.SetState("Dormant");
         }
@@ -246,6 +252,10 @@ namespace Gods_Of_Pharloom
         }
         public static void StartSequence()
         {
+            PlayerData.instance.tempRespawnMarker = backEntry;
+            PlayerData.instance.tempRespawnScene = backScene;
+            PlayerData.instance.respawnType = 0;
+
             if (currentBoss.is3ActBoss)
             {
                 PlayerData.instance.blackThreadWorld = true;

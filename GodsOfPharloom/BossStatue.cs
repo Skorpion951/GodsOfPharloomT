@@ -187,7 +187,7 @@ namespace Gods_Of_Pharloom
             var inputHandler = InputHandler.Instance.inputActions;
 
             var tp = CustomScene.CreateTransitionPoint(new TransitionPointInfo($"back_entry{instance.statueIndex}", new Vector3(), "", "", 
-                                                        dontWalkOutOfDoor: true, isADoor: true, noInputOnStart: false), go_backEntry);
+                                                        dontWalkOutOfDoor: true, isADoor: true, noInputOnStart: false), go_backEntry, BossStatueInfo.hog_sceneName);
 
             var interactComponent = go.AddComponent<PlayMakerNPC>();
             var fsmComponent = go.AddComponent<PlayMakerFSM>();

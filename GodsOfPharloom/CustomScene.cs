@@ -68,10 +68,10 @@ public class CustomScene
         if(item.isOneTimeTransition) collider.enabled = false;
 
         //adding transition point
-        CreateTransitionPoint(item, gm);
+        CreateTransitionPoint(item, gm, this.sceneName);
         SceneManager.MoveGameObjectToScene(gm, SceneManager.GetSceneByName(sceneName));
     }
-    public static TransitionPoint CreateTransitionPoint(TransitionPointInfo item, GameObject go)
+    public static TransitionPoint CreateTransitionPoint(TransitionPointInfo item, GameObject go, string sceneName)
     {
         var tp = go.AddComponent<TransitionPoint>();
 
@@ -93,7 +93,7 @@ public class CustomScene
         actionAfter.action = (Fsm fsm) =>
         {
             if(item.forceMemoryZone) GameManager.instance.ForceCurrentSceneIsMemory(true);
-            if(item.noInputOnStart) HeroController.instance.hero_state = GlobalEnums.ActorStates.no_input;
+            if(item.noInputOnStart) GodsOfPharloomMod.SetHeroState(GlobalEnums.ActorStates.no_input);//HeroController.instance.StartRoarLockNoRecoil();
             if(item.doSendEventAfterTransition) PlayMakerFSM.BroadcastEvent(TransitionPointInfo.eventName);
             item.afterTransition?.Invoke();
         };
@@ -122,6 +122,22 @@ public class CustomScene
             tp.alwaysEnterLeft = true;
             tp.alwaysEnterRight = false;
         }
+        if(item.doCreateRespawnMarker){
+            var respawnMarker = go.AddComponent<RespawnMarker>();
+            var mapZone = respawnMarker.overrideMapZone = new OverrideMapZone();
+            respawnMarker.customFadeDuration = new TeamCherry.SharedUtils.OverrideFloat();
+            tp.gameObject.tag = "RespawnPoint";
+
+            var teleportMap = SceneTeleportMap.GetTeleportMap();
+            if (!teleportMap.TryGetValue(sceneName, out SceneTeleportMap.SceneInfo value))
+            {
+                teleportMap.Add(sceneName, new SceneTeleportMap.SceneInfo());
+            }
+
+            teleportMap.TryGetValue(sceneName, out SceneTeleportMap.SceneInfo sceneInfo);
+            sceneInfo.RespawnPoints.Add(item.gateName);
+        }
+
         
         tp.targetScene = item.targetScene;
         tp.dontWalkOutOfDoor = item.dontWalkOutOfDoor;

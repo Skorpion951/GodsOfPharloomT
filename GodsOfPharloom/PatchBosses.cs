@@ -80,6 +80,35 @@ namespace Gods_Of_Pharloom
             }
         }
 
+        //if is in sequence - multiply self damage
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(HeroController), "TakeDamage")]
+        private static bool TakeDamagePatch_Prefix(HeroController __instance, ref int damageAmount)
+        {
+            if(!BossSequence.isInSequence) return true;
+
+            if(BossStatueInfo.currentDifficultMode == "Ascended")
+            {
+                damageAmount *= 2;
+                return true;
+            }
+            if(BossStatueInfo.currentDifficultMode == "Radiant")
+            {
+                damageAmount = int.MaxValue;
+                return true;
+            }
+
+            return true;
+        }
+
+        //get HeroDeathSequence to speed up death animation
+        // [HarmonyPostfix]
+        // [HarmonyPatch(typeof(HeroDeathSequence), "Awake")]
+        // private static void TakeDamagePatch_Postfix(HeroDeathSequence __instance)
+        // {
+        //     BossSequence.deathSequenceController = __instance;
+        // }
+
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SceneAdditiveLoadConditional), "OnEnable")]
         private static void SceneAdditiveLoadPatch_Prefix(SceneAdditiveLoadConditional __instance)
