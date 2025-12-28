@@ -2038,6 +2038,7 @@ public class PatchedFsm
         var bind = fsm.GetState("Bind");
         var breakOut = fsm.GetState("Break Out");
         var introLand = fsm.GetState("Intro Land");
+        var setRespawn = fsm.GetState("Set Respawn");
 
         ((Wait)(breakOut.Actions[16])).time = 0.01f;
 
@@ -2066,6 +2067,7 @@ public class PatchedFsm
         init.Actions = InsertInArray(init.Actions, waitEvent, init.Actions.Length - 1);
 
         breakOut.Actions = RemoveFromArray(breakOut.Actions, 12);
+        setRespawn.Actions = RemoveFromArray(setRespawn.Actions, 1);
 
         SetTransitionToState(init, breakOut, 1);
 
@@ -2251,6 +2253,8 @@ public class PatchedFsm
         citNPC.Actions = InsertInArray(citNPC.Actions, customAction, citNPC.Actions.Length - 1);
 
         deathLand.Actions = InsertInArray(deathLand.Actions, customActionSendEvent, 0);
+
+        setup1.Actions = RemoveFromArray(setup1.Actions, 2);
 
         return true;
     }
@@ -3663,6 +3667,7 @@ public class PatchedFsm
     public static bool PatchFsm_PinstressBossControl(Fsm fsm)
     {
         var init = fsm.GetState("Init");
+        var roarAntic = fsm.GetState("Roar Antic");
         var roar = fsm.GetState("Roar");
         var recover = fsm.GetState("Recover");
         var recoverEnd = fsm.GetState("Recover End");
@@ -3681,6 +3686,7 @@ public class PatchedFsm
 
         recoverEnd.Actions = RemoveFromArray(recoverEnd.Actions, 5);
         recoverEnd.Actions = RemoveFromArray(recoverEnd.Actions, 4);
+        roarAntic.Actions = RemoveFromArray(roarAntic.Actions, 3);
 
         recoverEnd.Transitions = new FsmTransition[0];
 

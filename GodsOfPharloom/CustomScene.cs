@@ -117,20 +117,20 @@ public class CustomScene
 
 
 
-        //do fade in on event
-        var fsmAfterDeath = go.AddComponent<PlayMakerFSM>();
-        fsmAfterDeath.enabled = false;
+        //do action after hero death event
+        var fsmAfterDeathComponent = go.AddComponent<PlayMakerFSM>();
+        fsmAfterDeathComponent.enabled = false;
 
-        var fsmFadeIn = fsmAfterDeath.Fsm;
-        fsmFadeIn.StartState = "Idle";
+        var fsmAfterDeath = fsmAfterDeathComponent.Fsm;
+        fsmAfterDeath.StartState = "Idle";
 
-        var idle = new FsmState(fsmFadeIn);
+        var idle = new FsmState(fsmAfterDeath);
         idle.Name = "Idle";
 
-        var afterDeath = new FsmState(fsmFadeIn);
+        var afterDeath = new FsmState(fsmAfterDeath);
         afterDeath.Name = "After Death";
 
-        var customActionAfterDeath = new PatchedFsm.CustomLogicFsm(fsmFadeIn);
+        var customActionAfterDeath = new PatchedFsm.CustomLogicFsm(fsmAfterDeath);
         customActionAfterDeath.action += (Fsm fsm) =>
         {
             var color = new Color(0, 0, 0, 0);
@@ -149,8 +149,8 @@ public class CustomScene
                 ToFsmState = afterDeath
             }
         };
-        fsmFadeIn.States = new FsmState[]{idle, afterDeath};
-        fsmAfterDeath.enabled = true;
+        fsmAfterDeath.States = new FsmState[]{idle, afterDeath};
+        fsmAfterDeathComponent.enabled = true;
         //////////////////////////
 
         if (item.alwaysEnterRight)

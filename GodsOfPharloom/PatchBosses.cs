@@ -42,43 +42,43 @@ namespace Gods_Of_Pharloom
 
         //Set Custom Bosses Hp
 
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(HealthManager), "Awake")]
-        private static void HealthManagerPatch_Postfix(HealthManager __instance)
-        {
-            if(!BossSequence.isInSequence) return;
-            if(BossSequence.currentBoss == BossInfo.bosses["Father of the Flame"]) return;
+        // [HarmonyPostfix]
+        // [HarmonyPatch(typeof(HealthManager), "Awake")]
+        // private static void HealthManagerPatch_Postfix(HealthManager __instance)
+        // {
+        //     if(!BossSequence.isInSequence) return;
+        //     if(BossSequence.currentBoss == BossInfo.bosses["Father of the Flame"]) return;
 
-            bool hasValue;
-            BossInfo boss;
+        //     bool hasValue;
+        //     BossInfo boss;
 
-            if(BossStatueInfo.currentDifficultMode == "Ascended" || BossStatueInfo.currentDifficultMode == "Radiant" && BossSequence.currentBoss.ascendedVersion != null) 
-                boss = BossSequence.currentBoss.ascendedVersion;
-            else boss = BossSequence.currentBoss;
+        //     if(BossStatueInfo.currentDifficultMode == "Ascended" || BossStatueInfo.currentDifficultMode == "Radiant" && BossSequence.currentBoss.ascendedVersion != null) 
+        //         boss = BossSequence.currentBoss.ascendedVersion;
+        //     else boss = BossSequence.currentBoss;
 
-            hasValue = boss.bossesGOsInfo.TryGetValue(__instance.gameObject.name, out var bossObj);
-            if(hasValue)
-            {
-                if (BossSequence.isHoG)
-                {
-                    var origHp = (int)__instance.GetType().GetField("initHp", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
+        //     hasValue = boss.bossesGOsInfo.TryGetValue(__instance.gameObject.name, out var bossObj);
+        //     if(hasValue)
+        //     {
+        //         if (BossSequence.isHoG)
+        //         {
+        //             var origHp = (int)__instance.GetType().GetField("initHp", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
 
-                    var newHp = (int)((float)bossObj[BossStatueInfo.currentDifficultMode] * origHp);
+        //             var newHp = (int)((float)bossObj[BossStatueInfo.currentDifficultMode] * origHp);
 
-                    __instance.GetType().GetField("initHp", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, newHp);
-                    __instance.hp = newHp;
-                }
-                if (BossSequence.isPantheon)
-                {
-                    var origHp = (int)__instance.GetType().GetField("initHp", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
+        //             __instance.GetType().GetField("initHp", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, newHp);
+        //             __instance.hp = newHp;
+        //         }
+        //         if (BossSequence.isPantheon)
+        //         {
+        //             var origHp = (int)__instance.GetType().GetField("initHp", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
 
-                    var newHp = (int)((float)bossObj["Attuned"] * origHp);
+        //             var newHp = (int)((float)bossObj["Attuned"] * origHp);
 
-                    __instance.GetType().GetField("initHp", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, newHp);
-                    __instance.hp = newHp;
-                }
-            }
-        }
+        //             __instance.GetType().GetField("initHp", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, newHp);
+        //             __instance.hp = newHp;
+        //         }
+        //     }
+        // }
 
         //if is in sequence - multiply self damage
         [HarmonyPrefix]
@@ -458,6 +458,11 @@ namespace Gods_Of_Pharloom
             if(BossSequence.currentBoss == BossInfo.bosses["Lace in the Cradle"] && 
                     __instance.gameObject.name == "Boss Scene"){
                 Destroy(__instance);
+                return false;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Lost Garmond"] && 
+                    __instance.gameObject.name == "Garmond Defeated Scene"){
+                Destroy(__instance.gameObject);
                 return false;
             }
             return true;
