@@ -405,6 +405,10 @@ namespace Gods_Of_Pharloom
                 Destroy(__instance.gameObject);
                 return false;
             }
+            if(BossSequence.currentBoss == BossInfo.bosses["Disgraced Chef Lugoli"] &&__instance.gameObject.name == "Chef Corpse Prepare Scene"){
+                Destroy(__instance.gameObject);
+                return false;
+            }
             return true;
         }
 

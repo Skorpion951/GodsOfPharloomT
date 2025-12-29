@@ -86,6 +86,8 @@ namespace Gods_Of_Pharloom
 
             BossSequence.CreateSequenceController();
 
+            afterSceneLoaded += CustomMenu.Reset;
+
             Harmony.CreateAndPatchAll(typeof(GodsOfPharloomMod), null);
             InitCustomScenes();
             // Plugin startup logic

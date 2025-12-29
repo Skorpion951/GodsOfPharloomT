@@ -38,6 +38,7 @@ namespace Gods_Of_Pharloom
         };
         public static string currentDifficultMode = difficultModes[0];
         public static string difficultyModeCanvasGOName = "DifficultyModeCanvas";
+        public static bool isInfiniteChallenge = false;
         public static GameObject difficultyModeCanvas;
         public static GameObject bossNameGO;
         public static GameObject attunedBadge;
@@ -180,10 +181,12 @@ namespace Gods_Of_Pharloom
             }
 
             var go = this.gameObject;
+            var pos = go.transform.position;
+            bool isOnLeft = pos.x < 44.5f;
 
             var go_backEntry = new GameObject($"back_entry{instance.statueIndex}");
             SceneManager.MoveGameObjectToScene(go_backEntry, SceneManager.GetSceneByName(BossStatueInfo.hog_sceneName));
-            go_backEntry.transform.position = go.transform.position;
+            go_backEntry.transform.position = new Vector3(pos.x + 1.711f, pos.y, pos.z);
             var inputHandler = InputHandler.Instance.inputActions;
 
             var tp = CustomScene.CreateTransitionPoint(new TransitionPointInfo($"back_entry{instance.statueIndex}", new Vector3(), "", "", 
@@ -257,10 +260,9 @@ namespace Gods_Of_Pharloom
                 }
                 if (inputHandler.Jump.WasPressed)
                 {
-
                     fsm.FsmComponent.SendEvent("START BOSS FIGHT");
                 }
-                if (inputHandler.QuickCast.WasPressed)
+                if (inputHandler.QuickCast.WasPressed || inputHandler.MenuCancel.WasPressed || inputHandler.Cast.WasPressed)
                 {
                     fsm.FsmComponent.SendEvent("EXIT MENU");
                 }

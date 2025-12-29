@@ -10,7 +10,8 @@ namespace Gods_Of_Pharloom
 {
     public partial class GodsOfPharloomMod : BaseUnityPlugin
     {
-        public static Action<Scene, Scene> afterSceneLoaded;
+        public static Action<Scene, Scene> afterSceneLoadedGetScenes;
+        public static Action afterSceneLoaded;
         public static MethodInfo RecordBeginTime = AccessTools.Method(typeof(SceneLoad), "RecordBeginTime");
         public static MethodInfo RecordEndTime = AccessTools.Method(typeof(SceneLoad), "RecordEndTime");
         public static MethodInfo LocalTryClearMemory = AccessTools.Method(typeof(SceneLoad), "LocalTryClearMemory");
@@ -62,7 +63,8 @@ namespace Gods_Of_Pharloom
             scene.isPreloading = false;
 
             Scene to = SceneManager.GetSceneByName(__instance.TargetSceneName);
-            afterSceneLoaded?.Invoke(from, to);
+            afterSceneLoaded?.Invoke();
+            afterSceneLoadedGetScenes?.Invoke(from, to);
 
             //////////////////////////////////////////////////////////////////////////////////
 
@@ -404,7 +406,8 @@ namespace Gods_Of_Pharloom
             scene.isPreloading = false;
 
             Scene to = SceneManager.GetSceneByName(__instance.TargetSceneName);
-            afterSceneLoaded?.Invoke(from, to);
+            afterSceneLoaded?.Invoke();
+            afterSceneLoadedGetScenes?.Invoke(from, to);
             ////////////////////////////////////////////////////////////
 
             InvokeMethod(RecordEndTime, new object[] {SceneLoad.Phases.Fetch});//RecordEndTime(SceneLoad.Phases.Fetch);

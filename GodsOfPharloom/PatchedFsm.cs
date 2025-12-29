@@ -2318,6 +2318,8 @@ public class PatchedFsm
     public static bool PatchFsm_SilkBossDeathSequence(Fsm fsm)
     {
         var init = fsm.GetState("Init");
+        var deathSlashesUp = fsm.GetState("Death Slashes Up");
+        var deathStart = fsm.GetState("Death Start");
         var bindOrNeedolin = fsm.GetState("Bind Or Needolin");
         var ready1 = fsm.GetState("Ready 1");
         var ready2 = fsm.GetState("Ready 2");
@@ -2387,9 +2389,18 @@ public class PatchedFsm
         bindBurst3.Actions = RemoveFromArray(bindBurst3.Actions, 5);
         bindBurst4.Actions = RemoveFromArray(bindBurst4.Actions, 7);
 
+        deathSlashesUp.Actions = RemoveFromArray(deathSlashesUp.Actions, 20);
+
         toBind2.Actions = RemoveFromArray(toBind2.Actions, 10); //remove set UnlockSilkFinalCutscene = true
 
         finalBind.Transitions = new FsmTransition[0];
+
+        var customActionSetToolItemManagerActive = new CustomLogicFsm(fsm);
+        customActionSetToolItemManagerActive.action += (Fsm fsm) =>
+        {
+            ToolItemManager.SetActiveState(ToolsActiveStates.Active);
+        };
+        finalBind.Actions = InsertInArray(finalBind.Actions, customActionSetToolItemManagerActive, 0);
         
         return true;
     }
@@ -2679,7 +2690,7 @@ public class PatchedFsm
         ((Wait)(init.Actions[12])).time = 0f;
         ((Wait)(rematchPause.Actions[2])).time = 0f;
         ((Wait)(entryAntic.Actions[6])).time = 0.1f;
-        ((Wait)(rematchRoar.Actions[3])).time = 0.1f;
+        // ((Wait)(rematchRoar.Actions[3])).time = 0.1f;
 
         return true;
     }
