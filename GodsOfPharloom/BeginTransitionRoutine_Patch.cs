@@ -20,6 +20,8 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(SceneLoad), "Begin")]
         private static bool Prefix(SceneLoad __instance)
         {
+            GodsOfPharloomMod.currentScene = __instance.TargetSceneName;
+            
             var scene = customScenes.Find((item) => item.sceneName == __instance.TargetSceneName);
             if(scene == null) return true;
 

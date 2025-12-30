@@ -19,12 +19,16 @@ public class CustomScene
     public Vector2 tileMapVector = new Vector2(512, 512);
     public bool isSceneActive = false;
     public bool isPreloading = false;
-    public bool isSkongScene = false;
+    public bool isSkongScene = true;
+    public bool isFastSuperJump = false;
+    public static float customSuperJumpSpeed = 48f;
+    public static float customWaitForSuperJump = 0.01f;
 
-    public CustomScene(string sceneName, bool isSkongScene = false)
+    public CustomScene(string sceneName, bool isSkongScene = true, bool isFastSuperJump = false)
     {
         this.sceneName = sceneName;
         this.isSkongScene = isSkongScene;
+        this.isFastSuperJump = isFastSuperJump;
     }
     
     public void AddTransitionPoint(TransitionPointInfo TransitionPointInfo)

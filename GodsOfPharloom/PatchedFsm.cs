@@ -14,6 +14,8 @@ using GenericVariableExtension;
 using InControl.NativeDeviceProfiles;
 using System.Collections;
 
+namespace Gods_Of_Pharloom;
+
 public class PatchedFsm
 {
     public static Func<object, MethodInfo, object[], object> InvokeMethod = (instance, method, obj) => method.Invoke(instance, obj);
@@ -90,6 +92,10 @@ public class PatchedFsm
         this.fsms = fsms;
     }
     public static PatchedFsm[] patchedFsms = new PatchedFsm[]{
+        new PatchedFsm("Menu_Title", new FsmPatch[]
+        {
+            new FsmPatch("Hero_Hornet(Clone)", "Superjump", PatchFsm_SuperJump),
+        }),
         new PatchedFsm("Tut_03", new FsmPatch[]
         {
             new FsmPatch("Mossbone Mother", "Control", PatchFsm_MossMother),
@@ -196,6 +202,7 @@ public class PatchedFsm
             new FsmPatch("Roachkeeper Chef (1)", "Control", PatchFsm_DustChef),
             new FsmPatch("kitchen_gong", "Tink Hit Force", PatchFsm_DustChefKitchenGong),
             new FsmPatch("Corpse Roachkeeper Chef(Clone)", "Death", PatchFsm_DustChefCorpseControl),
+            new FsmPatch("Kitchen Pipe Gong", "Gong Hit Reaction", PatchFsm_DustChefGongHitReaction),
         }),
         new PatchedFsm("Belltown_08", new FsmPatch[]
         {
@@ -442,6 +449,61 @@ public class PatchedFsm
         customCollider.isTrigger = true;
         customCollider.size = new Vector2(25, 18);
         return customTrigger;
+    }
+
+    public static bool PatchFsm_SuperJump(Fsm fsm)
+    {
+        var startDelay = fsm.GetState("Start Delay");
+        var throwNeedle = fsm.GetState("Throw Needle");
+        var throwWait = fsm.GetState("Throw Wait");
+        var groundCharge = fsm.GetState("Ground Charge");
+
+        float origSuperJumpSpeed = fsm.GetFsmFloat("Jump Speed").Value;
+        float origWaitSuperJump = fsm.GetFsmFloat("Charge Time").Value;
+        var origThrowNeedleWait = throwNeedle.Actions[9];
+
+        var customActionSendEvent = new CustomLogicFsm(fsm);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            fsm.FsmComponent.SendEvent("FINISHED");
+        };
+
+        throwNeedle.Actions = InsertInArray(throwNeedle.Actions, customActionSendEvent, throwNeedle.Actions.Length);
+        throwWait.Actions = InsertInArray(throwWait.Actions, customActionSendEvent, throwWait.Actions.Length);
+        startDelay.Actions = InsertInArray(startDelay.Actions, customActionSendEvent, startDelay.Actions.Length);
+
+        var sendEventAction = throwNeedle.Actions[throwNeedle.Actions.Length - 1];
+
+        var customActionSetCustomValues = new CustomLogicFsm(fsm);
+        customActionSetCustomValues.action += (Fsm fsm) =>
+        {
+            string activeScene = SceneManager.GetActiveScene().name;
+            var scene = GodsOfPharloomMod.customScenes.Find(item => item.sceneName == activeScene);
+
+            if(scene != null && scene.isFastSuperJump)
+            {
+                fsm.GetFsmFloat("Jump Speed").Value = CustomScene.customSuperJumpSpeed;
+                fsm.GetFsmFloat("Charge Time").Value = CustomScene.customWaitForSuperJump;
+
+                origThrowNeedleWait.Enabled = false;
+                sendEventAction.Enabled = true;
+            }
+            else
+            {
+                fsm.GetFsmFloat("Jump Speed").Value = origSuperJumpSpeed;
+                fsm.GetFsmFloat("Charge Time").Value = origWaitSuperJump;
+
+                origThrowNeedleWait.Enabled = true;
+                sendEventAction.Enabled = false;
+            }
+        };
+
+        startDelay.Actions = InsertInArray(startDelay.Actions, customActionSetCustomValues, 0);
+
+        groundCharge.Actions = InsertInArray(groundCharge.Actions, groundCharge.Actions[19], groundCharge.Actions.Length);
+        groundCharge.Actions = RemoveFromArray(groundCharge.Actions, 19);
+
+        return true;
     }
 
     public static bool PatchFsm_MossMother(Fsm fsm)
@@ -1950,6 +2012,15 @@ public class PatchedFsm
 
         return true;
     }
+    public static bool PatchFsm_DustChefGongHitReaction(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var waitForHit = fsm.GetState("Wait For Hit");
+
+        SetTransitionToState(init, waitForHit, 1);
+
+        return true;
+    }
     public static bool PatchFsm_DustChefKitchenGong(Fsm fsm)
     {
         var kitchenGong = fsm.GameObject;
@@ -3158,6 +3229,8 @@ public class PatchedFsm
     {
         var init = fsm.GetState("Init");
         var emergeAnnounce = fsm.GetState("Emerge Announce");
+        var emerge = fsm.GetState("Emerge");
+        var flapDown = fsm.GetState("Flap Down");
         var BGIdle = fsm.GetState("BG Idle");
         var BGRoar = fsm.GetState("BG Roar");
         var BGPeck1 = fsm.GetState("BG Peck 1");
@@ -3167,7 +3240,33 @@ public class PatchedFsm
         ((Wait)emergeAnnounce.Actions[2]).time = 0f;
         ((Wait)roar.Actions[3]).time = 0.1f;
 
+        var AnimateXPosition = new AnimateXPositionTo
+        {
+            GameObject = new FsmOwnerDefault(){GameObject = fsm.GameObject},
+            ToValue = fsm.GameObject.transform.position.x + 6.5f,
+            localSpace = false,
+            time = 0.4f,
+            easeType = (EaseFsmAction.EaseType)4,
+            // finishEvent = FsmEvent.GetFsmEvent(""),
+            delay = 0,
+            reverse = false,
+            speed = 1,
+            realTime = false,
+            BlocksFinish = true
+        };
+
+        var customActionRotate = new CustomLogicFsm(fsm);
+        customActionRotate.action += (Fsm fsm) =>
+        {
+            if(fsm.GameObject.transform.position.x > HeroController.instance.gameObject.transform.position.x)
+                fsm.GameObject.transform.localScale = new Vector3(-1, 1, 1);
+            else fsm.GameObject.transform.localScale = new Vector3(1, 1, 1);
+        };
+
         BGRoar.Transitions[0].FsmEvent.Name = "FINISHED";
+
+        emerge.Actions = InsertInArray(emerge.Actions, AnimateXPosition, 5);
+        flapDown.Actions = InsertInArray(flapDown.Actions, customActionRotate, 0);
 
         SetTransitionToState(BGPeakEnd, emergeAnnounce, 0);
 

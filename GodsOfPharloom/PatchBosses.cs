@@ -15,16 +15,15 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(PlayMakerFSM), "Awake")]
         private static void PlayMakerPatch_Postfix(PlayMakerFSM __instance)
         {
-            var orig = __instance?.gameObject;
-            if(orig == null) return;
+            var orig = __instance.gameObject;
 
+            Log.LogInfo(__instance.gameObject.name + "     " + __instance.FsmName + "        " + __instance.gameObject.scene.name);
             int index1 = 0;
             for(; index1 < PatchedFsm.patchedFsms.Length; index1++)
             {
                 if(String.Equals(__instance.gameObject.scene.name, PatchedFsm.patchedFsms[index1].sceneName, StringComparison.OrdinalIgnoreCase)) break;
                 if(index1 == PatchedFsm.patchedFsms.Length - 1) return;
             }
-            Log.LogInfo(__instance.gameObject.name);
 
 
             var patchedFsm = PatchedFsm.patchedFsms[index1];
@@ -506,6 +505,42 @@ namespace Gods_Of_Pharloom
                 __instance.setPDBoolOnEnd = null;
                 __instance.activeAfterBattle = null;
             }
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CustomSceneManager), "Awake")]
+        private static bool SceneManagerAwake_Prefix(CustomSceneManager __instance)
+        {
+            var scene = customScenes.Find((item) => item.sceneName == GodsOfPharloomMod.currentScene);
+            if(scene != null && !scene.isSkongScene) __instance.scenePools = new SceneObjectPool[0];
+
+            return true;
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(SceneColorManager), "PairKeyframes")]
+        private static bool SceneColorManagerPairKeyframes_Prefix(SceneColorManager __instance)
+        {
+            var scene = customScenes.Find((item) => item.sceneName == GodsOfPharloomMod.currentScene);
+            if(scene != null && !scene.isSkongScene) return false;
+
+            return true;
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(SceneColorManager), "CreateCurveFromKeyframes")]
+        private static bool SceneColorManagerCreateCurveFromKeyframes_Prefix(SceneColorManager __instance)
+        {
+            var scene = customScenes.Find((item) => item.sceneName == GodsOfPharloomMod.currentScene);
+            if(scene != null && !scene.isSkongScene) return false;
+
+            return true;
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CustomSceneManager), "DrawBlackBorders")]
+        private static bool SceneManagerDrawBlackBorders_Prefix(CustomSceneManager __instance)
+        {
+            var scene = customScenes.Find((item) => item.sceneName == GodsOfPharloomMod.currentScene);
+            if(scene != null && !scene.isSkongScene) return false;
+
+            return true;
         }
     }
 }

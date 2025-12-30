@@ -16,6 +16,7 @@ namespace Gods_Of_Pharloom
     public partial class GodsOfPharloomMod : BaseUnityPlugin
     {
         public static GodsOfPharloomMod instance;
+        public static string currentScene;
         string pathToModData = BepInEx.Paths.ConfigPath + "/" +"GodsOfPharloomData.dat";
         public static object obj;
         private static string[] assetBundleNames =
@@ -66,6 +67,21 @@ namespace Gods_Of_Pharloom
         {
             var jsonString = JsonConvert.SerializeObject(PlayerDataMod.instance, Formatting.Indented);
             File.WriteAllText(pathToModData, jsonString);
+        }
+        public void CreateSceneManager()
+        {
+            var sceneManager = new GameObject("_SceneManager");
+            SceneManager.MoveGameObjectToScene(sceneManager, SceneManager.GetSceneByName(BossStatueInfo.hog_sceneName));
+            sceneManager.tag = "SceneManager";
+            var sceneManagerComp = sceneManager.AddComponent<CustomSceneManager>();
+            sceneManagerComp.scenePools = new SceneObjectPool[0];
+            var sceneColorManager = GameCameras.instance.sceneColorManager;
+            sceneColorManager.GetType().GetField("changesInEditor", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(sceneColorManager, false);
+            sceneManagerComp.saturation = 0.8f;
+            sceneManagerComp.heroLightColor = new Color(0.7f, 0.7f, 0.7f, 0.7f);
+            sceneManagerComp.CancelEnviroSnapshot();
+            
         }
         private void Awake()
         {
@@ -186,15 +202,26 @@ namespace Gods_Of_Pharloom
 
         void InitCustomScenes()
         {
-            var GG_Pharloom_Atrium = new CustomScene("GG_Pharloom_Atrium");
+            var GG_Pharloom_Atrium = new CustomScene("GG_Pharloom_Atrium", isFastSuperJump: true, isSkongScene: false);
             GG_Pharloom_Atrium.AddTransitionPoint(new TransitionPointInfo("door1", new Vector3(79.68f, 73.9f, 0), "Belltown", "door1", isADoor: true, noInputOnStart: false));
             GG_Pharloom_Atrium.AddTransitionPoint(new TransitionPointInfo("door2", new Vector3(57.5f, 54f, 0), "GG_Pharloom_Hall_Of_Gods", "door1", isADoor: true, noInputOnStart: false));
-            GG_Pharloom_Atrium.AfterSceneActivated += () => {GG_Pharloom_Atrium.isSceneActive = true;};
+            GG_Pharloom_Atrium.AfterSceneActivated += () => {
+                var audioManager = GameManager.instance.AudioManager;
+                audioManager.StopAndClearAtmos();
+                audioManager.StopAndClearMusic();
+
+                GG_Pharloom_Atrium.isSceneActive = true;
+            };
             customScenes.Add(GG_Pharloom_Atrium);
 
-            var GG_Pharloom_HoG = new CustomScene("GG_Pharloom_Hall_Of_Gods");
+            var GG_Pharloom_HoG = new CustomScene("GG_Pharloom_Hall_Of_Gods", isFastSuperJump: true, isSkongScene: false);
             GG_Pharloom_HoG.AddTransitionPoint(new TransitionPointInfo("door1", new Vector3(44.64f, 52.58f, 0), "GG_Pharloom_Atrium", "door2", isADoor: true, noInputOnStart: false));
             GG_Pharloom_HoG.AfterSceneActivated += () => {
+                var gm = GameManager.instance;
+                var audioManager = gm.AudioManager;
+                audioManager.StopAndClearAtmos();
+                audioManager.StopAndClearMusic();
+
                 var rootObjects = SceneManager.GetSceneByName("GG_Pharloom_Hall_Of_Gods").GetRootGameObjects();
                 foreach(var obj in rootObjects)
                 {
@@ -217,6 +244,8 @@ namespace Gods_Of_Pharloom
                 cameraLock1.cameraXMin = 44.64f;
                 cameraLock1.cameraXMax = 44.64f;
                 go1.GetComponent<BoxCollider2D>().size = new Vector2(8f, 100f);
+
+                // CreateSceneManager();
 
                 HeroController.instance.StartAnimationControlToIdle();
 
