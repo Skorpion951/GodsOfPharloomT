@@ -21,7 +21,8 @@ namespace Gods_Of_Pharloom
         public static object obj;
         private static string[] assetBundleNames =
         {
-            "gg_pharloom_atrium", "gg_pharloom_hall_of_gods"
+            "gg_pharloom_atrium",
+            "gg_pharloom_hall_of_gods",
         };
         public static List<AssetBundle> assetBundles = new List<AssetBundle>();
         public static List<CustomScene> customScenes = new List<CustomScene>();
@@ -34,6 +35,7 @@ namespace Gods_Of_Pharloom
             foreach (string res in asm.GetManifestResourceNames())
             {
                 string name = Path.GetExtension(res).Substring(1);
+                Logger.LogInfo(name);
                 if (name != bundleName) continue;
 
                 AssetBundle bundle;
@@ -87,6 +89,7 @@ namespace Gods_Of_Pharloom
         {
             instance = this;
             Log = this.Logger;
+
             try{
             Logger.LogInfo($"Plugin is loaded!");
             BossInfo.InitBossesInfo();
@@ -102,6 +105,8 @@ namespace Gods_Of_Pharloom
 
             BossSequence.CreateSequenceController();
 
+            CustomScene.InitModRespawnMarkers();
+
             afterSceneLoaded += CustomMenu.Reset;
 
             Harmony.CreateAndPatchAll(typeof(GodsOfPharloomMod), null);
@@ -115,36 +120,6 @@ namespace Gods_Of_Pharloom
                 LoadBundle(name);
             }
         }
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(SceneParticlesController), "OnPositionedAtHero")]
-        private static bool Prefix(SceneParticlesController __instance)
-        {
-            if(customScenes.Find(item => item.sceneName == SceneManager.GetActiveScene().name) == null) return true;
-            Log.LogInfo("cleared OnPositionedAtHero");
-            return false;
-        }
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(GameManager), "PlayerDead")]
-        public static bool PlayerDead_Prefix(ref float waitTime)
-        {
-            if(!BossSequence.isInSequence) return true;
-            waitTime = 0f;
-            return true;
-        }
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(ScenePreloader), "SpawnPreloader")]
-        public static bool ScenePreloader_Prefix(string sceneName, LoadSceneMode mode)
-        {
-            if(BossSequence.isInSequence) return false;
-            return true;
-        }
-        // [HarmonyPrefix]
-        // [HarmonyPatch(typeof(GameManager), "FinishedEnteringScene")]
-        // public static bool FinishedEnteringScene_Prefix(GameManager __instance)
-        // {
-        //     HeroController.instance.StartAnimationControlToIdleForcePlay();
-        //     return true;
-        // }
 
         void Update()
         {
@@ -247,7 +222,20 @@ namespace Gods_Of_Pharloom
 
                 // CreateSceneManager();
 
-                HeroController.instance.StartAnimationControlToIdle();
+                //add a bench
+                GameObject gg_bench_sprite = null;
+                foreach(var obj in rootObjects)
+                {
+                    if(obj.name == "GG_Bench") gg_bench_sprite = obj;
+                }
+                var bench = Instantiate(Preload.preloads["RestBench"], parameters: new InstantiateParameters
+                {
+                    parent = gg_bench_sprite.transform,
+                    scene = SceneManager.GetSceneByName("GG_Pharloom_Hall_Of_Gods"),
+                });
+                bench.transform.position = gg_bench_sprite.transform.position;
+                bench.name = "RestBench";
+                bench.GetComponent<SpriteRenderer>().enabled = false;
 
                 GG_Pharloom_HoG.isSceneActive = true;
             };

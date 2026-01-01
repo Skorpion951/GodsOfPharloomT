@@ -174,14 +174,7 @@ public class CustomScene
             respawnMarker.customWakeUp = true;
             tp.gameObject.tag = "RespawnPoint";
 
-            var teleportMap = SceneTeleportMap.GetTeleportMap();
-            if (!teleportMap.TryGetValue(sceneName, out SceneTeleportMap.SceneInfo value))
-            {
-                teleportMap.Add(sceneName, new SceneTeleportMap.SceneInfo());
-            }
-
-            teleportMap.TryGetValue(sceneName, out SceneTeleportMap.SceneInfo sceneInfo);
-            sceneInfo.RespawnPoints.Add(item.gateName);
+            AddRespawnMarkerToTeleportMap(sceneName, item.gateName);
         }
 
         
@@ -208,6 +201,24 @@ public class CustomScene
         var cameraLockArea = go.AddComponent<CameraLockArea>();
 
         return cameraLockArea;
+    }
+
+    public static void AddRespawnMarkerToTeleportMap(string sceneName, string respawnMarkerName)
+    {
+        var teleportMap = SceneTeleportMap.GetTeleportMap();
+        if (!teleportMap.TryGetValue(sceneName, out SceneTeleportMap.SceneInfo value))
+        {
+            teleportMap.Add(sceneName, new SceneTeleportMap.SceneInfo());
+        }
+
+        teleportMap.TryGetValue(sceneName, out SceneTeleportMap.SceneInfo sceneInfo);
+        sceneInfo.RespawnPoints.Add(respawnMarkerName);
+    }
+
+    // to make custom benches work
+    public static void InitModRespawnMarkers()
+    {
+        AddRespawnMarkerToTeleportMap("GG_Pharloom_Hall_Of_Gods", "RestBench");
     }
 
     public System.Collections.IEnumerator GetObjectFromSilkScene(string[] path, string sceneName, Action<GameObject> func)

@@ -21,20 +21,13 @@ namespace Gods_Of_Pharloom
         private static bool Prefix(SceneLoad __instance)
         {
             GodsOfPharloomMod.currentScene = __instance.TargetSceneName;
-            
-            var scene = customScenes.Find((item) => item.sceneName == __instance.TargetSceneName);
-            if(scene == null) return true;
 
             var runner = __instance.GetType().GetField("runner", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            if (scene.isSkongScene)
-            {
-                ((MonoBehaviour)runner.GetValue(__instance)).StartCoroutine(OriginalBeginRoutine(__instance, scene));
-            }
-            else ((MonoBehaviour)runner.GetValue(__instance)).StartCoroutine(BeginRoutine_Patched(__instance, scene));
+            ((MonoBehaviour)runner.GetValue(__instance)).StartCoroutine(BeginRoutine_Patched(__instance));
             return false;
         }
 
-        private static System.Collections.IEnumerator BeginRoutine_Patched(SceneLoad __instance, CustomScene scene)
+        private static System.Collections.IEnumerator BeginRoutine_Patched2(SceneLoad __instance, CustomScene scene)
         {
             Log.LogInfo("PAAAAAAAAATTTTTCCCCHHHEEEDDD");
             FieldInfo operationHandle = __instance.GetType().GetField("operationHandle", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -50,6 +43,7 @@ namespace Gods_Of_Pharloom
             
             Scene from = SceneManager.GetActiveScene();
             AsyncOperation op;
+            
             if (!scene.isPreloading)
             {
                 op = SceneManager.LoadSceneAsync(scene.sceneName, LoadSceneMode.Additive);
@@ -342,7 +336,7 @@ namespace Gods_Of_Pharloom
 
 
 
-        private static System.Collections.IEnumerator OriginalBeginRoutine(SceneLoad __instance, CustomScene scene)
+        private static System.Collections.IEnumerator BeginRoutine_Patched(SceneLoad __instance)
         {
             Log.LogInfo("PAAAAAAAAATTTTTCCCCHHHEEEDDD");
             FieldInfo operationHandle = __instance.GetType().GetField("operationHandle", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -352,12 +346,37 @@ namespace Gods_Of_Pharloom
 
             Func<MethodInfo, object[], object> InvokeMethod = (method, obj) => method.Invoke(__instance, obj);
 
-            SceneAdditiveLoadConditional.LoadInSequence = true;
             string address = "Scenes/" + __instance.SceneLoadInfo.SceneName;
+
+            int sceneType = 0;
+
+            var scene = customScenes.Find((item) => item.sceneName == __instance.TargetSceneName);
+            if(scene == null) sceneType = 0;
+            else if(scene.isSkongScene) sceneType = 1;
+            else sceneType = 2;
+
+            while(!Preload.isInitialized) yield return null; // wait for preloads
+
+            bool wasPreloaded = false;
+
             UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle
-                    <UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>? 
-                        preLoadOperation = ScenePreloader.TakeSceneLoadOperation(address, LoadSceneMode.Additive);
-            bool wasPreloaded = preLoadOperation.HasValue;
+                        <UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>? 
+                            preLoadOperation = null;
+
+            SceneAdditiveLoadConditional.LoadInSequence = true;
+
+            if(sceneType == 0 || sceneType == 1)
+            {
+                preLoadOperation = ScenePreloader.TakeSceneLoadOperation(address, LoadSceneMode.Additive);
+                
+                wasPreloaded = preLoadOperation.HasValue;
+            }
+            else
+            {
+                var op = SceneManager.LoadSceneAsync(scene.sceneName, LoadSceneMode.Additive);
+                yield return op;
+            }
+
             InvokeMethod(RecordBeginTime, new object[] {SceneLoad.Phases.FetchBlocked});
             while (!__instance.IsFetchAllowed)
             {
@@ -366,7 +385,7 @@ namespace Gods_Of_Pharloom
             Log.LogInfo("PAAAAAAAAATTTTTCCCCHHHEEEDDD3");
             InvokeMethod(RecordEndTime, new object[] {SceneLoad.Phases.FetchBlocked});
             bool hasClearedMemory = false;
-            if (SceneLoad.IsClearMemoryRequired())
+            if (sceneType == 0 || sceneType == 1 && SceneLoad.IsClearMemoryRequired())
             {
                 GameManager.IsCollectingGarbage = true;
                 InvokeMethod(RecordBeginTime, new object[] {SceneLoad.Phases.ClearMemPreFetch});
@@ -376,38 +395,47 @@ namespace Gods_Of_Pharloom
             }
             InvokeMethod(RecordBeginTime, new object[] {SceneLoad.Phases.Fetch});//RecordBeginTime(SceneLoad.Phases.Fetch);
             int priority = __instance.SceneLoadInfo.AsyncPriority;
-            if (CheatManager.OverrideSceneLoadPriority)
+            
+            if(sceneType == 0 || sceneType == 1)
             {
-                priority = CheatManager.SceneLoadPriority;
+                if (CheatManager.OverrideSceneLoadPriority)
+                {
+                    priority = CheatManager.SceneLoadPriority;
+                }
+                if (wasPreloaded)
+                {
+                    operationHandle.SetValue(__instance, preLoadOperation.Value);//operationHandle = preLoadOperation.Value;
+                }
+                else if (__instance.SceneLoadInfo.SceneResourceLocation != null)
+                {
+                    operationHandle.SetValue(__instance, Addressables.LoadSceneAsync(__instance.SceneLoadInfo.SceneResourceLocation, LoadSceneMode.Additive, activateOnLoad: false, priority));//operationHandle = Addressables.LoadSceneAsync(__instance.SceneLoadInfo.SceneResourceLocation, LoadSceneMode.Additive, activateOnLoad: false, priority);
+                }
+                else
+                {
+                    operationHandle.SetValue(__instance, Addressables.LoadSceneAsync(address, LoadSceneMode.Additive, activateOnLoad: false, priority));//operationHandle = Addressables.LoadSceneAsync(address, LoadSceneMode.Additive, activateOnLoad: false, priority);
+                }
+                yield return (UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>)
+                    (operationHandle.GetValue(__instance));
             }
-            if (wasPreloaded)
-            {
-                operationHandle.SetValue(__instance, preLoadOperation.Value);//operationHandle = preLoadOperation.Value;
-            }
-            else if (__instance.SceneLoadInfo.SceneResourceLocation != null)
-            {
-                operationHandle.SetValue(__instance, Addressables.LoadSceneAsync(__instance.SceneLoadInfo.SceneResourceLocation, LoadSceneMode.Additive, activateOnLoad: false, priority));//operationHandle = Addressables.LoadSceneAsync(__instance.SceneLoadInfo.SceneResourceLocation, LoadSceneMode.Additive, activateOnLoad: false, priority);
-            }
-            else
-            {
-                operationHandle.SetValue(__instance, Addressables.LoadSceneAsync(address, LoadSceneMode.Additive, activateOnLoad: false, priority));//operationHandle = Addressables.LoadSceneAsync(address, LoadSceneMode.Additive, activateOnLoad: false, priority);
-            }
-            yield return (UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>)
-                (operationHandle.GetValue(__instance));
             
 
             //////////////////////////////////////////////
             Scene from = SceneManager.GetActiveScene();
-            scene.Activate();
-
-            while(!scene.isSceneActive)
+            
+            if(sceneType == 1 || sceneType == 2)
             {
-                yield return null;
+                scene.Activate();
+
+                while(!scene.isSceneActive)
+                {
+                    yield return null;
+                }
+                scene.isSceneActive = false;
+                scene.isPreloading = false;
             }
-            scene.isSceneActive = false;
-            scene.isPreloading = false;
 
             Scene to = SceneManager.GetSceneByName(__instance.TargetSceneName);
+            
             afterSceneLoaded?.Invoke();
             afterSceneLoadedGetScenes?.Invoke(from, to);
             ////////////////////////////////////////////////////////////
@@ -464,17 +492,20 @@ namespace Gods_Of_Pharloom
                 }
             }
             Log.LogInfo("PAAAAAAAAATTTTTCCCCHHHEEEDDD5");
-            if (((UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>)
-                    operationHandle.GetValue(__instance)).OperationException != null) //if (operationHandle.OperationException != null)
+            if(sceneType == 0 || sceneType == 1)
             {
-                Debug.LogError("Exception in scene load OperationHandle:");
-                CheatManager.LastErrorText = ((UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>)
-                    (operationHandle.GetValue(__instance))).OperationException.ToString(); //operationHandle.OperationException.ToString();
-                Debug.LogException(((UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>)
-                    (operationHandle.GetValue(__instance))).OperationException /*operationHandle.OperationException*/);
+                if (((UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>)
+                    operationHandle.GetValue(__instance)).OperationException != null) //if (operationHandle.OperationException != null)
+                {
+                    Debug.LogError("Exception in scene load OperationHandle:");
+                    CheatManager.LastErrorText = ((UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>)
+                        (operationHandle.GetValue(__instance))).OperationException.ToString(); //operationHandle.OperationException.ToString();
+                    Debug.LogException(((UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>)
+                        (operationHandle.GetValue(__instance))).OperationException /*operationHandle.OperationException*/);
+                }
+                yield return ((UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>)
+                        (operationHandle.GetValue(__instance))).Result.ActivateAsync(); //operationHandle.Result.ActivateAsync();
             }
-            yield return ((UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>)
-                    (operationHandle.GetValue(__instance))).Result.ActivateAsync(); //operationHandle.Result.ActivateAsync();
             
             InvokeMethod(RecordEndTime, new object[] {SceneLoad.Phases.Activation}); //RecordEndTime(SceneLoad.Phases.Activation);
 

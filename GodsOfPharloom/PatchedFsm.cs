@@ -96,6 +96,13 @@ public class PatchedFsm
         {
             new FsmPatch("Hero_Hornet(Clone)", "Superjump", PatchFsm_SuperJump),
         }),
+
+        new PatchedFsm(BossStatueInfo.hog_sceneName, new FsmPatch[]
+        {
+            new FsmPatch("Detect Range", "Detect Hero", PatchFsm_DetectRangeBenchControl),
+            new FsmPatch("RestBench", "Trap Bench", PatchFsm_TrapBenchDestroy),
+        }),
+
         new PatchedFsm("Tut_03", new FsmPatch[]
         {
             new FsmPatch("Mossbone Mother", "Control", PatchFsm_MossMother),
@@ -502,6 +509,32 @@ public class PatchedFsm
 
         groundCharge.Actions = InsertInArray(groundCharge.Actions, groundCharge.Actions[19], groundCharge.Actions.Length);
         groundCharge.Actions = RemoveFromArray(groundCharge.Actions, 19);
+
+        return true;
+    }
+    public static bool PatchFsm_DetectRangeBenchControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var idle = fsm.GetState("Idle");
+        var close = fsm.GetState("Close");
+
+        var color = new FsmColor();
+        color.Value = new UnityEngine.Color(0, 0, 0, 0);
+
+        ((SetMaterialColor)idle.Actions[6]).color = color;
+
+        idle.Actions = RemoveFromArray(idle.Actions, 5);
+
+        close.Actions = RemoveFromArray(close.Actions, 6);
+        close.Actions = RemoveFromArray(close.Actions, 5);
+        close.Actions = RemoveFromArray(close.Actions, 3);
+        close.Actions = RemoveFromArray(close.Actions, 2);
+
+        return true;
+    }
+    public static bool PatchFsm_TrapBenchDestroy(Fsm fsm)
+    {
+        GameObject.Destroy(fsm.FsmComponent);
 
         return true;
     }
