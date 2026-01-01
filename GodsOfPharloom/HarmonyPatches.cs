@@ -69,6 +69,21 @@ namespace Gods_Of_Pharloom
             if(!Preload.isInitialized) Preload.Init();
         }
 
+        // remove enemies armor
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(HealthManager), "ApplyDamageScaling")]
+        public static bool HealthManagerApplyDamageScaling_Prefix(HealthManager __instance, HitInstance hitInstance, 
+            ref HitInstance __result)
+        {
+            if (BossSequence.isInSequence)
+            {
+                __result = hitInstance;
+                return false;
+            }
+
+            return true;
+        }
+
         //Set Custom Bosses Hp
 
         // [HarmonyPostfix]

@@ -70,33 +70,16 @@ namespace Gods_Of_Pharloom
             var jsonString = JsonConvert.SerializeObject(PlayerDataMod.instance, Formatting.Indented);
             File.WriteAllText(pathToModData, jsonString);
         }
-        public void CreateSceneManager()
-        {
-            var sceneManager = new GameObject("_SceneManager");
-            SceneManager.MoveGameObjectToScene(sceneManager, SceneManager.GetSceneByName(BossStatueInfo.hog_sceneName));
-            sceneManager.tag = "SceneManager";
-            var sceneManagerComp = sceneManager.AddComponent<CustomSceneManager>();
-            sceneManagerComp.scenePools = new SceneObjectPool[0];
-            var sceneColorManager = GameCameras.instance.sceneColorManager;
-            sceneColorManager.GetType().GetField("changesInEditor", BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(sceneColorManager, false);
-            sceneManagerComp.saturation = 0.8f;
-            sceneManagerComp.heroLightColor = new Color(0.7f, 0.7f, 0.7f, 0.7f);
-            sceneManagerComp.CancelEnviroSnapshot();
-            
-        }
         private void Awake()
         {
             instance = this;
             Log = this.Logger;
 
             try{
-            Logger.LogInfo($"Plugin is loaded!");
             BossInfo.InitBossesInfo();
             BossStatueInfo.InitBossesStatue();
             LoadModData();
             BossStatueInfo.GetBadges();
-
             }
             catch(Exception ex)
             {
@@ -109,16 +92,17 @@ namespace Gods_Of_Pharloom
 
             afterSceneLoaded += CustomMenu.Reset;
 
-            Harmony.CreateAndPatchAll(typeof(GodsOfPharloomMod), null);
+            Harmony.CreateAndPatchAll(typeof(GodsOfPharloomMod));
             InitCustomScenes();
-            // Plugin startup logic
-            Logger.LogInfo($"Plugin is loaded!");
+
             SceneManager.activeSceneChanged += OnSceneChanged;
 
             foreach(string name in assetBundleNames)
             {
                 LoadBundle(name);
             }
+
+            Logger.LogInfo($"Plugin is loaded!");
         }
 
         void Update()
@@ -179,7 +163,7 @@ namespace Gods_Of_Pharloom
         {
             var GG_Pharloom_Atrium = new CustomScene("GG_Pharloom_Atrium", isFastSuperJump: true, isSkongScene: false);
             GG_Pharloom_Atrium.AddTransitionPoint(new TransitionPointInfo("door1", new Vector3(79.68f, 73.9f, 0), "Belltown", "door1", isADoor: true, noInputOnStart: false));
-            GG_Pharloom_Atrium.AddTransitionPoint(new TransitionPointInfo("door2", new Vector3(57.5f, 54f, 0), "GG_Pharloom_Hall_Of_Gods", "door1", isADoor: true, noInputOnStart: false));
+            GG_Pharloom_Atrium.AddTransitionPoint(new TransitionPointInfo("door2", new Vector3(57.5f, 54f, 0), BossStatueInfo.hog_sceneName, "door1", isADoor: true, noInputOnStart: false));
             GG_Pharloom_Atrium.AfterSceneActivated += () => {
                 var audioManager = GameManager.instance.AudioManager;
                 audioManager.StopAndClearAtmos();
@@ -189,7 +173,7 @@ namespace Gods_Of_Pharloom
             };
             customScenes.Add(GG_Pharloom_Atrium);
 
-            var GG_Pharloom_HoG = new CustomScene("GG_Pharloom_Hall_Of_Gods", isFastSuperJump: true, isSkongScene: false);
+            var GG_Pharloom_HoG = new CustomScene(BossStatueInfo.hog_sceneName, isFastSuperJump: true, isSkongScene: false);
             GG_Pharloom_HoG.AddTransitionPoint(new TransitionPointInfo("door1", new Vector3(44.64f, 52.58f, 0), "GG_Pharloom_Atrium", "door2", isADoor: true, noInputOnStart: false));
             GG_Pharloom_HoG.AfterSceneActivated += () => {
                 var gm = GameManager.instance;
@@ -197,7 +181,7 @@ namespace Gods_Of_Pharloom
                 audioManager.StopAndClearAtmos();
                 audioManager.StopAndClearMusic();
 
-                var rootObjects = SceneManager.GetSceneByName("GG_Pharloom_Hall_Of_Gods").GetRootGameObjects();
+                var rootObjects = SceneManager.GetSceneByName(BossStatueInfo.hog_sceneName).GetRootGameObjects();
                 foreach(var obj in rootObjects)
                 {
                     if(obj.name == "BossStatues")
@@ -220,8 +204,6 @@ namespace Gods_Of_Pharloom
                 cameraLock1.cameraXMax = 44.64f;
                 go1.GetComponent<BoxCollider2D>().size = new Vector2(8f, 100f);
 
-                // CreateSceneManager();
-
                 //add a bench
                 GameObject gg_bench_sprite = null;
                 foreach(var obj in rootObjects)
@@ -231,11 +213,30 @@ namespace Gods_Of_Pharloom
                 var bench = Instantiate(Preload.preloads["RestBench"], parameters: new InstantiateParameters
                 {
                     parent = gg_bench_sprite.transform,
-                    scene = SceneManager.GetSceneByName("GG_Pharloom_Hall_Of_Gods"),
+                    scene = SceneManager.GetSceneByName(BossStatueInfo.hog_sceneName),
                 });
                 bench.transform.position = gg_bench_sprite.transform.position;
                 bench.name = "RestBench";
                 bench.GetComponent<SpriteRenderer>().enabled = false;
+                /////////////
+                
+                //add a scene manager
+                var sceneManager = Instantiate(Preload.preloads["_SceneManager_Ant_17"], parameters: new InstantiateParameters
+                {
+                    scene = SceneManager.GetSceneByName(BossStatueInfo.hog_sceneName),
+                });
+                var sceneManagerComp = sceneManager.GetComponent<CustomSceneManager>();
+                sceneManager.SetActive(true);
+                IEnumerator enumerator()
+                {
+                    yield return null;
+
+                    sceneManagerComp.darknessLevel = 0;
+                    sceneManagerComp.saturation = 1.2f;
+                    sceneManagerComp.UpdateScene();
+                }
+                this.StartCoroutine(enumerator());
+                /////////////////////
 
                 GG_Pharloom_HoG.isSceneActive = true;
             };
@@ -380,7 +381,7 @@ namespace Gods_Of_Pharloom
             customScenes.Add(Slab_10b);
 
             var Dock_09 = new CustomScene("Dock_09");
-            Dock_09.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(24.766f, 7.57f, 0), "", "", isADoor: true, 
+            Dock_09.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(30f, 7.57f, 0), "", "", isADoor: true, 
             isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Dock_09.isSkongScene = true;
             Dock_09.AfterSceneActivated += () => {Dock_09.isSceneActive = true;};
@@ -549,7 +550,7 @@ namespace Gods_Of_Pharloom
 
             var Memory_Ant_Queen = new CustomScene("Memory_Ant_Queen");
             Memory_Ant_Queen.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(148.4f, 19.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: true));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Memory_Ant_Queen.isSkongScene = true;
             Memory_Ant_Queen.AfterSceneActivated += () => {Memory_Ant_Queen.isSceneActive = true;};
             customScenes.Add(Memory_Ant_Queen);

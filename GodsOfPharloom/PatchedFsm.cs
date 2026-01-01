@@ -2245,7 +2245,7 @@ public class PatchedFsm
                     if(child.gameObject.name == "Start Range")
                     {
                         var childPos = child.gameObject.transform.position;
-                        child.gameObject.transform.position = new Vector3(18f, childPos.y, childPos.z);
+                        child.gameObject.transform.position = new Vector3(27f, childPos.y, childPos.z);
                         break;
                     }
                 }
