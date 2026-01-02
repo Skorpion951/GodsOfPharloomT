@@ -214,6 +214,7 @@ public class PatchedFsm
         new PatchedFsm("Belltown_08", new FsmPatch[]
         {
             new FsmPatch("Wisp Pyre Effigy", "Summon Control", PatchFsm_FatherOfFlame),
+            new FsmPatch("Battle Gate Swamp", "BG Control", PatchFsm_FatherOfFlameGateControl),
         }),
         new PatchedFsm("Slab_10b", new FsmPatch[]
         {
@@ -256,6 +257,7 @@ public class PatchedFsm
             new FsmPatch("Lace Boss2 New", "Control", PatchFsm_Lace2BossControl),
             new FsmPatch("Corpse Lace2(Clone)", "Control", PatchFsm_Lace2CorpseControl),
             new FsmPatch("Lace Return Corpse", "Position", PatchFsm_Lace2ReturnCorpseDeactivate),
+            new FsmPatch("song_tower_right_gate", "Control", PatchFsm_Lace2RightGate),
         }),
         new PatchedFsm("Coral_27", new FsmPatch[]
         {
@@ -277,6 +279,10 @@ public class PatchedFsm
         {
             new FsmPatch("Mapper Spar NPC", "Attack Enemies", PatchFsm_ShakraAttackEnemies),
             new FsmPatch("Mapper Call Pole", "Control", PatchFsm_ShakraCallPole),
+        }),
+        new PatchedFsm("Ward_02", new FsmPatch[]
+        {
+            new FsmPatch("Pipe_Vent_Hatch", "Open At Battle End", PatchFsm_TheUnravelledPipeControl),
         }),
         new PatchedFsm("Ward_02_Boss", new FsmPatch[]
         {
@@ -2105,6 +2111,15 @@ public class PatchedFsm
 
         return true;
     }
+    public static bool PatchFsm_FatherOfFlameGateControl(Fsm fsm)
+    {
+        var pause = fsm.GetState("Pause");
+        var close1 = fsm.GetState("Close 1");
+
+        SetTransitionToState(pause, close1, 0);
+
+        return true;
+    }
     public static bool PatchFsm_FirstSinner(Fsm fsm)
     {
         var init = fsm.GetState("Init");
@@ -2173,7 +2188,16 @@ public class PatchedFsm
         breakOut.Actions = RemoveFromArray(breakOut.Actions, 12);
         setRespawn.Actions = RemoveFromArray(setRespawn.Actions, 1);
 
-        SetTransitionToState(init, breakOut, 1);
+        // SetTransitionToState(init, breakOut, 1);
+
+        init.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent("FINISHED"),
+                ToFsmState = breakOut
+            }
+        };
 
         GameObject.DestroyImmediate(fsm.FsmComponent.gameObject.GetComponent<PlayMakerNPC>());
 
@@ -2699,6 +2723,16 @@ public class PatchedFsm
 
         return true;
     }
+    public static bool PatchFsm_Lace2RightGate(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        
+        init.Transitions = new FsmTransition[0];
+
+        fsm.GameObject.GetComponent<Gate>().ForceClose();
+
+        return true;
+    }
     public static bool PatchFsm_RagingConchfly(Fsm fsm)
     {
         var init = fsm.GetState("Init");
@@ -3013,6 +3047,14 @@ public class PatchedFsm
         };
 
         deathBlow.Actions = InsertInArray(deathBlow.Actions, customActionSendBossDeadEvent, 0);
+
+        return true;
+    }
+    public static bool PatchFsm_TheUnravelledPipeControl(Fsm fsm)
+    {
+        var state3 = fsm.GetState("State 3");
+
+        state3.Transitions = new FsmTransition[0];
 
         return true;
     }

@@ -46,6 +46,7 @@ namespace Gods_Of_Pharloom
             Log.LogInfo("cleared OnPositionedAtHero");
             return false;
         }
+
         [HarmonyPrefix]
         [HarmonyPatch(typeof(GameManager), "PlayerDead")]
         public static bool PlayerDead_Prefix(ref float waitTime)
@@ -54,6 +55,7 @@ namespace Gods_Of_Pharloom
             waitTime = 0f;
             return true;
         }
+
         [HarmonyPrefix]
         [HarmonyPatch(typeof(ScenePreloader), "SpawnPreloader")]
         public static bool ScenePreloader_Prefix(string sceneName, LoadSceneMode mode)
@@ -62,6 +64,7 @@ namespace Gods_Of_Pharloom
             return true;
         }
 
+        // init preloads
         [HarmonyPostfix]
         [HarmonyPatch(typeof(HeroController), "Awake")]
         public static void HeroControllerAwake_Postfix()
@@ -145,27 +148,23 @@ namespace Gods_Of_Pharloom
             return true;
         }
 
-        //get HeroDeathSequence to speed up death animation
-        // [HarmonyPostfix]
-        // [HarmonyPatch(typeof(HeroDeathSequence), "Awake")]
-        // private static void TakeDamagePatch_Postfix(HeroDeathSequence __instance)
-        // {
-        //     BossSequence.deathSequenceController = __instance;
-        // }
-
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SceneAdditiveLoadConditional), "OnEnable")]
-        private static void SceneAdditiveLoadPatch_Prefix(SceneAdditiveLoadConditional __instance)
+        private static bool SceneAdditiveLoadPatch_Prefix(SceneAdditiveLoadConditional __instance)
         {
             if(BossSequence.currentBoss == BossInfo.bosses["Fourth Chorus"] && __instance.gameObject.name.Contains("Boss Golem Loader"))
             {
                 FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo tests = __instance.GetType().GetField("tests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo doorBlackList = __instance.GetType().GetField("doorBlackList", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo otherLoaderBlacklist = __instance.GetType().GetField("otherLoaderBlacklist", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
                 var playerDataTest = new PlayerDataTest();
 
                 questTests.SetValue(__instance, new QuestTest[0]);
                 tests.SetValue(__instance, playerDataTest);
+                doorBlackList.SetValue(__instance, new string[0]);
+                otherLoaderBlacklist.SetValue(__instance, new SceneAdditiveLoadConditional[0]);
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Fourth Chorus"] && __instance.gameObject.name.Contains("Boss Beastfly Loader"))
             {
@@ -208,11 +207,19 @@ namespace Gods_Of_Pharloom
             {
                 FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo tests = __instance.GetType().GetField("tests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo doorBlackList = __instance.GetType().GetField("doorBlackList", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo otherLoaderBlacklist = __instance.GetType().GetField("otherLoaderBlacklist", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo loadAlt = __instance.GetType().GetField("loadAlt", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _additiveSceneLoads = __instance.GetType().GetField("_additiveSceneLoads", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
 
                 var playerDataTest = new PlayerDataTest();
 
                 questTests.SetValue(__instance, new QuestTest[0]);
                 tests.SetValue(__instance, playerDataTest);
+                doorBlackList.SetValue(__instance, new string[0]);
+                otherLoaderBlacklist.SetValue(__instance, new SceneAdditiveLoadConditional[0]);
+                loadAlt.SetValue(__instance, false);
+                _additiveSceneLoads.SetValue(__instance, new List<SceneAdditiveLoadConditional>());
             }
 
             if(BossSequence.currentBoss == BossInfo.bosses["The Unravelled"] && __instance.gameObject.name.Contains("Boss Loader"))
@@ -246,6 +253,8 @@ namespace Gods_Of_Pharloom
                 questTests.SetValue(__instance, new QuestTest[0]);
                 tests.SetValue(__instance, playerDataTest);
             }
+
+            return true;
         }
         [HarmonyPrefix]
         [HarmonyPatch(typeof(TestGameObjectActivator), "OnEnable")]
@@ -427,6 +436,12 @@ namespace Gods_Of_Pharloom
                 Destroy(__instance);
                 return false;
             }
+            if(BossSequence.currentBoss == BossInfo.bosses["Lace in the Cradle"] &&
+                __instance.gameObject.name == "Lace Boss2 New")
+            {
+                Destroy(__instance);
+                return false;
+            }
             return true;
         }
         [HarmonyPrefix]
@@ -437,7 +452,7 @@ namespace Gods_Of_Pharloom
                 __instance.gameObject.SetActive(false);
                 return false;
             }
-            if(BossSequence.currentBoss == BossInfo.bosses["Skull Tyrant"] && __instance.gameObject.name == "Corpse"){
+            if(BossSequence.currentBoss == BossInfo.bosses["Skull Tyrant"] && __instance.gameObject.name == "Corpse" || __instance.gameObject.name == "Hunter Fan Outside Rummage (1)"){
                 __instance.gameObject.SetActive(false);
                 return false;
             }
@@ -454,6 +469,10 @@ namespace Gods_Of_Pharloom
                 return false;
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Voltvyrm"] &&__instance.gameObject.name == "Return Aftermath"){
+                Destroy(__instance.gameObject);
+                return false;
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Phantom"] &&__instance.gameObject.name == "Return Mask"){
                 Destroy(__instance.gameObject);
                 return false;
             }
@@ -517,6 +536,12 @@ namespace Gods_Of_Pharloom
                 Destroy(__instance.gameObject);
                 return false;
             }
+            if(BossSequence.currentBoss == BossInfo.bosses["Crawfather"] && 
+                    __instance.gameObject.name == "grey_lever_gate"){
+                __instance.gameObject.GetComponent<Gate>().ForceClose();
+                Destroy(__instance);
+                return false;
+            }
             return true;
         }
         [HarmonyPrefix]
@@ -553,6 +578,14 @@ namespace Gods_Of_Pharloom
                     __instance.gameObject.name == "Battle Scene"){
                 __instance.setPDBoolOnEnd = null;
                 __instance.activeAfterBattle = null;
+            }
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(HarpoonRingSlider), "Awake")]
+        private static void HarpoonRingSliderAwake_Prefix(HarpoonRingSlider __instance)
+        {
+            if(BossSequence.currentBoss == BossInfo.bosses["Cogwork Dancers"]){
+                Destroy(__instance.gameObject);
             }
         }
         [HarmonyPrefix]
