@@ -102,8 +102,12 @@ public class PatchedFsm
         {
             new FsmPatch("Detect Range", "Detect Hero", PatchFsm_DetectRangeBenchControl),
             new FsmPatch("RestBench", "Trap Bench", PatchFsm_TrapBenchDestroy),
-            new FsmPatch("thread_memory", "FSM", PatchFsm_ThreadMemoryFSM),
             // new FsmPatch("thread_memory", "Deep Memory Pre Enter Effect", PatchFsm_ThreadMemoryPreEnterEffect),
+        }),
+        new PatchedFsm("Shellwood_11b", new FsmPatch[]
+        {
+            new FsmPatch("thread_memory", "FSM", PatchFsm_ThreadMemoryFSM),
+            new FsmPatch("thread_memory", "Deep Memory Pre Enter Effect", PatchFsm_ThreadMemoryPreEnterEffect),
         }),
 
         new PatchedFsm("Tut_03", new FsmPatch[]
@@ -234,6 +238,7 @@ public class PatchedFsm
         }),
         new PatchedFsm("Library_09", new FsmPatch[]
         {
+            new FsmPatch("Garmond Scene", "Control", PatchFsm_GarmondAndZazaSceneControl),
             new FsmPatch("Garmond Fighter", "Control", PatchFsm_GarmondAndZaza),
             new FsmPatch("Citadel Library NPC", "Dialogue", PatchFsm_GarmondAndZazaDestroyNPCComponent),
         }),
@@ -581,6 +586,22 @@ public class PatchedFsm
         };
 
         collapse.Actions = PatchedFsm.InsertInArray(collapse.Actions, wait, collapse.Actions.Length-1);
+
+        return true;
+    }
+    public static bool PatchFsm_ThreadMemoryPreEnterEffect(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+
+        GodsOfPharloomMod.Log.LogInfo("182398891283401723847019283470912837401928");
+
+        GodsOfPharloomMod.Log.LogInfo(((CreateObject)init.Actions[2]).gameObject.Value.name);
+        var obj = GameObject.Instantiate(((CreateObject)init.Actions[2]).gameObject.Value, parameters: new InstantiateParameters
+        {
+            parent = Preload.handler.transform
+        });
+        fsm.SetVariable("Deep Memory Pre Enter Effect", obj);
+        ((CreateObject)init.Actions[2]).gameObject = obj;
 
         return true;
     }
@@ -944,12 +965,8 @@ public class PatchedFsm
 
         deathLand.Actions = InsertInArray(deathLand.Actions, customActionSendEvent, 0);
 
-        init.Transitions[0].ToState = remeetRoar.Name;
-        init.Transitions[0].ToFsmState = remeetRoar;
-
-        remeetRoar.Transitions[0].ToState = roarNoClamp.Name;
-        remeetRoar.Transitions[0].ToFsmState = roarNoClamp;
-
+        SetTransitionToState(init, remeetRoar, 0);
+        SetTransitionToState(remeetRoar, roarNoClamp, 0);
         SetTransitionToState(deathAnim, explode, 0);
 
         return true;
@@ -1022,8 +1039,16 @@ public class PatchedFsm
             };
         };
 
+        var customActionStartBattle = new CustomLogicFsm(fsm);
+        customActionStartBattle.action += (Fsm fsm) =>
+        {
+            fsm.FsmComponent.SendEvent("REMEET READY");
+        };
+
         remeetReady.Actions = InsertInArray(remeetReady.Actions,
                               customActionCreateTriggerForStart, remeetReady.Actions.Length);
+        
+        init.Actions = InsertInArray(init.Actions, customActionStartBattle, init.Actions.Length);
 
         if(Gods_Of_Pharloom.BossSequence.currentBoss == BossInfo.bosses["Fourth Chorus"])
         {
@@ -1215,9 +1240,22 @@ public class PatchedFsm
     {
         var introRoar = fsm.GetState("Intro Roar");
         var introFallAnticQ = fsm.GetState("Intro Fall Antic Q");
+        var firstIdle = fsm.GetState("First Idle");
+        var idle = fsm.GetState("Idle");
 
         ((Wait)(introRoar.Actions[1])).time = 0.1f;
         ((Wait)(introFallAnticQ.Actions[4])).time = 0f;
+
+        var customActionSendFinishEvent = new CustomLogicFsm(fsm);
+        customActionSendFinishEvent.action += (Fsm fsm) =>
+        {
+            fsm.FsmComponent.SendEvent("FINISHED");
+        };
+
+        firstIdle.Actions = InsertInArray(firstIdle.Actions, customActionSendFinishEvent, 4);
+
+        SetTransitionToState(firstIdle, idle, 0);
+        SetTransitionToState(firstIdle, idle, 1);
 
         return true;
     }
@@ -2423,6 +2461,20 @@ public class PatchedFsm
         deathLand.Actions = InsertInArray(deathLand.Actions, customActionSendEvent, 0);
 
         setup1.Actions = RemoveFromArray(setup1.Actions, 2);
+
+        return true;
+    }
+    public static bool PatchFsm_GarmondAndZazaSceneControl(Fsm fsm)
+    {
+        var idle = fsm.GetState("Idle");
+
+        var customActionSendEvent = new CustomLogicFsm(fsm);
+        customActionSendEvent.action += (Fsm fsm) =>
+        {
+            fsm.FsmComponent.SendEvent("SEEN");
+        };
+
+        idle.Actions = new FsmStateAction[]{customActionSendEvent};
 
         return true;
     }

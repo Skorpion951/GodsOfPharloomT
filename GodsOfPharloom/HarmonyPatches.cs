@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using System.Reflection;
 using UnityEngine.AddressableAssets;
 using HarmonyLib;
+using System.Collections;
 
 namespace Gods_Of_Pharloom
 {
@@ -17,13 +18,13 @@ namespace Gods_Of_Pharloom
             var orig = __instance.gameObject;
 
             Log.LogInfo(__instance.gameObject.name + "     " + __instance.FsmName + "        " + __instance.gameObject.scene.name);
+
             int index1 = 0;
             for(; index1 < PatchedFsm.patchedFsms.Length; index1++)
             {
                 if(String.Equals(__instance.gameObject.scene.name, PatchedFsm.patchedFsms[index1].sceneName, StringComparison.OrdinalIgnoreCase)) break;
                 if(index1 == PatchedFsm.patchedFsms.Length - 1) return;
             }
-
 
             var patchedFsm = PatchedFsm.patchedFsms[index1];
 
@@ -158,6 +159,8 @@ namespace Gods_Of_Pharloom
                 FieldInfo tests = __instance.GetType().GetField("tests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo doorBlackList = __instance.GetType().GetField("doorBlackList", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo otherLoaderBlacklist = __instance.GetType().GetField("otherLoaderBlacklist", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo loadAlt = __instance.GetType().GetField("loadAlt", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _additiveSceneLoads = __instance.GetType().GetField("_additiveSceneLoads", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
 
                 var playerDataTest = new PlayerDataTest();
 
@@ -165,43 +168,67 @@ namespace Gods_Of_Pharloom
                 tests.SetValue(__instance, playerDataTest);
                 doorBlackList.SetValue(__instance, new string[0]);
                 otherLoaderBlacklist.SetValue(__instance, new SceneAdditiveLoadConditional[0]);
+                loadAlt.SetValue(__instance, false);
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Fourth Chorus"] && __instance.gameObject.name.Contains("Boss Beastfly Loader"))
             {
                 Destroy(__instance.gameObject);
+                return false;
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Savage Beastfly in Far Fields"] && __instance.gameObject.name.Contains("Boss Beastfly Loader"))
             {
                 FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo tests = __instance.GetType().GetField("tests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo doorBlackList = __instance.GetType().GetField("doorBlackList", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo otherLoaderBlacklist = __instance.GetType().GetField("otherLoaderBlacklist", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo loadAlt = __instance.GetType().GetField("loadAlt", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _additiveSceneLoads = __instance.GetType().GetField("_additiveSceneLoads", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
 
                 var playerDataTest = new PlayerDataTest();
 
                 questTests.SetValue(__instance, new QuestTest[0]);
                 tests.SetValue(__instance, playerDataTest);
+                doorBlackList.SetValue(__instance, new string[0]);
+                otherLoaderBlacklist.SetValue(__instance, new SceneAdditiveLoadConditional[0]);
+                loadAlt.SetValue(__instance, false);
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Savage Beastfly in Far Fields"] && __instance.gameObject.name.Contains("Boss Golem Loader"))
             {
                 Destroy(__instance.gameObject);
+                return false;
             }
             if(BossSequence.isInSequence && __instance.gameObject.name.Contains("Rest Golem Loader"))
             {
                 Destroy(__instance.gameObject);
+                return false;
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Shakra"] && __instance.gameObject.name.Contains("Mapper Sparring"))
             {
                 FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo tests = __instance.GetType().GetField("tests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo doorBlackList = __instance.GetType().GetField("doorBlackList", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo otherLoaderBlacklist = __instance.GetType().GetField("otherLoaderBlacklist", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo loadAlt = __instance.GetType().GetField("loadAlt", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _additiveSceneLoads = __instance.GetType().GetField("_additiveSceneLoads", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
 
                 var playerDataTest = new PlayerDataTest();
 
                 questTests.SetValue(__instance, new QuestTest[0]);
                 tests.SetValue(__instance, playerDataTest);
+                doorBlackList.SetValue(__instance, new string[0]);
+                otherLoaderBlacklist.SetValue(__instance, new SceneAdditiveLoadConditional[0]);
+                loadAlt.SetValue(__instance, false);
+            }
+            if(BossSequence.currentBoss == BossInfo.bosses["Shakra"] && __instance.gameObject.name.Contains("Boss Scene Loader") || __instance.gameObject.name.Contains("Caravan Scene Loader"))
+            {
+                GameObject.Destroy(__instance.gameObject);
+                return false;
             }
 
             if(BossSequence.currentBoss == BossInfo.bosses["Moorwing"] && __instance.gameObject.name.Contains("Mapper Sparring") || __instance.gameObject.name.Contains("Caravan Scene Loader"))
             {
                 GameObject.Destroy(__instance.gameObject);
+                return false;
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Moorwing"] && __instance.gameObject.name.Contains("Boss Scene Loader"))
             {

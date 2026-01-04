@@ -40,8 +40,10 @@ public class Preload
     public static ScenePreloadInfo[] preloadsInfo = new ScenePreloadInfo[]
     {
         new ScenePreloadInfo{sceneName = "Ant_17", objectsInfo = new ObjectPreloadInfo[]{
-            new ObjectPreloadInfo{objectName = "RestBench", path = "Trap Scene/RestBench", isActive = true},
             new ObjectPreloadInfo{objectName = "_SceneManager_Ant_17", path = "_SceneManager", isActive = false},
+        }},
+        new ScenePreloadInfo{sceneName = "Peak_12", objectsInfo = new ObjectPreloadInfo[]{
+            new ObjectPreloadInfo{objectName = "RestBench", path = "RestBench (1)", isActive = true},
         }},
         new ScenePreloadInfo{sceneName = "Shellwood_11b", objectsInfo = new ObjectPreloadInfo[]{
             new ObjectPreloadInfo{objectName = "Memory Group", path = "memory_font/Uncompleted/Memory Group", isActive = true,
@@ -88,17 +90,14 @@ public class Preload
     }
     public static void AddToPreloads(GameObject obj, ObjectPreloadInfo objectInfo)
     {
-        var copy = (GameObject)GameObject.Instantiate(obj, parameters: new InstantiateParameters
-        {
-            scene = SceneManager.GetSceneByName("DontDestroyOnLoad"),
-            parent = handler.transform
-        });
-        copy.name = objectInfo.objectName;
-        copy.SetActive(objectInfo.isActive);
+        GameObject.DontDestroyOnLoad(obj);
+        obj.transform.SetParent(handler.transform);
+        obj.name = objectInfo.objectName;
+        obj.SetActive(objectInfo.isActive);
 
-        preloads[copy.name] = copy;
+        preloads[obj.name] = obj;
 
-        objectInfo.afterObjectPreloaded?.Invoke(copy);
+        objectInfo.afterObjectPreloaded?.Invoke(obj);
     }
 
     public static IEnumerator PreloadObjects(ScenePreloadInfo preloadInfo)

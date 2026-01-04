@@ -113,7 +113,8 @@ namespace Gods_Of_Pharloom
             }
 
             ////////////////////////////////////////////////////////////
-            while(!Preload.isInitialized) yield return null; // wait for preloads
+            if(__instance.TargetSceneName != "Opening_Sequence")
+                while(!Preload.isInitialized) yield return null; // wait for preloads
 
             if(sceneTypeTo == 1 || sceneTypeTo == 2)
             {
