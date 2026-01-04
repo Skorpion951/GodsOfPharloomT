@@ -95,12 +95,15 @@ public class PatchedFsm
         new PatchedFsm("Menu_Title", new FsmPatch[]
         {
             new FsmPatch("Hero_Hornet(Clone)", "Superjump", PatchFsm_SuperJump),
+            // new FsmPatch("Start Blanker", "Blanker Control", PatchFsm_ForInitModPreloads),
         }),
 
         new PatchedFsm(BossStatueInfo.hog_sceneName, new FsmPatch[]
         {
             new FsmPatch("Detect Range", "Detect Hero", PatchFsm_DetectRangeBenchControl),
             new FsmPatch("RestBench", "Trap Bench", PatchFsm_TrapBenchDestroy),
+            new FsmPatch("thread_memory", "FSM", PatchFsm_ThreadMemoryFSM),
+            // new FsmPatch("thread_memory", "Deep Memory Pre Enter Effect", PatchFsm_ThreadMemoryPreEnterEffect),
         }),
 
         new PatchedFsm("Tut_03", new FsmPatch[]
@@ -518,6 +521,29 @@ public class PatchedFsm
 
         return true;
     }
+    public static bool PatchFsm_ForInitModPreloads(Fsm fsm)
+    {
+        if(Preload.isInitialized) return false;
+
+        void afterPreloaded()
+        {
+            var scene = SceneManager.GetSceneByName("Menu_Title");
+            foreach(var go in scene.GetRootGameObjects())
+            {
+                if(go.name == "_SceneManager")
+                {
+                    go.GetComponent<CustomSceneManager>().UpdateScene();
+                    Preload.afterAllPreloaded -= afterPreloaded;
+                    return;
+                }
+            }
+        }
+
+        Preload.afterAllPreloaded += afterPreloaded;
+        Preload.Init();
+
+        return true;
+    }
     public static bool PatchFsm_DetectRangeBenchControl(Fsm fsm)
     {
         var init = fsm.GetState("Init");
@@ -541,6 +567,20 @@ public class PatchedFsm
     public static bool PatchFsm_TrapBenchDestroy(Fsm fsm)
     {
         GameObject.Destroy(fsm.FsmComponent);
+
+        return true;
+    }
+    public static bool PatchFsm_ThreadMemoryFSM(Fsm fsm)
+    {
+        var collapse = fsm.GetState("Collapse");
+
+        var wait = new Wait
+        {
+            time = 0.5f,
+            finishEvent = FsmEvent.GetFsmEvent("FINISHED")
+        };
+
+        collapse.Actions = PatchedFsm.InsertInArray(collapse.Actions, wait, collapse.Actions.Length-1);
 
         return true;
     }

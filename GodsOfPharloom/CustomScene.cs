@@ -15,7 +15,7 @@ public class CustomScene
 {
     public string sceneName {get; private set;}
     private List<TransitionPointInfo> TransitionGates = new List<TransitionPointInfo>();
-    public Action AfterSceneActivated;
+    public Action<Scene> AfterSceneActivated;
     public Vector2 tileMapVector = new Vector2(512, 512);
     public bool isSceneActive = false;
     public bool isPreloading = false;
@@ -55,17 +55,17 @@ public class CustomScene
         this.isPreloading = true;
         var op = SceneManager.LoadSceneAsync(this.sceneName, LoadSceneMode.Additive);
         yield return op;
-        this.Activate();
+        this.Activate((Scene)GodsOfPharloomMod.lastLoadedScene);
     }
-    private void CreateGate(TransitionPointInfo item)
+    private void CreateGate(TransitionPointInfo item, Scene scene)
     {
         //create\\
-        var gm = new GameObject(item.gateName);
-        var collider = gm.AddComponent<BoxCollider2D>();
+        var go = new GameObject(item.gateName);
+        var collider = go.AddComponent<BoxCollider2D>();
         collider.isTrigger = true;
 
         //setup gate's position
-        gm.transform.position = item.position;
+        go.transform.position = item.position;
         
         //setup collider size
         if(item.gateName.Contains("top") || item.gateName.Contains("bot")) collider.size = new Vector2(4, 1);
@@ -73,8 +73,8 @@ public class CustomScene
         if(item.isOneTimeTransition) collider.enabled = false;
 
         //adding transition point
-        CreateTransitionPoint(item, gm, this.sceneName);
-        SceneManager.MoveGameObjectToScene(gm, SceneManager.GetSceneByName(sceneName));
+        CreateTransitionPoint(item, go, this.sceneName);
+        SceneManager.MoveGameObjectToScene(go, scene);
     }
     public static TransitionPoint CreateTransitionPoint(TransitionPointInfo item, GameObject go, string sceneName)
     {
@@ -191,10 +191,10 @@ public class CustomScene
         return tp;
     }
 
-    public static CameraLockArea CreateCameraLock(string sceneName)
+    public static CameraLockArea CreateCameraLock(Scene scene)
     {
         var go = new GameObject("CameraLockArea");
-        SceneManager.MoveGameObjectToScene(go, SceneManager.GetSceneByName(sceneName));
+        SceneManager.MoveGameObjectToScene(go, scene);
         var collider = go.AddComponent<BoxCollider2D>();
         collider.isTrigger = true;
         collider.size = new Vector2(10f, 10f);
@@ -282,9 +282,8 @@ public class CustomScene
         return null;
     }
 
-    public void Activate()
+    public void Activate(Scene scene)
     {
-        var scene = SceneManager.GetSceneByName(sceneName);
         var rootObjects = scene.GetRootGameObjects();
         foreach(var obj in rootObjects)
         {
@@ -295,18 +294,18 @@ public class CustomScene
         }
         foreach(var item in TransitionGates)
         {
-            CreateGate(item);
+            CreateGate(item, scene);
         }
 
-        if (!isSkongScene)
+        if(!isSkongScene)
         {
             // tilemap needs for max heigh and width of scene
-            var gm = new GameObject("TileMap");
-            gm.tag = "TileMap";
-            var tileMap = gm.AddComponent<tk2dTileMap>();
+            var go = new GameObject("TileMap");
+            go.tag = "TileMap";
+            var tileMap = go.AddComponent<tk2dTileMap>();
             tileMap.width = (int)tileMapVector.x;
             tileMap.height = (int)tileMapVector.y;
-            SceneManager.MoveGameObjectToScene(gm, SceneManager.GetSceneByName(this.sceneName));
+            SceneManager.MoveGameObjectToScene(go, scene);
         }
         // var sm = new GameObject("_SceneManager");
         // sm.tag = "SceneManager";
@@ -314,6 +313,6 @@ public class CustomScene
         // var csm = sm.AddComponent<CustomSceneManager>();
         // csm.scenePools = new SceneObjectPool[0];
         // sm.AddComponent<PlayerDataTestResponse>();
-        AfterSceneActivated?.Invoke();
+        AfterSceneActivated?.Invoke(scene);
     }
 }

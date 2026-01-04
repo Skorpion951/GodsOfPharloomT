@@ -592,7 +592,7 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(CustomSceneManager), "Awake")]
         private static bool SceneManagerAwake_Prefix(CustomSceneManager __instance)
         {
-            var scene = customScenes.Find((item) => item.sceneName == GodsOfPharloomMod.currentScene);
+            var scene = customScenes.Find((item) => item.sceneName == GodsOfPharloomMod.currentSceneName);
             if(scene != null && !scene.isSkongScene) __instance.scenePools = new SceneObjectPool[0];
 
             return true;
@@ -601,7 +601,7 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(SceneColorManager), "PairKeyframes")]
         private static bool SceneColorManagerPairKeyframes_Prefix(SceneColorManager __instance)
         {
-            var scene = customScenes.Find((item) => item.sceneName == GodsOfPharloomMod.currentScene);
+            var scene = customScenes.Find((item) => item.sceneName == GodsOfPharloomMod.currentSceneName);
             if(scene != null && !scene.isSkongScene) return false;
 
             return true;
@@ -610,7 +610,7 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(SceneColorManager), "CreateCurveFromKeyframes")]
         private static bool SceneColorManagerCreateCurveFromKeyframes_Prefix(SceneColorManager __instance)
         {
-            var scene = customScenes.Find((item) => item.sceneName == GodsOfPharloomMod.currentScene);
+            var scene = customScenes.Find((item) => item.sceneName == GodsOfPharloomMod.currentSceneName);
             if(scene != null && !scene.isSkongScene) return false;
 
             return true;
@@ -619,7 +619,7 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(CustomSceneManager), "DrawBlackBorders")]
         private static bool SceneManagerDrawBlackBorders_Prefix(CustomSceneManager __instance)
         {
-            var scene = customScenes.Find((item) => item.sceneName == GodsOfPharloomMod.currentScene);
+            var scene = customScenes.Find((item) => item.sceneName == GodsOfPharloomMod.currentSceneName);
             if(scene != null && !scene.isSkongScene) return false;
 
             return true;

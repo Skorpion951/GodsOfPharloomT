@@ -12,6 +12,8 @@ using System.Collections;
 using HutongGames.PlayMaker.Actions;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
+using System.Drawing.Drawing2D;
+using HutongGames.PlayMaker;
 
 namespace Gods_Of_Pharloom;
 
@@ -22,12 +24,14 @@ public class Preload
         public string objectName;
         public string path;
         public bool isActive;
+        public Action<GameObject> afterObjectPreloaded;
     }
     public struct ScenePreloadInfo
     {
         public string sceneName;
         public ObjectPreloadInfo[] objectsInfo;
     }
+    public static Action afterAllPreloaded;
     public static bool startedInitialization = false;
     public static bool isInitialized = false;
     public static int preloadedCount = 0;
@@ -38,6 +42,23 @@ public class Preload
         new ScenePreloadInfo{sceneName = "Ant_17", objectsInfo = new ObjectPreloadInfo[]{
             new ObjectPreloadInfo{objectName = "RestBench", path = "Trap Scene/RestBench", isActive = true},
             new ObjectPreloadInfo{objectName = "_SceneManager_Ant_17", path = "_SceneManager", isActive = false},
+        }},
+        new ScenePreloadInfo{sceneName = "Shellwood_11b", objectsInfo = new ObjectPreloadInfo[]{
+            new ObjectPreloadInfo{objectName = "Memory Group", path = "memory_font/Uncompleted/Memory Group", isActive = true,
+                afterObjectPreloaded = (GameObject go) =>
+                {
+                    var children = go.transform;
+                    foreach(Transform child in children)
+                    {
+                        if(child.name == "thread_memory")
+                        {
+                            go = child.gameObject;
+
+                            GameObject.Destroy(go.GetComponent<PersistentBoolItem>());
+                        }
+                    }
+                }
+            },
         }},
     };
 
@@ -61,6 +82,8 @@ public class Preload
         
         while(!(preloadedCount >= preloadsInfo.Length)) yield return null;
 
+        afterAllPreloaded?.Invoke();
+
         isInitialized = true;
     }
     public static void AddToPreloads(GameObject obj, ObjectPreloadInfo objectInfo)
@@ -74,6 +97,8 @@ public class Preload
         copy.SetActive(objectInfo.isActive);
 
         preloads[copy.name] = copy;
+
+        objectInfo.afterObjectPreloaded?.Invoke(copy);
     }
 
     public static IEnumerator PreloadObjects(ScenePreloadInfo preloadInfo)
@@ -87,44 +112,48 @@ public class Preload
 
         foreach(var objInfo in preloadInfo.objectsInfo)
         {
-            string[] subPaths = objInfo.path.Split(separator: new char[]{'/'});
-            GameObject parent = null;
-
-            foreach(var obj in rootObjects)
-            {
-                if(obj.name == subPaths[0])
-                {
-                    parent = obj;
-                    break;
-                }
-            }
-
-            if(subPaths.Length == 1){
-                AddToPreloads(parent, objInfo);
-                break;
-            }
-
-            for(int i = 0; i < subPaths.Length; i++)
-            {
-                foreach(Transform child in parent.transform)
-                {
-                    if(child.name == subPaths[i])
-                    {
-                        if(i == subPaths.Length - 1)
-                        {
-                            AddToPreloads(child.gameObject, objInfo);
-                            break;
-                        }
-                        parent = child.gameObject;
-                        break;
-                    }
-                }
-            }
+            AddToPreloads(FindObjectByPath(rootObjects, objInfo.path), objInfo);
         }
 
         Addressables.UnloadSceneAsync(op);
 
         preloadedCount++;
+    }
+    public static GameObject FindObjectByPath(GameObject[] rootObjects, string path)
+    {
+        string[] subPaths = path.Split(separator: new char[]{'/'});
+        GameObject parent = null;
+
+        foreach(var obj in rootObjects)
+        {
+            if(obj.name == subPaths[0])
+            {
+                parent = obj;
+                break;
+            }
+        }
+
+        if(subPaths.Length == 1){
+            return parent;
+        }
+
+        for(int i = 0; i < subPaths.Length; i++)
+        {
+            foreach(Transform child in parent.transform)
+            {
+                if(child.name == subPaths[i])
+                {
+                    if(i == subPaths.Length - 1)
+                    {
+                        return child.gameObject;
+                    }
+                    parent = child.gameObject;
+                    break;
+                }
+            }
+        }
+
+        return null;
     }
     private static IEnumerator PreloadScene(AsyncOperationHandle<SceneInstance> op)
     {

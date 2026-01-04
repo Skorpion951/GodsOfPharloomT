@@ -254,7 +254,7 @@ namespace Gods_Of_Pharloom
         {
             PlayerData.instance.tempRespawnMarker = backEntry;
             PlayerData.instance.tempRespawnScene = backScene;
-            PlayerData.instance.respawnType = 0;
+            PlayerData.instance.tempRespawnType = 0;
 
             if (currentBoss.is3ActBoss)
             {

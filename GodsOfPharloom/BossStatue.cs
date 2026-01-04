@@ -90,7 +90,7 @@ namespace Gods_Of_Pharloom
         {
             if(BossStatueInfo.difficultyModeCanvas == null)
             {
-                var rootObjects = SceneManager.GetSceneByName(BossStatueInfo.hog_sceneName).GetRootGameObjects();
+                var rootObjects = GodsOfPharloomMod.currentScene.GetRootGameObjects();
                 foreach(var obj in rootObjects)
                 {
                     if(obj.name == BossStatueInfo.difficultyModeCanvasGOName)
@@ -185,7 +185,7 @@ namespace Gods_Of_Pharloom
             bool isOnLeft = pos.x < 44.5f;
 
             var go_backEntry = new GameObject($"back_entry{instance.statueIndex}");
-            SceneManager.MoveGameObjectToScene(go_backEntry, SceneManager.GetSceneByName(BossStatueInfo.hog_sceneName));
+            SceneManager.MoveGameObjectToScene(go_backEntry, GodsOfPharloomMod.currentScene);
             go_backEntry.transform.position = new Vector3(pos.x + 1.711f, pos.y, pos.z);
             var inputHandler = InputHandler.Instance.inputActions;
 
