@@ -102,12 +102,8 @@ public class PatchedFsm
         {
             new FsmPatch("Detect Range", "Detect Hero", PatchFsm_DetectRangeBenchControl),
             new FsmPatch("RestBench", "Trap Bench", PatchFsm_TrapBenchDestroy),
-            // new FsmPatch("thread_memory", "Deep Memory Pre Enter Effect", PatchFsm_ThreadMemoryPreEnterEffect),
-        }),
-        new PatchedFsm("Shellwood_11b", new FsmPatch[]
-        {
-            new FsmPatch("thread_memory", "FSM", PatchFsm_ThreadMemoryFSM),
             new FsmPatch("thread_memory", "Deep Memory Pre Enter Effect", PatchFsm_ThreadMemoryPreEnterEffect),
+            new FsmPatch("thread_memory", "FSM", PatchFsm_ThreadMemoryFSM),
         }),
 
         new PatchedFsm("Tut_03", new FsmPatch[]
@@ -592,16 +588,93 @@ public class PatchedFsm
     public static bool PatchFsm_ThreadMemoryPreEnterEffect(Fsm fsm)
     {
         var init = fsm.GetState("Init");
+        var idle = fsm.GetState("Idle");
+        var inZone = fsm.GetState("In Zone");
+        var preEnterEffect = fsm.GetState("Pre Enter Effect");
 
-        GodsOfPharloomMod.Log.LogInfo("182398891283401723847019283470912837401928");
+        ((CreateObject)init.Actions[2]).gameObject = Preload.preloads["Deep Memory Pre Enter Effect"];
 
-        GodsOfPharloomMod.Log.LogInfo(((CreateObject)init.Actions[2]).gameObject.Value.name);
-        var obj = GameObject.Instantiate(((CreateObject)init.Actions[2]).gameObject.Value, parameters: new InstantiateParameters
+        GameObject effectObj = null;
+
+        ParticleSystem roarEmitter = null;
+        ParticleSystem burst2Particles = null;
+        ParticleSystem burst3Particles = null;
+        ParticleSystem burst4Particles = null;
+        ParticleSystem burst5Particles = null;
+
+        int origBurst2MaxParticles = 0;
+        int origBurst4MaxParticles = 0;
+
+        float timer = 0f;
+
+        var customActionStopRoarEmitter = new CustomLogicFsm(fsm);
+        customActionStopRoarEmitter.action += (Fsm fsm) =>
         {
-            parent = Preload.handler.transform
-        });
-        fsm.SetVariable("Deep Memory Pre Enter Effect", obj);
-        ((CreateObject)init.Actions[2]).gameObject = obj;
+            roarEmitter.Stop();
+        };
+        var customActionStartRoarEmitter = new CustomLogicFsm(fsm);
+        customActionStartRoarEmitter.action += (Fsm fsm) =>
+        {
+            roarEmitter.Play();
+        };
+        var customActionReset = new CustomLogicFsm(fsm);
+        customActionReset.action += (Fsm fsm) =>
+        {
+            timer = 0f;
+
+            var mainBurst2 = burst2Particles.main;
+            var mainBurst4 = burst4Particles.main;
+            mainBurst2.maxParticles = origBurst2MaxParticles;
+            mainBurst4.maxParticles = origBurst4MaxParticles;
+        };
+
+        IEnumerator enumerator()
+        {
+            effectObj = fsm.GetFsmGameObject("Deep Memory Pre Enter Effect").Value;
+            roarEmitter = Preload.FindObjectByPath(new GameObject[]{effectObj}, $"{effectObj.name}/Roar Wave Emitter (2)").GetComponent<ParticleSystem>();
+            burst2Particles = Preload.FindObjectByPath(new GameObject[]{effectObj}, $"{effectObj.name}/Burst (2)").GetComponent<ParticleSystem>();
+            burst3Particles = Preload.FindObjectByPath(new GameObject[]{effectObj}, $"{effectObj.name}/Burst (3)").GetComponent<ParticleSystem>();
+            burst4Particles = Preload.FindObjectByPath(new GameObject[]{effectObj}, $"{effectObj.name}/Burst (4)").GetComponent<ParticleSystem>();
+            burst5Particles = Preload.FindObjectByPath(new GameObject[]{effectObj}, $"{effectObj.name}/Burst (5)").GetComponent<ParticleSystem>();
+
+            var mainBurst2 = burst2Particles.main;
+            var mainBurst4 = burst4Particles.main;
+
+            origBurst2MaxParticles = mainBurst2.maxParticles;
+            origBurst4MaxParticles = mainBurst4.maxParticles;
+
+            while (true)
+            {
+                if(timer > 0f){
+                    burst2Particles.Emit(1000);
+                    if(timer > 3f){
+                        if(mainBurst2.maxParticles < 300) mainBurst2.maxParticles += 5;
+                    }
+                }
+                if(timer > 1.5f) burst3Particles.Emit(1000);
+                if(timer > 1.5f){
+                    burst4Particles.Emit(1000);
+                    if(timer > 5f){
+                        mainBurst4.maxParticles += 5;
+                    }
+                }
+                if(timer > 3.5f) burst5Particles.Emit(1000);
+
+                if(fsm.ActiveState == preEnterEffect) timer += Time.deltaTime;
+                
+                yield return null;
+            }
+        }
+        var customActionStartEnumerator = new CustomLogicFsm(fsm);
+        customActionStartEnumerator.action += (Fsm fsm) =>
+        {
+            fsm.FsmComponent.StartCoroutine(enumerator());
+        };
+
+        init.Actions = InsertInArray(init.Actions, customActionStartEnumerator, init.Actions.Length);
+        inZone.Actions = InsertInArray(inZone.Actions, customActionStopRoarEmitter, 0);
+        inZone.Actions = InsertInArray(inZone.Actions, customActionReset, 0);
+        preEnterEffect.Actions = InsertInArray(preEnterEffect.Actions, customActionStartRoarEmitter, 0);
 
         return true;
     }

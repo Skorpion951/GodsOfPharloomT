@@ -14,6 +14,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using System.Drawing.Drawing2D;
 using HutongGames.PlayMaker;
+using GenericVariableExtension;
 
 namespace Gods_Of_Pharloom;
 
@@ -49,6 +50,7 @@ public class Preload
             new ObjectPreloadInfo{objectName = "Memory Group", path = "memory_font/Uncompleted/Memory Group", isActive = true,
                 afterObjectPreloaded = (GameObject go) =>
                 {
+                    go.transform.position = new Vector3(45, 53, 0);
                     var children = go.transform;
                     foreach(Transform child in children)
                     {
@@ -56,7 +58,27 @@ public class Preload
                         {
                             go = child.gameObject;
 
+                            GameObject.Destroy(Preload.FindObjectByPath(new GameObject[]{go}, "thread_memory/fade/ghosts/glow (2)"));
+
                             GameObject.Destroy(go.GetComponent<PersistentBoolItem>());
+
+                            var fsms = go.GetComponents<PlayMakerFSM>();
+                            foreach(var fsm in fsms)
+                            {
+                                if(fsm.FsmName == "Deep Memory Pre Enter Effect")
+                                {
+                                    var init = fsm.Fsm.GetState("Init");
+
+                                    ((CreateObject)init.Actions[2]).OnEnter();
+
+                                    var preEnterEffect = ((CreateObject)init.Actions[2]).storeObject.Value;
+                                    preEnterEffect.transform.SetParent(handler.transform);
+                                    preEnterEffect.name = "Deep Memory Pre Enter Effect";
+                                    preloads[preEnterEffect.name] = preEnterEffect;
+
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
