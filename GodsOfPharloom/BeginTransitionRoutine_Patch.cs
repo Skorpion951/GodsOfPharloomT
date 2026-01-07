@@ -122,14 +122,14 @@ namespace Gods_Of_Pharloom
                 {
                     yield return op;
                     currentScene = SceneManager.GetSceneAt(SceneManager.sceneCount-1);
-                    scene.Activate(currentScene);
                 }
                 else{
                     currentScene = ((UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>)
                         (operationHandle.GetValue(__instance))).Result.Scene;
-                    
-                    scene.Activate(currentScene);
                 }
+
+                scene.Activate(currentScene);
+                scene.AfterSceneLoaded?.Invoke(currentScene);
 
                 while(!scene.isSceneActive)
                 {
@@ -214,6 +214,11 @@ namespace Gods_Of_Pharloom
                 }
                 yield return ((UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>)
                         (operationHandle.GetValue(__instance))).Result.ActivateAsync(); //operationHandle.Result.ActivateAsync();
+            }
+
+            if(sceneTypeTo == 1 || sceneTypeTo == 2)
+            {
+                scene.AfterSceneActivated?.Invoke(currentScene);
             }
             
             InvokeMethod(RecordEndTime, new object[] {SceneLoad.Phases.Activation}); //RecordEndTime(SceneLoad.Phases.Activation);

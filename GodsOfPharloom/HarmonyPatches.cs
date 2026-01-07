@@ -6,6 +6,9 @@ using System.Reflection;
 using UnityEngine.AddressableAssets;
 using HarmonyLib;
 using System.Collections;
+using UnityExplorer.CacheObject;
+using UnityExplorer.CacheObject.Views;
+using HutongGames.PlayMaker;
 
 namespace Gods_Of_Pharloom
 {
@@ -648,6 +651,47 @@ namespace Gods_Of_Pharloom
         {
             var scene = customScenes.Find((item) => item.sceneName == GodsOfPharloomMod.currentSceneName);
             if(scene != null && !scene.isSkongScene) return false;
+
+            return true;
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(InventoryItemCollectable), "Submit")]
+        private static bool InventoryItemCollectableSubmit_Prefix(InventoryItemCollectable __instance)
+        {
+            
+
+            return true;
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CacheObjectBase), "SetValueState")]
+        public static bool blehhh(CacheObjectBase __instance, CacheObjectCell cell, CacheObjectBase.ValueStateArgs args)
+        {
+            if (cell is not CacheListEntryCell listEntry)
+                return true;
+
+
+            void Convert(string name)
+            {
+                AccessTools.Property(typeof(CacheObjectBase), "ValueLabelText")
+                    .SetValue(
+                        __instance, 
+                        UniverseLib.Utility.ToStringUtility.ToStringWithType(
+                            __instance.Value, 
+                            __instance.FallbackType, 
+                            true
+                            )
+                        + $" - <i><color=#b0edff>{name}</color></i>"
+                    );
+            }
+
+            switch (__instance.Value)
+            {
+                case FsmState fsm: Convert(fsm.Name); break;
+                case FsmEvent fsm: Convert(fsm.Name); break;
+                case FsmStateAction fsm: Convert(fsm.Name); break;
+                case FsmVar fsm: Convert(fsm.NamedVar.Name); break;
+                // add additional type handling if u want
+            }
 
             return true;
         }

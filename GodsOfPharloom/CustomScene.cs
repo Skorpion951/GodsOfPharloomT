@@ -15,6 +15,7 @@ public class CustomScene
 {
     public string sceneName {get; private set;}
     private List<TransitionPointInfo> TransitionGates = new List<TransitionPointInfo>();
+    public Action<Scene> AfterSceneLoaded;
     public Action<Scene> AfterSceneActivated;
     public Vector2 tileMapVector = new Vector2(512, 512);
     public bool isSceneActive = false;
@@ -215,71 +216,12 @@ public class CustomScene
         sceneInfo.RespawnPoints.Add(respawnMarkerName);
     }
 
-    // to make custom benches work
+    // to make custom benches and respawn points work
     public static void InitModRespawnMarkers()
     {
+        AddRespawnMarkerToTeleportMap("GG_Pharloom_Atrium", "Death Respawn Marker");
         AddRespawnMarkerToTeleportMap("GG_Pharloom_Hall_Of_Gods", "RestBench");
-    }
-
-    public System.Collections.IEnumerator GetObjectFromSilkScene(string[] path, string sceneName, Action<GameObject> func)
-    {
-        string scenePath = "Scenes/" + sceneName;
-        var op = UnityEngine.AddressableAssets.Addressables.LoadSceneAsync(scenePath, UnityEngine.SceneManagement.LoadSceneMode.Additive, activateOnLoad: false);
-        GodsOfPharloomMod.Log.LogInfo("000000000000000000");
-        yield return op;
-        GodsOfPharloomMod.Log.LogInfo("000000000000000000.1");
-        var handle = op.Result;
-        var wait = handle.ActivateAsync();
-        yield return wait;
-        var scene = handle.Scene;
-        GodsOfPharloomMod.Log.LogInfo("111111111111111111");
-        GodsOfPharloomMod.Log.LogInfo(scene.name);
-        var objects = scene.GetRootGameObjects();
-        var obj = GetObjectByPath(ref objects, path);
-        GodsOfPharloomMod.Log.LogInfo("222222222222222222");
-        // obj.SetActive(false);
-        // GodsOfPharloomMod.Log.LogInfo("333333333333333333");
-        // SceneManager.MoveGameObjectToScene(obj, SceneManager.GetSceneByName(this.sceneName));
-        // func(obj);
-        Addressables.UnloadSceneAsync(handle, true);
-    }
-
-    public static GameObject GetObjectByPath(ref GameObject[] rootObjects, string[] path)
-    {
-        int j = 0;
-        Transform parent = null;
-
-        foreach(var obj in rootObjects)
-        {
-            obj.SetActive(false);
-            if(obj.name == path[j])
-            {
-                parent = obj.transform;
-            }
-        }
-
-        if(j == path.Length - 1 && parent != null)
-        {
-            return parent.gameObject;
-        }
-
-        j++;
-        int i = 0;
-        for(; i < parent.childCount; i++)
-        {
-            var child = parent.GetChild(i);
-            if(child.gameObject.name == path[j])
-            {
-                if(j == path.Length - 1)
-                {
-                    return child.gameObject;
-                }
-                parent = child;
-                i = 0;
-                j++;
-            }
-        }
-        return null;
+        AddRespawnMarkerToTeleportMap("Abyss_05", "Death Respawn Marker_Mod");
     }
 
     public void Activate(Scene scene)
@@ -307,12 +249,6 @@ public class CustomScene
             tileMap.height = (int)tileMapVector.y;
             SceneManager.MoveGameObjectToScene(go, scene);
         }
-        // var sm = new GameObject("_SceneManager");
-        // sm.tag = "SceneManager";
-        // SceneManager.MoveGameObjectToScene(sm, SceneManager.GetSceneByName("GG_Pharloom_Atrium"));
-        // var csm = sm.AddComponent<CustomSceneManager>();
-        // csm.scenePools = new SceneObjectPool[0];
-        // sm.AddComponent<PlayerDataTestResponse>();
-        AfterSceneActivated?.Invoke(scene);
+        isSceneActive = true;
     }
 }

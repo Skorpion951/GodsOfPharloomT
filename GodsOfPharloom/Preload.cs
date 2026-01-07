@@ -46,7 +46,12 @@ public class Preload
         new ScenePreloadInfo{sceneName = "Peak_12", objectsInfo = new ObjectPreloadInfo[]{
             new ObjectPreloadInfo{objectName = "RestBench", path = "RestBench (1)", isActive = true},
         }},
+        new ScenePreloadInfo{sceneName = "Memory_Ant_Queen", objectsInfo = new ObjectPreloadInfo[]{
+            new ObjectPreloadInfo{objectName = "Exit Edge Trigger_AntQueen", path = "Exit Edge Trigger", isActive = true},
+            new ObjectPreloadInfo{objectName = "door_wakeInMemory_AntQueen", path = "door_wakeInMemory", isActive = true},
+        }},
         new ScenePreloadInfo{sceneName = "Shellwood_11b", objectsInfo = new ObjectPreloadInfo[]{
+            new ObjectPreloadInfo{objectName = "door_wakeOnGround_FlowerQueen", path = "door_wakeOnGround", isActive = true},
             new ObjectPreloadInfo{objectName = "Memory Group", path = "memory_font/Uncompleted/Memory Group", isActive = true,
                 afterObjectPreloaded = (GameObject go) =>
                 {
@@ -69,9 +74,7 @@ public class Preload
                                 {
                                     var init = fsm.Fsm.GetState("Init");
 
-                                    ((CreateObject)init.Actions[2]).OnEnter();
-
-                                    var preEnterEffect = ((CreateObject)init.Actions[2]).storeObject.Value;
+                                    var preEnterEffect = GameObject.Instantiate(((CreateObject)init.Actions[2]).gameObject.Value);
                                     preEnterEffect.transform.SetParent(handler.transform);
                                     preEnterEffect.name = "Deep Memory Pre Enter Effect";
                                     preloads[preEnterEffect.name] = preEnterEffect;
@@ -150,6 +153,42 @@ public class Preload
             if(obj.name == subPaths[0])
             {
                 parent = obj;
+                break;
+            }
+        }
+
+        if(subPaths.Length == 1){
+            return parent;
+        }
+
+        for(int i = 0; i < subPaths.Length; i++)
+        {
+            foreach(Transform child in parent.transform)
+            {
+                if(child.name == subPaths[i])
+                {
+                    if(i == subPaths.Length - 1)
+                    {
+                        return child.gameObject;
+                    }
+                    parent = child.gameObject;
+                    break;
+                }
+            }
+        }
+
+        return null;
+    }
+    public static GameObject FindObjectByPath(GameObject parentObject, string path)
+    {
+        string[] subPaths = path.Split(separator: new char[]{'/'});
+        GameObject parent = null;
+
+        foreach(Transform obj in parentObject.transform)
+        {
+            if(obj.name == subPaths[0])
+            {
+                parent = obj.gameObject;
                 break;
             }
         }

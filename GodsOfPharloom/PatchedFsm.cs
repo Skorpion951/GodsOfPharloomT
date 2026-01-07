@@ -97,11 +97,15 @@ public class PatchedFsm
             new FsmPatch("Hero_Hornet(Clone)", "Superjump", PatchFsm_SuperJump),
             // new FsmPatch("Start Blanker", "Blanker Control", PatchFsm_ForInitModPreloads),
         }),
-
         new PatchedFsm(BossStatueInfo.hog_sceneName, new FsmPatch[]
         {
             new FsmPatch("Detect Range", "Detect Hero", PatchFsm_DetectRangeBenchControl),
             new FsmPatch("RestBench", "Trap Bench", PatchFsm_TrapBenchDestroy),
+            new FsmPatch("thread_memory", "Deep Memory Pre Enter Effect", PatchFsm_ThreadMemoryPreEnterEffect),
+            new FsmPatch("thread_memory", "FSM", PatchFsm_ThreadMemoryFSM),
+        }),
+        new PatchedFsm("Abyss_05", new FsmPatch[]
+        {
             new FsmPatch("thread_memory", "Deep Memory Pre Enter Effect", PatchFsm_ThreadMemoryPreEnterEffect),
             new FsmPatch("thread_memory", "FSM", PatchFsm_ThreadMemoryFSM),
         }),
@@ -631,6 +635,8 @@ public class PatchedFsm
         IEnumerator enumerator()
         {
             effectObj = fsm.GetFsmGameObject("Deep Memory Pre Enter Effect").Value;
+            var pos = effectObj.transform.position;
+            effectObj.transform.position = new Vector3(10000, 10000, pos.z);
             roarEmitter = Preload.FindObjectByPath(new GameObject[]{effectObj}, $"{effectObj.name}/Roar Wave Emitter (2)").GetComponent<ParticleSystem>();
             burst2Particles = Preload.FindObjectByPath(new GameObject[]{effectObj}, $"{effectObj.name}/Burst (2)").GetComponent<ParticleSystem>();
             burst3Particles = Preload.FindObjectByPath(new GameObject[]{effectObj}, $"{effectObj.name}/Burst (3)").GetComponent<ParticleSystem>();
@@ -648,7 +654,7 @@ public class PatchedFsm
                 if(timer > 0f){
                     burst2Particles.Emit(1000);
                     if(timer > 3f){
-                        if(mainBurst2.maxParticles < 300) mainBurst2.maxParticles += 5;
+                        if(mainBurst2.maxParticles < 500) mainBurst2.maxParticles += 5;
                     }
                 }
                 if(timer > 1.5f) burst3Particles.Emit(1000);
