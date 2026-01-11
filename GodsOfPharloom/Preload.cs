@@ -15,6 +15,8 @@ using UnityEngine.ResourceManagement.ResourceProviders;
 using System.Drawing.Drawing2D;
 using HutongGames.PlayMaker;
 using GenericVariableExtension;
+using TMPro;
+using UniverseLib;
 
 namespace Gods_Of_Pharloom;
 
@@ -88,6 +90,8 @@ public class Preload
             },
         }},
     };
+
+    public static Dictionary<string, object> bundleResources = new Dictionary<string, object>();
 
     public static void Init()
     {

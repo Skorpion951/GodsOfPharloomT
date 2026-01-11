@@ -91,6 +91,42 @@ namespace Gods_Of_Pharloom
             return true;
         }
 
+        //nail binding
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(PlayerData), "get_nailDamage")]
+        public static void PlayerDataNailDamage_Postfix(ref int __result)
+        {
+            if (PlayerDataMod.instance.bindings["Needle Binding"])
+            {
+                var nailDamage = __result;
+
+                if(nailDamage > 13)
+                {
+                    nailDamage = 13;
+                    __result = nailDamage;
+
+                    return;
+                }
+                else if(nailDamage > 9 && nailDamage < 14) nailDamage = 10;
+                else if(nailDamage > 5 && nailDamage < 10) nailDamage = 7;
+                else if(nailDamage > 3 && nailDamage < 6) nailDamage = 4;
+                else nailDamage = 1;
+                
+                __result = nailDamage;
+            }
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(HealthManager), "TakeDamage")]
+        public static bool HealthManagerTakeDamage_Prefix(HealthManager __instance, ref HitInstance hitInstance)
+        {
+            if (PlayerDataMod.instance.bindings["Needle Binding"])
+            {
+                
+            }
+
+            return true;
+        }
+
         //Set Custom Bosses Hp
 
         // [HarmonyPostfix]
@@ -172,6 +208,8 @@ namespace Gods_Of_Pharloom
                 doorBlackList.SetValue(__instance, new string[0]);
                 otherLoaderBlacklist.SetValue(__instance, new SceneAdditiveLoadConditional[0]);
                 loadAlt.SetValue(__instance, false);
+
+                return true;
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Fourth Chorus"] && __instance.gameObject.name.Contains("Boss Beastfly Loader"))
             {
@@ -194,6 +232,8 @@ namespace Gods_Of_Pharloom
                 doorBlackList.SetValue(__instance, new string[0]);
                 otherLoaderBlacklist.SetValue(__instance, new SceneAdditiveLoadConditional[0]);
                 loadAlt.SetValue(__instance, false);
+
+                return true;
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Savage Beastfly in Far Fields"] && __instance.gameObject.name.Contains("Boss Golem Loader"))
             {
@@ -221,6 +261,8 @@ namespace Gods_Of_Pharloom
                 doorBlackList.SetValue(__instance, new string[0]);
                 otherLoaderBlacklist.SetValue(__instance, new SceneAdditiveLoadConditional[0]);
                 loadAlt.SetValue(__instance, false);
+
+                return true;
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Shakra"] && __instance.gameObject.name.Contains("Boss Scene Loader") || __instance.gameObject.name.Contains("Caravan Scene Loader"))
             {
@@ -250,6 +292,8 @@ namespace Gods_Of_Pharloom
                 otherLoaderBlacklist.SetValue(__instance, new SceneAdditiveLoadConditional[0]);
                 loadAlt.SetValue(__instance, false);
                 _additiveSceneLoads.SetValue(__instance, new List<SceneAdditiveLoadConditional>());
+
+                return true;
             }
 
             if(BossSequence.currentBoss == BossInfo.bosses["The Unravelled"] && __instance.gameObject.name.Contains("Boss Loader"))
@@ -261,6 +305,8 @@ namespace Gods_Of_Pharloom
 
                 questTests.SetValue(__instance, new QuestTest[0]);
                 tests.SetValue(__instance, playerDataTest);
+
+                return true;
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Bell Beast"] && __instance.gameObject.name.Contains("Boss Additive Loader"))
             {
@@ -271,6 +317,8 @@ namespace Gods_Of_Pharloom
 
                 questTests.SetValue(__instance, new QuestTest[0]);
                 tests.SetValue(__instance, playerDataTest);
+
+                return true;
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Cogwork Dancers"] && 
                 __instance.gameObject.name.Contains("Boss Loader"))
@@ -282,6 +330,8 @@ namespace Gods_Of_Pharloom
 
                 questTests.SetValue(__instance, new QuestTest[0]);
                 tests.SetValue(__instance, playerDataTest);
+
+                return true;
             }
 
             return true;
@@ -319,6 +369,8 @@ namespace Gods_Of_Pharloom
                 children.GetChild(0).gameObject.SetActive(false);
                 children.GetChild(1).gameObject.SetActive(true);
                 Destroy(__instance);
+
+                return false;
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Savage Beastfly in Far Fields"] && 
             __instance.gameObject.name == "Beastfly States")
@@ -327,11 +379,15 @@ namespace Gods_Of_Pharloom
                 children.GetChild(0).gameObject.SetActive(true);
                 children.GetChild(1).gameObject.SetActive(false);
                 Destroy(__instance);
+
+                return false;
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Gurr the Outcast"] && 
             __instance.gameObject.name == "Boss Scene")
             {
                 Destroy(__instance);
+
+                return false;
             }
             if(BossSequence.currentBoss == BossInfo.bosses["Plasmified Zango"] && 
             __instance.gameObject.name == "Area_States")
@@ -340,6 +396,8 @@ namespace Gods_Of_Pharloom
                 children.GetChild(0).gameObject.SetActive(false);
                 children.GetChild(1).gameObject.SetActive(true);
                 Destroy(__instance);
+
+                return false;
             }
             return true;
         }
@@ -628,24 +686,6 @@ namespace Gods_Of_Pharloom
             return true;
         }
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(SceneColorManager), "PairKeyframes")]
-        private static bool SceneColorManagerPairKeyframes_Prefix(SceneColorManager __instance)
-        {
-            var scene = customScenes.Find((item) => item.sceneName == GodsOfPharloomMod.currentSceneName);
-            if(scene != null && !scene.isSkongScene) return false;
-
-            return true;
-        }
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(SceneColorManager), "CreateCurveFromKeyframes")]
-        private static bool SceneColorManagerCreateCurveFromKeyframes_Prefix(SceneColorManager __instance)
-        {
-            var scene = customScenes.Find((item) => item.sceneName == GodsOfPharloomMod.currentSceneName);
-            if(scene != null && !scene.isSkongScene) return false;
-
-            return true;
-        }
-        [HarmonyPrefix]
         [HarmonyPatch(typeof(CustomSceneManager), "DrawBlackBorders")]
         private static bool SceneManagerDrawBlackBorders_Prefix(CustomSceneManager __instance)
         {
@@ -658,7 +698,45 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(InventoryItemCollectable), "Submit")]
         private static bool InventoryItemCollectableSubmit_Prefix(InventoryItemCollectable __instance)
         {
-            
+            if(!__instance.transform.IsChildOf(BindingsMenu.menuBindings.transform)) return true;
+
+            if(BindingsMenu.submitActions.TryGetValue(__instance.gameObject.name, out Action<bool> val))
+            {
+                val?.Invoke(false);
+                return false;
+            }
+
+            return true;
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(InventoryItemSelectable), "Submit")]
+        private static bool InventoryItemSelectableSubmit_Prefix(InventoryItemSelectable __instance)
+        {
+            if(!__instance.transform.IsChildOf(BindingsMenu.menuBindings.transform)) return true;
+
+            if(BindingsMenu.submitActions.TryGetValue(__instance.gameObject.name, out Action<bool> val))
+            {
+                val?.Invoke(false);
+                return false;
+            }
+
+            return true;
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(InventoryItemTool), "Submit")]
+        private static bool InventoryItemToolSubmit_Prefix(InventoryItemTool __instance)
+        {
+            if(!PlayerDataMod.instance.bindings["Tools Binding"]) return true;
+            if(__instance.name != "Silk Spear" && __instance.name != "Thread Sphere" &&
+               __instance.name != "Parry" && __instance.name != "Silk Charge" &&
+               __instance.name != "Silk Bomb" && __instance.name != "Silk Boss Needle")
+            {
+                if(BindingsMenu.submitActions.TryGetValue("Tools Buttons Msg", out Action<bool> val))
+                {
+                    val?.Invoke(false);
+                    return false;
+                }
+            }
 
             return true;
         }

@@ -92,6 +92,10 @@ public class PatchedFsm
         this.fsms = fsms;
     }
     public static PatchedFsm[] patchedFsms = new PatchedFsm[]{
+        new PatchedFsm("DontDestroyOnLoad", new FsmPatch[]
+        {
+            new FsmPatch("Inventory", "Inventory Control", PatchFsm_InventoryControl),
+        }),
         new PatchedFsm("Menu_Title", new FsmPatch[]
         {
             new FsmPatch("Hero_Hornet(Clone)", "Superjump", PatchFsm_SuperJump),
@@ -586,6 +590,12 @@ public class PatchedFsm
         };
 
         collapse.Actions = PatchedFsm.InsertInArray(collapse.Actions, wait, collapse.Actions.Length-1);
+
+        return true;
+    }
+    public static bool PatchFsm_InventoryControl(Fsm fsm)
+    {
+        BindingsMenu.InitBindingsMenu();
 
         return true;
     }

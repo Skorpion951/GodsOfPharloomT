@@ -12,6 +12,8 @@ namespace Gods_Of_Pharloom
     {
         public static Action<Scene, Scene> afterSceneLoadedGetScenes;
         public static Action afterSceneLoaded;
+        public static Action afterSceneActivated;
+        public static string previousSceneName;
         public static Scene? lastLoadedScene = null;
         public static MethodInfo RecordBeginTime = AccessTools.Method(typeof(SceneLoad), "RecordBeginTime");
         public static MethodInfo RecordEndTime = AccessTools.Method(typeof(SceneLoad), "RecordEndTime");
@@ -68,7 +70,7 @@ namespace Gods_Of_Pharloom
             else
             {
                 op = SceneManager.LoadSceneAsync(scene.sceneName, LoadSceneMode.Additive);
-                // op.allowSceneActivation = false;
+                op.allowSceneActivation = false;
             }
 
             InvokeMethod(RecordBeginTime, new object[] {SceneLoad.Phases.FetchBlocked});
@@ -89,6 +91,9 @@ namespace Gods_Of_Pharloom
             }
             InvokeMethod(RecordBeginTime, new object[] {SceneLoad.Phases.Fetch});//RecordBeginTime(SceneLoad.Phases.Fetch);
             int priority = __instance.SceneLoadInfo.AsyncPriority;
+
+            Scene from = SceneManager.GetActiveScene();
+            previousSceneName = from.name;
             
             if(sceneTypeTo == 0 || sceneTypeTo == 1)
             {
@@ -120,6 +125,7 @@ namespace Gods_Of_Pharloom
             {
                 if(sceneTypeTo == 2)
                 {
+                    op.allowSceneActivation = true;
                     yield return op;
                     currentScene = SceneManager.GetSceneAt(SceneManager.sceneCount-1);
                 }
@@ -174,9 +180,6 @@ namespace Gods_Of_Pharloom
             }
             Log.LogInfo("PAAAAAAAAATTTTTCCCCHHHEEEDDD4.1.1");
 
-            Scene from = SceneManager.GetActiveScene();
-            Scene to = SceneManager.GetSceneByName(__instance.TargetSceneName);
-
             SceneAdditiveLoadConditional.Unload(SceneManager.GetActiveScene(), ((List<UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<UnityEngine.ResourceManagement.ResourceProviders.SceneInstance>>)
                 (_tempOps.GetValue(null)))/*_tempOps*/);
 
@@ -220,6 +223,8 @@ namespace Gods_Of_Pharloom
             {
                 scene.AfterSceneActivated?.Invoke(currentScene);
             }
+            
+            afterSceneActivated?.Invoke();
             
             InvokeMethod(RecordEndTime, new object[] {SceneLoad.Phases.Activation}); //RecordEndTime(SceneLoad.Phases.Activation);
 

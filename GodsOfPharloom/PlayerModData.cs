@@ -8,6 +8,18 @@ namespace Gods_Of_Pharloom
         public static PlayerDataMod instance;
         public Dictionary<string, Badges> badges;
 
+        //bindings
+        public Dictionary<string, bool> bindings = new Dictionary<string, bool>
+        {
+            {"Needle Binding", false},
+            {"Silk Binding", false},
+            {"Tools Binding", false},
+            {"Mask Binding", false},
+        };
+
+        public int previousNeedleUpgrade;
+        public int previousHealthCount = 10;
+
         public PlayerDataMod()
         {
             var newBadges = new Dictionary<string, Badges>();

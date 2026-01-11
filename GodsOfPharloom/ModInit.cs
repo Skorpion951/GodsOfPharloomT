@@ -98,6 +98,12 @@ namespace Gods_Of_Pharloom
             CustomScene.InitModRespawnMarkers();
 
             afterSceneLoaded += CustomMenu.Reset;
+            // afterSceneActivated += () =>
+            // {
+            //     if(previousSceneName == "Menu_Title") BindingsMenu.InitBindingsMenu();
+            // };
+
+            // BindingsMenu.InitBindingsMenuFsmHistory();
 
             Harmony.CreateAndPatchAll(typeof(GodsOfPharloomMod));
             InitCustomScenes();
@@ -108,6 +114,15 @@ namespace Gods_Of_Pharloom
             {
                 var bundle = LoadBundle(name);
                 assetBundles.Add(bundle);
+
+                if(name == "gg_resources")
+                {
+                    var assets = bundle.LoadAllAssets();
+                    foreach(var asset in assets)
+                    {
+                        Preload.bundleResources[asset.name] = asset;
+                    }
+                }
             }
 
             Logger.LogInfo($"Plugin is loaded!");
@@ -115,10 +130,18 @@ namespace Gods_Of_Pharloom
 
         void Update()
         {
-            keyboard = Keyboard.current;
-            if (keyboard.backquoteKey.wasPressedThisFrame)
+            if (Keyboard.current.backquoteKey.wasPressedThisFrame)
             {
                 FastTeleport.Start();
+            }
+            if (Keyboard.current.bKey.wasPressedThisFrame)
+            {
+                if(BindingsMenu.menuBindingsFsm != null && BindingsMenu.menuBindingsFsm.ActiveStateName == "Opened") BindingsMenu.menuBindingsFsm.FsmComponent.SendEvent("CLOSE");
+                else if(BindingsMenu.menuBindingsFsm.ActiveStateName == "Closed") BindingsMenu.menuBindingsFsm.SetState("Can Open Inventory?");
+            }
+            if (Keyboard.current.backspaceKey.wasPressedThisFrame)
+            {
+                PlayerData.instance.GetType().GetProperty("nailDamage", BindingFlags.Instance | BindingFlags.Public).SetValue(PlayerData.instance, 100);
             }
         }
 
