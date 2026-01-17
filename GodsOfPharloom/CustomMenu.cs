@@ -13,31 +13,23 @@ namespace Gods_Of_Pharloom;
 public class CustomButton
 {
     public string buttonName;
-    public Action buttonAction;
+    public Action submitAction;
+    public Action OnSelected;
+    public Action OnDeselected;
+    public CustomButton[] selectables;
     public GameObject GO;
 }
-public class CustomMenu : MonoBehaviour
+public class CustomMenu
 {
     public static List<CustomMenu> menus = new List<CustomMenu>();
     public bool isActivated = false;
     public string menuName;
     public Action<CustomMenu> OnActivate;
     public Action<CustomMenu> OnDeactivate;
-    public CustomButton[][] buttons;
+    public CustomButton[] buttons;
     public GameObject pointer;
-    public int vertIndex = 0;
-    public int horizIndex = 0;
     public CustomButton currentButton;
 
-    void Awake()
-    {
-        var menuCanvas = this.gameObject.transform.GetChild(0);
-        var buttons = menuCanvas.transform.Find("Buttons");
-        foreach(Transform button in buttons)
-        {
-            
-        }
-    }
     void Start()
     {
         menus.Add(this);

@@ -3,6 +3,18 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace Gods_Of_Pharloom
 {
     [Serializable]
+    public class PantheonInfo
+    {
+        public bool completedPantheon;
+        public bool completedNeedleBinding = false;
+        public bool completedSilkBinding = false;
+        public bool completedToolsBinding = false;
+        public bool completedMaskBinding = false;
+        public bool completedNoHit = false;
+        public bool completedAllBindings = false;
+        public bool completedAllBindingsNoHit = false;
+    }
+    [Serializable]
     public class PlayerDataMod
     {
         public static PlayerDataMod instance;
@@ -17,7 +29,15 @@ namespace Gods_Of_Pharloom
             {"Mask Binding", false},
         };
 
-        public int previousNeedleUpgrade;
+        public Dictionary<string, PantheonInfo> pantheonsInfo = new Dictionary<string, PantheonInfo>
+        {
+            {"Pantheon 1", new PantheonInfo()},
+            {"Pantheon 2", new PantheonInfo()},
+            {"Pantheon 3", new PantheonInfo()},
+            {"Pantheon 4", new PantheonInfo()},
+            {"Pantheon 5", new PantheonInfo()},
+        };
+
         public int previousHealthCount = 10;
 
         public PlayerDataMod()

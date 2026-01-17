@@ -17,6 +17,7 @@ using UnityExplorer.CacheObject;
 using UnityExplorer.CacheObject.Views;
 using TeamCherry.NestedFadeGroup;
 using Mono.Posix;
+using UniverseLib.Utility;
 
 namespace Gods_Of_Pharloom;
 
@@ -26,6 +27,7 @@ public class BindingsMenu
     public static Fsm menuBindingsFsm;
     public static Fsm menuBindingsInvProxyFsm;
     public static string[] menuBindingsInvProxyFsmStatesHistory = new string[50];
+    public static GameObject customBrokenSpool;
     public static TMProOld.TextMeshPro textName;
     public static TMProOld.TextMeshPro textDesc;
     public static InventoryItemCollectable needleBinding;
@@ -207,9 +209,11 @@ public class BindingsMenu
         {"Spool Pieces", (_) =>
         {
             var pd = PlayerData.instance;
-            if(pd == null) return;
+            var pdm = PlayerDataMod.instance;
+            if(pd == null || pdm == null) return;
 
             var newMaxSilk = (pd.silkMax < 18) ? pd.silkMax + 1 : 0;
+            newMaxSilk = (newMaxSilk > 9 && pdm.bindings["Silk Binding"]) ? 0 : newMaxSilk;
             pd.silkMax = newMaxSilk;
 
             var amountText = spoolPieces.transform.Find("Amount Text").gameObject.GetComponent<TMProOld.TextMeshPro>();
@@ -320,6 +324,129 @@ public class BindingsMenu
             cloakStates.transform.Find($"CloakState_{cloakState}")?.gameObject.SetActive(true);
         }},
     };
+
+    public static IEnumerator UpdateSilkSpool()
+    {
+        GameCameras gc = GameCameras.instance;
+        Transform spoolParent = null;
+        PlayerData pd = null;
+        Coroutine silkUpdater = null;
+        int silkAmountStart = 9;
+
+        while (true)
+        {
+            while (true)
+            {
+                if(!gc.IsNullOrDestroyed()) break;
+
+                gc = GameCameras.instance;
+                if(gc.IsNullOrDestroyed()){
+                    yield return null;
+                    continue;
+                }
+                else break;
+            }
+            while (true)
+            {
+                if(!pd.IsNullOrDestroyed()) break;
+
+                pd = PlayerData.instance;
+                if(pd.IsNullOrDestroyed()){
+                    yield return null;
+                    continue;
+                }
+                else break;
+            }
+            while(true)
+            {
+                if(!spoolParent.IsNullOrDestroyed()) break;
+
+                try
+                {
+                    spoolParent = gc.hudCanvasSlideOut.gameObject.transform.Find("Thread/Spool/Thread Spool/Parent");
+                }
+                catch(Exception ex){GodsOfPharloomMod.Log.LogInfo("UpdateSilkSpool_Method:\n" + ex.Message);}
+
+                if(spoolParent.IsNullOrDestroyed()){
+                    yield return null;
+                    continue;
+                }
+                else break;
+            }
+
+            if(customBrokenSpool.IsNullOrDestroyed() || customBrokenSpool.transform.parent != spoolParent)
+            {
+                if(!customBrokenSpool.IsNullOrDestroyed()) GameObject.Destroy(customBrokenSpool);
+
+                var prefab = (GameObject)Preload.bundleResources["CustomBrokenSilkSpool"];
+                customBrokenSpool = GameObject.Instantiate(prefab, parent: spoolParent);
+                customBrokenSpool.transform.localScale = prefab.transform.localScale;
+                customBrokenSpool.transform.position = prefab.transform.position;
+
+                customBrokenSpool.SetActive(true);
+
+                Material brokenSpoolMaterial = customBrokenSpool.GetComponent<MeshRenderer>().material;
+
+                IEnumerator UpdateBrokenSpoolMaterial()
+                {
+                    // float alpha;
+                    while (true)
+                    {
+                        // alpha = (pd.silkMax <= silkAmountStart) ? (1 - ScreenFaderState.Alpha) : 0;
+
+                        // brokenSpoolMaterial.SetFloat("_Alpha", alpha);
+                        brokenSpoolMaterial.SetInt("_SilkSpoolSegAmount", pd.silkMax);
+
+                        yield return null;
+                    }
+                }
+
+                if(silkUpdater.IsNullOrDestroyed()) silkUpdater = GodsOfPharloomMod.instance.StartCoroutine(UpdateBrokenSpoolMaterial());
+            }
+
+            if(pd.silkMax <= silkAmountStart)
+            {
+                while(pd.silkMax <= silkAmountStart)
+                {
+                    spoolParent.Find("Active").gameObject.SetActive(false);
+                    spoolParent.Find("Broken").gameObject.SetActive(false);
+                    spoolParent.Find("Bind Notch").gameObject.SetActive(false);
+
+                    yield return null;
+                }
+
+                gc.HUDOut();
+                gc.HUDIn();
+            }
+
+            yield return null;
+        }
+    }
+    public static IEnumerator UpdateSilkBinding()
+    {
+        while (true)
+        {
+            if(PlayerDataMod.instance.bindings["Silk Binding"])
+            {
+                PlayerData pd = null;
+                while(pd.IsNullOrDestroyed())
+                {
+                    pd = PlayerData.instance;
+                    if(!pd.IsNullOrDestroyed()) break;
+                    yield return null;
+                }
+                while(PlayerDataMod.instance.bindings["Silk Binding"])
+                {
+                    pd.silkMax = (pd.silkMax > 9) ? 9 : pd.silkMax;
+                    yield return null;
+                }
+            }
+
+            PlayerData.instance.IsSilkSpoolBroken = false;
+
+            yield return null;
+        }
+    }
 
     public static IEnumerator TrySetHeroHealth(int amount)
     {
@@ -546,30 +673,7 @@ public class BindingsMenu
     {
         GodsOfPharloomMod.instance.StartCoroutine(IInitBindingsMenu());
 
-        IEnumerator DoActivateSilkBinding()
-        {
-            while (true)
-            {
-                if(PlayerDataMod.instance.bindings["Silk Binding"])
-                {
-                    var pd = PlayerData.instance;
-                    if(pd == null)
-                    {
-                        yield return null;
-                        continue;
-                    }
-                    while(PlayerDataMod.instance.bindings["Silk Binding"])
-                    {
-                        pd.IsSilkSpoolBroken = true;
-                        yield return null;
-                    }
-                    pd.IsSilkSpoolBroken = false;
-                }
-
-                yield return null;
-            }
-        }
-        GodsOfPharloomMod.instance.StartCoroutine(DoActivateSilkBinding());
+        GodsOfPharloomMod.instance.StartCoroutine(UpdateSilkBinding());
     }
     public static InventoryItemCollectable CreateButtonInv(string objName, GameObject template, Vector3 pos, string textLable = "", string textDescription = "")
     {
@@ -895,6 +999,8 @@ public class BindingsMenu
             ToggleBinding(item.gameObject);
             ToggleBinding(item.gameObject);
         }
+
+        menuBindingsFsm.FsmComponent.StartCoroutine(UpdateSilkSpool());
 
         invPane.OnPaneStart += () =>
         {

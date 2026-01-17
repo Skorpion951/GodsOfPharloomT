@@ -200,6 +200,8 @@ namespace Gods_Of_Pharloom
                 audioManager.StopAndClearAtmos();
                 audioManager.StopAndClearMusic();
 
+                var rootObjects = scene.GetRootGameObjects();
+
                 //add memory entry
                 var wakeInMemory = (GameObject)Instantiate(Preload.preloads["door_wakeInMemory_AntQueen"], scene: scene);
                 wakeInMemory.transform.position = new Vector3(14f, 54f, 0);
@@ -227,6 +229,33 @@ namespace Gods_Of_Pharloom
                 exitEdge2.transform.position = new Vector3(62f, 28f, 0);
                 exitEdge2.transform.Rotate(new Vector3(0, 0, 90));
                 exitEdge2.transform.localScale = new Vector3(1, 7, 1);
+
+                //init pantheons
+                Pantheon pComp;
+                var pantheon1 = Preload.FindObjectByPath(rootObjects, "Half1/Pantheon1");
+                pComp = pantheon1.AddComponent<Pantheon>();
+                pComp.pantheonName = "Pantheon 1";
+                pComp.Init();
+
+                var pantheon2 = Preload.FindObjectByPath(rootObjects, "Half1/Pantheon2");
+                pComp = pantheon2.AddComponent<Pantheon>();
+                pComp.pantheonName = "Pantheon 2";
+                pComp.Init();
+
+                var pantheon3 = Preload.FindObjectByPath(rootObjects, "Half2/Pantheon3");
+                pComp = pantheon3.AddComponent<Pantheon>();
+                pComp.pantheonName = "Pantheon 3";
+                pComp.Init();
+
+                var pantheon4 = Preload.FindObjectByPath(rootObjects, "Half2/Pantheon4");
+                pComp = pantheon4.AddComponent<Pantheon>();
+                pComp.pantheonName = "Pantheon 4";
+                pComp.Init();
+
+                var pantheon5 = Preload.FindObjectByPath(rootObjects, "Pantheon5");
+                pComp = pantheon5.AddComponent<Pantheon>();
+                pComp.pantheonName = "Pantheon 5";
+                pComp.Init();
 
                 GG_Pharloom_Atrium.isSceneActive = true;
             };
