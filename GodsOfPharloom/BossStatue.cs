@@ -9,6 +9,7 @@ using HutongGames.PlayMaker;
 using UnityEngine.UI;
 using HutongGames.PlayMaker.Actions;
 using System.Windows.Forms;
+using UniverseLib.Utility;
 
 namespace Gods_Of_Pharloom
 {
@@ -49,22 +50,22 @@ namespace Gods_Of_Pharloom
         public static GameObject selectArrow;
         public static BossStatueInfo[] bossStatues;
 
-        public BossInfo boss;
+        public BossScene boss;
         public int statueIndex;
         public Dictionary<string, Dictionary<string, GameObject>> modes;
         Badges badges;
 
-        public BossStatueInfo(BossInfo boss)
+        public BossStatueInfo(BossScene boss)
         {
             this.boss = boss;
         }
 
         public static void InitBossesStatue()
         {
-            var statues = new BossStatueInfo[BossInfo.bosses.Count];
+            var statues = new BossStatueInfo[BossScene.bosses.Count];
 
             int i = 0;
-            foreach(var boss in BossInfo.bosses)
+            foreach(var boss in BossScene.bosses)
             {
                 statues[i] = new BossStatueInfo(boss.Value);
                 statues[i].statueIndex = i;
@@ -88,9 +89,9 @@ namespace Gods_Of_Pharloom
 
         void Awake()
         {
-            if(BossStatueInfo.difficultyModeCanvas == null)
+            if(BossStatueInfo.difficultyModeCanvas.IsNullOrDestroyed())
             {
-                var rootObjects = GodsOfPharloomMod.currentScene.GetRootGameObjects();
+                var rootObjects = this.gameObject.scene.GetRootGameObjects();
                 foreach(var obj in rootObjects)
                 {
                     if(obj.name == BossStatueInfo.difficultyModeCanvasGOName)
@@ -185,7 +186,7 @@ namespace Gods_Of_Pharloom
             bool isOnLeft = pos.x < 44.5f;
 
             var go_backEntry = new GameObject($"back_entry{instance.statueIndex}");
-            SceneManager.MoveGameObjectToScene(go_backEntry, GodsOfPharloomMod.currentScene);
+            SceneManager.MoveGameObjectToScene(go_backEntry, this.gameObject.scene);
             go_backEntry.transform.position = new Vector3(pos.x + 1.711f, pos.y, pos.z);
             var inputHandler = InputHandler.Instance.inputActions;
 
@@ -282,7 +283,7 @@ namespace Gods_Of_Pharloom
             var startBossFightAction = new PatchedFsm.CustomLogicFsm(fsm);
             startBossFightAction.action += (Fsm fsm) =>
             {
-                BossSequence.SetSequence(new BossInfo[]{instance.boss}, $"back_entry{instance.statueIndex}", BossStatueInfo.hog_sceneName, isHoG: true);
+                BossSequence.SetSequence(new BossScene[]{instance.boss}, $"back_entry{instance.statueIndex}", BossStatueInfo.hog_sceneName, isHoG: true);
             };
 
 

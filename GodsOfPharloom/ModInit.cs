@@ -81,7 +81,7 @@ namespace Gods_Of_Pharloom
             Log = this.Logger;
 
             try{
-            BossInfo.InitBossesInfo();
+            BossScene.InitBossesInfo();
             BossStatueInfo.InitBossesStatue();
             LoadModData();
             BossStatueInfo.GetBadges();
@@ -202,10 +202,11 @@ namespace Gods_Of_Pharloom
 
                 var rootObjects = scene.GetRootGameObjects();
 
-                //add memory entry
-                var wakeInMemory = (GameObject)Instantiate(Preload.preloads["door_wakeInMemory_AntQueen"], scene: scene);
+                // //add memory entry
+                var wakeInMemory = (GameObject)Instantiate(Preload.preloads["door_wakeInMemory_AntQueen"], scene: scene); /////////fix for fast pantheon death anim
                 wakeInMemory.transform.position = new Vector3(14f, 54f, 0);
                 var wakeInMemoryFSM = wakeInMemory.GetComponent<PlayMakerFSM>().Fsm;
+                var pause = wakeInMemoryFSM.GetState("Pause");
                 var setRespawn = wakeInMemoryFSM.GetState("Set Respawn?");
                 var blankScreen = wakeInMemoryFSM.GetState("Blank Screen");
                 var saveGame = wakeInMemoryFSM.GetState("Save?");
@@ -217,6 +218,7 @@ namespace Gods_Of_Pharloom
                     PlayerData.instance.respawnScene = "GG_Pharloom_Atrium";
                 };
                 blankScreen.Actions = PatchedFsm.InsertInArray(blankScreen.Actions, customActionSetRespawn, 0);
+                pause.Transitions = new FsmTransition[]{pause.Transitions[1]};
 
                 //add exit edge
                 var exitEdge = (GameObject)Instantiate(Preload.preloads["Exit Edge Trigger_AntQueen"], scene: scene);
@@ -230,11 +232,30 @@ namespace Gods_Of_Pharloom
                 exitEdge2.transform.Rotate(new Vector3(0, 0, 90));
                 exitEdge2.transform.localScale = new Vector3(1, 7, 1);
 
+                //init pantheon menu
+                var pantheonMenuHandler = Preload.FindObjectByPath(rootObjects, "PantheonMenuCanvasHandler");
+                var pantheonMenuComp = pantheonMenuHandler.AddComponent<PantheonMenu>();
+
                 //init pantheons
+                Pantheon.pantheonsCount = 0;
                 Pantheon pComp;
+                var bosses = BossScene.bosses;
                 var pantheon1 = Preload.FindObjectByPath(rootObjects, "Half1/Pantheon1");
                 pComp = pantheon1.AddComponent<Pantheon>();
                 pComp.pantheonName = "Pantheon 1";
+                pComp.sequence = new BossScene[]{
+                    bosses["Moss Mother"],
+                    bosses["Bell Beast"],
+                    bosses["Skull Tyrant"],
+                    bosses["Fourth Chorus"],
+                    bosses["Lace in Deep Docks"],
+                    bosses["RestScene"],
+                    bosses["Savage Beastfly in Chapel of The Beast"],
+                    bosses["Moorwing"],
+                    bosses["Sister Splinter"],
+                    bosses["Great Conchflies"],
+                    bosses["Widow"],
+                };
                 pComp.Init();
 
                 var pantheon2 = Preload.FindObjectByPath(rootObjects, "Half1/Pantheon2");

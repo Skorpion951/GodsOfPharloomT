@@ -78,83 +78,22 @@ public class BindingsMenu
         {"Needle Binding", (_) =>
         {
             ToggleBinding(needleBinding.gameObject);
+
+            UpdateMenuBindingsDisplay();
         }},
         {"Silk Binding", (_) =>
         {
             ToggleBinding(silkBinding.gameObject);
+
+            UpdateMenuBindingsDisplay();
         }},
         {"Tools Binding", (_) =>
         {
             ToggleBinding(toolsBinding.gameObject);
 
-            var inventory = GameObject.Find("_GameCameras/HudCamera/In-game/Inventory");
-            var additiveDefendSlot = inventory.transform.Find("Tools/Tool Group/Floating Slots/Defend Slot").gameObject.GetComponent<InventoryToolCrestSlot>();
-            var additiveExploreSlot = inventory.transform.Find("Tools/Tool Group/Floating Slots/Explore Slot").gameObject.GetComponent<InventoryToolCrestSlot>();
+            TryActivateToolsBinding();
 
-            if(PlayerDataMod.instance.bindings["Tools Binding"])
-            {
-                foreach(var crest in ToolItemManager.GetAllCrests())
-                {
-                    if(crest == null) continue;
-                    var crestSlots = PlayerData.instance.ToolEquips.GetData(crest.name).Slots;
-                    if(crestSlots == null) continue;
-                    
-                    var crestPreviousState = new List<string>();
-
-                    var newCrestState = new List<string>();
-
-                    foreach(var slot in crestSlots)
-                    {
-                        var tool = ToolItemManager.GetToolByName(slot.EquippedTool);
-                        if(tool == null)
-                        {
-                            crestPreviousState.Add("");
-                            newCrestState.Add("");
-                        }
-                        else
-                        {
-                            var name = tool.name != null ? tool.name : "";
-                            crestPreviousState.Add(name);
-                            if(tool.Type == ToolItemType.Skill)
-                            {
-                                newCrestState.Add(name);
-                            }
-                            else newCrestState.Add("");
-                        }
-                    }
-
-                    crestsPreviousState[crest.name] = crestPreviousState;
-
-                    ToolItemManager.SetEquippedTools(crest.name, newCrestState);
-                }
-
-                crestsPreviousState[additiveDefendSlot.name] = new List<string>{additiveDefendSlot.SaveData.EquippedTool};
-                crestsPreviousState[additiveExploreSlot.name] = new List<string>{additiveExploreSlot.SaveData.EquippedTool};
-                ToolItemManager.SetExtraEquippedTool("Defend1", "");
-                ToolItemManager.SetExtraEquippedTool("Explore1", "");
-
-                ToolItemManager.SendEquippedChangedEvent();
-            }
-            else
-            {
-                foreach(var crestState in crestsPreviousState)
-                {
-                    if(crestState.Key == additiveDefendSlot.name)
-                    {
-                        ToolItemManager.SetExtraEquippedTool("Defend1", crestState.Value[0]);
-                        continue;
-                    }
-                    if(crestState.Key == additiveExploreSlot.gameObject.name)
-                    {
-                        ToolItemManager.SetExtraEquippedTool("Explore1", crestState.Value[0]);
-                        continue;
-                    }
-                    ToolItemManager.SetEquippedTools(crestState.Key, crestState.Value);
-                }
-                crestsPreviousState = new Dictionary<string, List<string>>();
-
-                ToolItemManager.SendEquippedChangedEvent();
-            }
+            UpdateMenuBindingsDisplay();
         }},
         {"Mask Binding", (_) =>
         {
@@ -175,14 +114,16 @@ public class BindingsMenu
             {
                 GodsOfPharloomMod.instance.StartCoroutine(TrySetHeroHealth(pdm.previousHealthCount));
             }
+
+            UpdateMenuBindingsDisplay();
         }},
         {"Needle", (_) =>
         {
             var pd = PlayerData.instance;
             if(pd == null) return;
             pd.nailUpgrades = ((pd.nailUpgrades + 1) < 5) ? pd.nailUpgrades + 1 : 0;
-            needle.GetType().GetMethod("UpdateState", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(needle, null);
-            needle.GetType().GetMethod("UpdateDisplay", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(needle, null);
+            
+            UpdateMenuBindingsDisplay();
         }},
         {"Heart Pieces", (_) =>
         {
@@ -193,9 +134,7 @@ public class BindingsMenu
             var newHeroHealth = pd.maxHealth + 1;
             newHeroHealth = (newHeroHealth > 10) ? 1 : newHeroHealth;
 
-            bool isMaskBindingActive = pdm.bindings["Mask Binding"];
-
-            if(!isMaskBindingActive)
+            if(!pdm.bindings["Mask Binding"])
             {
                 GodsOfPharloomMod.instance.StartCoroutine(TrySetHeroHealth(newHeroHealth));
             }
@@ -205,6 +144,8 @@ public class BindingsMenu
                 GodsOfPharloomMod.instance.StartCoroutine(TrySetHeroHealth(newHeroHealth));
                 pdm.previousHealthCount = newHeroHealth;
             }
+
+            UpdateMenuBindingsDisplay();
         }},
         {"Spool Pieces", (_) =>
         {
@@ -216,8 +157,7 @@ public class BindingsMenu
             newMaxSilk = (newMaxSilk > 9 && pdm.bindings["Silk Binding"]) ? 0 : newMaxSilk;
             pd.silkMax = newMaxSilk;
 
-            var amountText = spoolPieces.transform.Find("Amount Text").gameObject.GetComponent<TMProOld.TextMeshPro>();
-            amountText.text = $"{newMaxSilk}";
+            UpdateMenuBindingsDisplay();
         }},
         {"Sprint", (bool onlyUpdateDisplaying) =>
         {
@@ -225,10 +165,8 @@ public class BindingsMenu
             if(pd == null) return;
 
             if(!onlyUpdateDisplaying) pd.hasDash = !pd.hasDash;
-            float conditionVal = pd.hasDash ? 0f : 0.5f;
-            var color = new Color(1f-conditionVal, 1f-conditionVal, 1f-conditionVal, 1);
-
-            sprint.GetComponent<SpriteRenderer>().color = color;
+            
+            UpdateMenuBindingsDisplay();
         }},
         {"Harpoon Dash", (bool onlyUpdateDisplaying) =>
         {
@@ -236,10 +174,8 @@ public class BindingsMenu
             if(pd == null) return;
 
             if(!onlyUpdateDisplaying) pd.hasHarpoonDash = !pd.hasHarpoonDash;
-            float conditionVal = pd.hasHarpoonDash ? 0f : 0.5f;
-            var color = new Color(1f-conditionVal, 1f-conditionVal, 1f-conditionVal, 1);
-
-            harpoonDash.GetComponent<SpriteRenderer>().color = color;
+            
+            UpdateMenuBindingsDisplay();
         }},
         {"Eva Heal", (bool onlyUpdateDisplaying) =>
         {
@@ -247,10 +183,8 @@ public class BindingsMenu
             if(pd == null) return;
 
             if(!onlyUpdateDisplaying) pd.HasBoundCrestUpgrader = !pd.HasBoundCrestUpgrader;
-            float conditionVal = pd.HasBoundCrestUpgrader ? 0f : 0.5f;
-            var color = new Color(1f-conditionVal, 1f-conditionVal, 1f-conditionVal, 1);
-
-            evaHeal.GetComponent<SpriteRenderer>().color = color;
+            
+            UpdateMenuBindingsDisplay();
         }},
         {"Super Jump", (bool onlyUpdateDisplaying) =>
         {
@@ -258,10 +192,8 @@ public class BindingsMenu
             if(pd == null) return;
 
             if(!onlyUpdateDisplaying) pd.hasSuperJump = !pd.hasSuperJump;
-            float conditionVal = pd.hasSuperJump ? 0f : 0.5f;
-            var color = new Color(1f-conditionVal, 1f-conditionVal, 1f-conditionVal, 1);
-
-            superJump.GetComponent<SpriteRenderer>().color = color;
+            
+            UpdateMenuBindingsDisplay();
         }},
         {"Wall Jump", (bool onlyUpdateDisplaying) =>
         {
@@ -269,10 +201,8 @@ public class BindingsMenu
             if(pd == null) return;
 
             if(!onlyUpdateDisplaying) pd.hasWalljump = !pd.hasWalljump;
-            float conditionVal = pd.hasWalljump ? 0f : 0.5f;
-            var color = new Color(1f-conditionVal, 1f-conditionVal, 1f-conditionVal, 1);
-
-            wallJump.GetComponent<SpriteRenderer>().color = color;
+            
+            UpdateMenuBindingsDisplay();
         }},
         {"Needolin", (bool onlyUpdateDisplaying) =>
         {
@@ -280,10 +210,8 @@ public class BindingsMenu
             if(pd == null) return;
 
             if(!onlyUpdateDisplaying) pd.hasNeedolin = !pd.hasNeedolin;
-            float conditionVal = pd.hasNeedolin ? 0f : 0.5f;
-            var color = new Color(1f-conditionVal, 1f-conditionVal, 1f-conditionVal, 1);
-
-            needolin.GetComponent<SpriteRenderer>().color = color;
+            
+            UpdateMenuBindingsDisplay();
         }},
         {"Spool", (_) =>
         {
@@ -316,12 +244,7 @@ public class BindingsMenu
                 textDesc.text = cloakDescriptions[cloakState];
             }
 
-            foreach(Transform child in cloakStates.transform)
-            {
-                child.gameObject.SetActive(false);
-            }
-
-            cloakStates.transform.Find($"CloakState_{cloakState}")?.gameObject.SetActive(true);
+            UpdateMenuBindingsDisplay();
         }},
     };
 
@@ -502,8 +425,6 @@ public class BindingsMenu
             else yield return null;
         }
 
-        if(heartPieces != null) heartPieces.transform.Find("Amount Text").gameObject.GetComponent<TMProOld.TextMeshPro>().text = $"{PlayerData.instance.maxHealth}";
-
         isHealthIncreasing = false;
     }
 
@@ -545,7 +466,77 @@ public class BindingsMenu
         }
         GodsOfPharloomMod.Log.LogInfo("End fade msg");
     }
+    public static void TryActivateToolsBinding()
+    {
+        var inventory = GameObject.Find("_GameCameras/HudCamera/In-game/Inventory");
+        var additiveDefendSlot = inventory.transform.Find("Tools/Tool Group/Floating Slots/Defend Slot").gameObject.GetComponent<InventoryToolCrestSlot>();
+        var additiveExploreSlot = inventory.transform.Find("Tools/Tool Group/Floating Slots/Explore Slot").gameObject.GetComponent<InventoryToolCrestSlot>();
 
+        if(PlayerDataMod.instance.bindings["Tools Binding"])
+        {
+            foreach(var crest in ToolItemManager.GetAllCrests())
+            {
+                if(crest == null) continue;
+                var crestSlots = PlayerData.instance.ToolEquips.GetData(crest.name).Slots;
+                if(crestSlots == null) continue;
+                
+                var crestPreviousState = new List<string>();
+
+                var newCrestState = new List<string>();
+
+                foreach(var slot in crestSlots)
+                {
+                    var tool = ToolItemManager.GetToolByName(slot.EquippedTool);
+                    if(tool == null)
+                    {
+                        crestPreviousState.Add("");
+                        newCrestState.Add("");
+                    }
+                    else
+                    {
+                        var name = tool.name != null ? tool.name : "";
+                        crestPreviousState.Add(name);
+                        if(tool.Type == ToolItemType.Skill)
+                        {
+                            newCrestState.Add(name);
+                        }
+                        else newCrestState.Add("");
+                    }
+                }
+
+                crestsPreviousState[crest.name] = crestPreviousState;
+
+                ToolItemManager.SetEquippedTools(crest.name, newCrestState);
+            }
+
+            crestsPreviousState[additiveDefendSlot.name] = new List<string>{additiveDefendSlot.SaveData.EquippedTool};
+            crestsPreviousState[additiveExploreSlot.name] = new List<string>{additiveExploreSlot.SaveData.EquippedTool};
+            ToolItemManager.SetExtraEquippedTool("Defend1", "");
+            ToolItemManager.SetExtraEquippedTool("Explore1", "");
+
+            ToolItemManager.SendEquippedChangedEvent();
+        }
+        else
+        {
+            foreach(var crestState in crestsPreviousState)
+            {
+                if(crestState.Key == additiveDefendSlot.name)
+                {
+                    ToolItemManager.SetExtraEquippedTool("Defend1", crestState.Value[0]);
+                    continue;
+                }
+                if(crestState.Key == additiveExploreSlot.gameObject.name)
+                {
+                    ToolItemManager.SetExtraEquippedTool("Explore1", crestState.Value[0]);
+                    continue;
+                }
+                ToolItemManager.SetEquippedTools(crestState.Key, crestState.Value);
+            }
+            crestsPreviousState = new Dictionary<string, List<string>>();
+
+            ToolItemManager.SendEquippedChangedEvent();
+        }
+    }
     public static void ToggleBinding(GameObject bindingObj)
     {
         var playerData = PlayerDataMod.instance;
@@ -675,6 +666,104 @@ public class BindingsMenu
 
         GodsOfPharloomMod.instance.StartCoroutine(UpdateSilkBinding());
     }
+    public static void UpdateMenuBindingsDisplay()
+    {
+        var pd = PlayerData.instance;
+        var pdm = PlayerDataMod.instance;
+
+        //hero health
+        if(heartPieces != null) heartPieces.transform.Find("Amount Text").gameObject.GetComponent<TMProOld.TextMeshPro>().text = $"{PlayerData.instance.maxHealth}";
+
+        //spool pieces
+        var amountText = spoolPieces.transform.Find("Amount Text").gameObject.GetComponent<TMProOld.TextMeshPro>();
+        amountText.text = $"{pd.silkMax}";
+
+        //needle state
+        needle.GetType().GetMethod("UpdateState", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(needle, null);
+        needle.GetType().GetMethod("UpdateDisplay", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(needle, null);
+
+        //sprint
+        float conditionVal = pd.hasDash ? 0f : 0.5f;
+        var color = new Color(1f-conditionVal, 1f-conditionVal, 1f-conditionVal, 1);
+        sprint.GetComponent<SpriteRenderer>().color = color;
+
+        //harpoon dash
+        conditionVal = pd.hasHarpoonDash ? 0f : 0.5f;
+        color = new Color(1f-conditionVal, 1f-conditionVal, 1f-conditionVal, 1);
+        harpoonDash.GetComponent<SpriteRenderer>().color = color;
+
+        //eva heal
+        conditionVal = pd.HasBoundCrestUpgrader ? 0f : 0.5f;
+        color = new Color(1f-conditionVal, 1f-conditionVal, 1f-conditionVal, 1);
+        evaHeal.GetComponent<SpriteRenderer>().color = color;
+
+        //super jump
+        conditionVal = pd.hasSuperJump ? 0f : 0.5f;
+        color = new Color(1f-conditionVal, 1f-conditionVal, 1f-conditionVal, 1);
+        superJump.GetComponent<SpriteRenderer>().color = color;
+
+        //wall jump
+        conditionVal = pd.hasWalljump ? 0f : 0.5f;
+        color = new Color(1f-conditionVal, 1f-conditionVal, 1f-conditionVal, 1);
+        wallJump.GetComponent<SpriteRenderer>().color = color;
+
+        //needolin
+        conditionVal = pd.hasNeedolin ? 0f : 0.5f;
+        color = new Color(1f-conditionVal, 1f-conditionVal, 1f-conditionVal, 1);
+        needolin.GetComponent<SpriteRenderer>().color = color;
+
+        //cloak
+        int cloakState = 0;
+        if(!pd.hasBrolly && !pd.hasDoubleJump) cloakState = 0;
+        else if(pd.hasBrolly && !pd.hasDoubleJump) cloakState = 1;
+        else if(!pd.hasBrolly && pd.hasDoubleJump) cloakState = 2;
+        else if(pd.hasBrolly && pd.hasDoubleJump) cloakState = 3;
+        foreach(Transform child in cloakStates.transform) child.gameObject.SetActive(false);
+        cloakStates.transform.Find($"CloakState_{cloakState}")?.gameObject.SetActive(true);
+
+        //4 main bindings
+        var bindings = new InventoryItemCollectable[]{needleBinding, silkBinding, toolsBinding, maskBinding};
+        foreach(var binding in bindings)
+        {
+            foreach(Transform icon in binding.transform.Find("Group/Parent")) icon.gameObject.SetActive(false);
+        }
+
+        if(pdm.bindings["Needle Binding"] && pdm.bindings["Silk Binding"] &&
+           pdm.bindings["Tools Binding"] && pdm.bindings["Mask Binding"])
+        {
+            foreach(var binding in bindings)
+            {
+                binding.transform.Find("Group/Parent/AllActivated").gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            foreach(var binding in bindings)
+            {
+                bool isActive = false;
+
+                if(binding == needleBinding)
+                {
+                    isActive = pdm.bindings["Needle Binding"];
+                }
+                else if(binding == silkBinding)
+                {
+                    isActive = pdm.bindings["Silk Binding"];
+                }
+                else if(binding == toolsBinding)
+                {
+                    isActive = pdm.bindings["Tools Binding"];
+                }
+                else if(binding == maskBinding)
+                {
+                    isActive = pdm.bindings["Mask Binding"];
+                }
+
+                binding.transform.Find("Group/Parent/Activated").gameObject.SetActive(isActive);
+                binding.transform.Find("Group/Parent/Deactivated").gameObject.SetActive(!isActive);
+            }
+        }
+    }
     public static InventoryItemCollectable CreateButtonInv(string objName, GameObject template, Vector3 pos, string textLable = "", string textDescription = "")
     {
         var button = GameObject.Instantiate(template, parent: menuBindings.transform);
@@ -782,6 +871,9 @@ public class BindingsMenu
 
         var equipment = inv.transform.Find("Equipment").gameObject;
         var template = equipment.transform.Find("Template Collectable Item").gameObject;
+        var flashUI_template = template.transform.Find("Group/generic_flash_ui");
+        Preload.preloads["generic_flash_ui"] = GameObject.Instantiate(flashUI_template.gameObject, parent: Preload.handler.transform);
+
         needle = inv.transform.Find("Inv_Items/Needle").GetComponent<InventoryItemNail>();
 
         foreach(Transform item in equipment.transform)
@@ -1014,20 +1106,7 @@ public class BindingsMenu
                 item.gameObject.transform.Find("Group/generic_flash_ui").gameObject.SetActive(false);
             }
 
-            needle.GetType().GetMethod("UpdateState", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(needle, null);
-            needle.GetType().GetMethod("UpdateDisplay", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(needle, null);
-
-            heartPieces.transform.Find("Amount Text").gameObject.GetComponent<TMProOld.TextMeshPro>().text = $"{PlayerData.instance.maxHealth}";
-            spoolPieces.transform.Find("Amount Text").gameObject.GetComponent<TMProOld.TextMeshPro>().text = $"{PlayerData.instance.silkMax}";
-
-            submitActions["Sprint"].Invoke(true);
-            submitActions["Harpoon Dash"].Invoke(true);
-            submitActions["Eva Heal"].Invoke(true);
-            submitActions["Super Jump"].Invoke(true);
-            submitActions["Wall Jump"].Invoke(true);
-            submitActions["Needolin"].Invoke(true);
-
-            submitActions["Cloak States"].Invoke(true);
+            UpdateMenuBindingsDisplay();
         };
     }
 }

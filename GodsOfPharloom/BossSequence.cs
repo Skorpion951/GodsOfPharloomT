@@ -10,19 +10,19 @@ using HarmonyLib;
 
 namespace Gods_Of_Pharloom
 {
-    public class BossInfo
+    public class BossScene
     {
-        public static Dictionary<string, BossInfo> bosses;
+        public static Dictionary<string, BossScene> bosses;
         public static float waitForBossDeathAnim = 1.6f;
         public string sceneName;
         public string entryGate;
         public string bossName;
         public Dictionary<string, Dictionary<string, object>> bossesGOsInfo;
-        public BossInfo ascendedVersion;
+        public BossScene ascendedVersion;
         public bool noInputOnStart;
         public bool is3ActBoss;
 
-        public BossInfo(string sceneName, string entryGate, string bossName, string[] bossesGOsName, float[][] bossesHpMul, BossInfo ascendedVersion = null, bool is3ActBoss = false)
+        public BossScene(string sceneName, string entryGate, string bossName, string[] bossesGOsName, float[][] bossesHpMul, BossScene ascendedVersion = null, bool is3ActBoss = false)
         {
             this.sceneName = sceneName;
             this.entryGate = entryGate;
@@ -48,59 +48,61 @@ namespace Gods_Of_Pharloom
         }
         public static void InitBossesInfo()
         {
-            var bossesInfo = new BossInfo[]
+            var bossesInfo = new BossScene[]
             {
-                new BossInfo("Tut_03", "start_battle_entry", "Moss Mother", new string[]{"Mossbone Mother"},new float[][]{new float[]{504f, 504*1.2f}}, 
-                        ascendedVersion : new BossInfo("Weave_03", "start_battle_entry", "Moss Mother", new string[]{"Mossbone Mother A", "Mossbone Mother B"}, new float[][]{new float[]{817f, 817*1.2f}, new float[]{817f, 817*1.2f}})),
-                new BossInfo("Bone_05", "start_battle_entry", "Bell Beast", new string[]{"Bone Beast"}, new float[][]{new float[]{350f, 350*1.2f}}),
-                new BossInfo("Bone_East_08", "start_battle_entry", "Fourth Chorus", new string[]{"song_golem"}, new float[][]{new float[]{500f, 500*1.2f}}),
-                new BossInfo("Coral_11", "start_battle_entry", "Great Conchflies", new string[]{"Driller A", "Driller B"}, new float[][]{new float[]{647f, 647*1.2f}, new float[]{647f, 647*1.2f}}),
-                new BossInfo("Bone_East_12", "start_battle_entry", "Lace in Deep Docks", new string[]{"Lace Boss1"}, new float[][]{new float[]{2f, 3f}}),
-                new BossInfo("Coral_Judge_Arena", "start_battle_entry", "The Last Judge", new string[]{"Last Judge"}, new float[][]{new float[]{2f, 3f}}),
-                new BossInfo("Greymoor_08", "start_battle_entry", "Moorwing", new string[]{"Vampire Gnat"}, new float[][]{new float[]{2f, 3f}}),
-                new BossInfo("Organ_01", "start_battle_entry", "Phantom", new string[]{"Phantom"}, new float[][]{new float[]{2f, 3f}}),
-                new BossInfo("Ant_19", "start_battle_entry", "Savage Beastfly in Chapel of The Beast", new string[]{"Bone Flyer Giant"}, new float[][]{new float[]{680f, 680*1.2f}}),
-                new BossInfo("Shellwood_18", "start_battle_entry", "Sister Splinter", new string[]{"Splinter Queen"}, new float[][]{new float[]{724f, 724*1.2f}}),
-                new BossInfo("Bone_15", "start_battle_entry", "Skull Tyrant", new string[]{"Skull King"}, new float[][]{new float[]{727f, 727*1.2f}}),
-                new BossInfo("Belltown_Shrine", "start_battle_entry", "Widow", new string[]{"Spinner Boss"}, new float[][]{new float[]{1512f, 1512*1.2f}}),
-                new BossInfo("Slab_16b", "start_battle_entry", "Broodmother", new string[]{"Slab Fly Broodmother"}, new float[][]{new float[]{2f, 3f}}),
-                new BossInfo("Cog_Dancers", "start_battle_entry", "Cogwork Dancers", new string[]{"Dancer A", "Dancer B"}, new float[][]{new float[]{444f, 444*1.2f}, new float[]{444f, 444*1.2f}}),
-                new BossInfo("Dust_Chef", "start_battle_entry", "Disgraced Chef Lugoli", new string[]{"Roachkeeper Chef (1)"}, new float[][]{new float[]{970f, 970*1.2f}}),
-                new BossInfo("Belltown_08", "start_battle_entry", "Father of the Flame", new string[]{"None"}, new float[][]{new float[]{2f, 3f}}),
-                new BossInfo("Slab_10b", "start_battle_entry", "First Sinner", new string[]{"First Weaver"}, new float[][]{new float[]{2f, 3f}}),
-                new BossInfo("Dock_09", "start_battle_entry", "Forebrothers Signis & Gron", new string[]{"Dock Guard Slasher", "Dock Guard Thrower"}, new float[][]{new float[]{890f, 890*1.2f}, new float[]{643f, 643*1.2f}}),
-                new BossInfo("Library_09", "start_battle_entry", "Garmond & Zaza", new string[]{"Garmond Fighter"}, new float[][]{new float[]{2f, 3f}}),
-                new BossInfo("Cradle_03", "start_battle_entry", "Grand Mother Silk", new string[]{"Silk Boss"}, new float[][]{new float[]{2f, 3f}}),
-                new BossInfo("Shadow_18", "start_battle_entry", "Groal the Great", new string[]{"Swamp Shaman"}, new float[][]{new float[]{2f, 3f}}),
-                new BossInfo("Song_Tower_01", "start_battle_entry", "Lace in the Cradle", new string[]{"Lace Boss2 New"}, new float[][]{new float[]{2f, 3f}}),
-                new BossInfo("Coral_27", "start_battle_entry", "Raging Conchfly", new string[]{"Coral Conch Driller Giant Solo"}, new float[][]{new float[]{820f, 820*1.2f}}),
-                new BossInfo("Bone_East_08", "start_battle_entry", "Savage Beastfly in Far Fields", new string[]{"Bone Flyer Giant"}, new float[][]{new float[]{2f, 3f}}),
-                new BossInfo("Hang_17b", "start_battle_entry", "Second Sentiel", new string[]{"Song Knight"}, new float[][]{new float[]{2f, 3f}}),
-                new BossInfo("Greymoor_08", "start_battle_entry", "Shakra", new string[]{"Mapper Spar NPC"}, new float[][]{new float[]{2f, 3f}}),
-                new BossInfo("Ward_02", "start_battle_entry", "The Unravelled", new string[]{"Conductor Boss"}, new float[][]{new float[]{2f, 3f}}),
-                new BossInfo("Library_13", "start_battle_entry", "Trobbio", new string[]{"Trobbio"}, new float[][]{new float[]{2f, 3f}}),
-                new BossInfo("Coral_29", "start_battle_entry", "Voltvyrm", new string[]{"Zap Core Enemy"}, new float[][]{new float[]{2f, 3f}}),
-                new BossInfo("Bellway_Centipede_Arena", "start_battle_entry", "Bell Eater", new string[]{"Giant Centipede Head", "Giant Centipede Butt"}, new float[][]{new float[]{2f, 3f}, new float[]{2f, 3f}}, is3ActBoss: true),
-                new BossInfo("Clover_10", "start_battle_entry", "Clover Dancers", new string[]{"Dancer A"}, new float[][]{new float[]{2f, 3f}}, is3ActBoss: true),
-                new BossInfo("Room_CrowCourt_02", "start_battle_entry", "Crawfather", new string[]{"Crawfather"}, new float[][]{new float[]{1300f, 1300*1.2f}}, is3ActBoss: true),
-                new BossInfo("Memory_Coral_Tower", "start_battle_entry", "Crust King Khann", new string[]{"Coral King"}, new float[][]{new float[]{1650f, 1650*1.2f}}, is3ActBoss: true),
-                new BossInfo("Bone_East_18b", "start_battle_entry", "Gurr the Outcast", new string[]{"Bone Hunter Trapper"}, new float[][]{new float[]{1000f, 1000*1.2f}}, is3ActBoss: true),
-                new BossInfo("Coral_33", "start_battle_entry", "Lost Garmond", new string[]{"Garmond Black Threaded Fighter"}, new float[][]{new float[]{2f, 3f}}, is3ActBoss: true),
-                new BossInfo("Abyss_Cocoon", "start_battle_entry", "Lost Lace", new string[]{"Lost Lace Boss"}, new float[][]{new float[]{2f, 3f}}, is3ActBoss: true),
-                new BossInfo("Shellwood_11b_Memory", "start_battle_entry", "Nyleth", new string[]{"Flower Queen Boss"}, new float[][]{new float[]{1250f, 1250*1.2f}}, is3ActBoss: true),
-                new BossInfo("Clover_19", "start_battle_entry", "Palestag", new string[]{"Cloverstag White Boss"}, new float[][]{new float[]{2f, 3f}}, is3ActBoss: true),
-                new BossInfo("Peak_07", "start_battle_entry", "Pinstress", new string[]{"Pinstress Boss"}, new float[][]{new float[]{2f, 3f}}, is3ActBoss: true),
-                new BossInfo("Crawl_10", "start_battle_entry", "Plasmified Zango", new string[]{"Blue Assistant"}, new float[][]{new float[]{2f, 3f}}, is3ActBoss: true),
-                new BossInfo("Shellwood_22", "start_battle_entry", "Shrine Guardian Seth", new string[]{"Seth"}, new float[][]{new float[]{1185f, 1185*1.2f}}, is3ActBoss: true),
-                new BossInfo("Memory_Ant_Queen", "start_battle_entry", "Skarrsinger Karmelita", new string[]{"Hunter Queen Boss"}, new float[][]{new float[]{1500f, 1500*1.2f}}, is3ActBoss: true),
-                new BossInfo("Library_13", "start_battle_entry", "Tormented Trobbio", new string[]{"Tormented Trobbio"}, new float[][]{new float[]{2f, 3f}}, is3ActBoss: true),
-                new BossInfo("Coral_39", "start_battle_entry", "Watcher at the Edge", new string[]{"Coral Warrior Grey"}, new float[][]{new float[]{2f, 3f}}, is3ActBoss: true),
+                new BossScene("Tut_03", "start_battle_entry", "Moss Mother", new string[]{"Mossbone Mother"},new float[][]{new float[]{504f, 504*1.2f}}, 
+                        ascendedVersion : new BossScene("Weave_03", "start_battle_entry", "Moss Mother", new string[]{"Mossbone Mother A", "Mossbone Mother B"}, new float[][]{new float[]{817f, 817*1.2f}, new float[]{817f, 817*1.2f}})),
+                new BossScene("Bone_05", "start_battle_entry", "Bell Beast", new string[]{"Bone Beast"}, new float[][]{new float[]{350f, 350*1.2f}}),
+                new BossScene("Bone_East_08", "start_battle_entry", "Fourth Chorus", new string[]{"song_golem"}, new float[][]{new float[]{500f, 500*1.2f}}),
+                new BossScene("Coral_11", "start_battle_entry", "Great Conchflies", new string[]{"Driller A", "Driller B"}, new float[][]{new float[]{647f, 647*1.2f}, new float[]{647f, 647*1.2f}}),
+                new BossScene("Bone_East_12", "start_battle_entry", "Lace in Deep Docks", new string[]{"Lace Boss1"}, new float[][]{new float[]{2f, 3f}}),
+                new BossScene("Coral_Judge_Arena", "start_battle_entry", "The Last Judge", new string[]{"Last Judge"}, new float[][]{new float[]{2f, 3f}}),
+                new BossScene("Greymoor_08", "start_battle_entry", "Moorwing", new string[]{"Vampire Gnat"}, new float[][]{new float[]{2f, 3f}}),
+                new BossScene("Organ_01", "start_battle_entry", "Phantom", new string[]{"Phantom"}, new float[][]{new float[]{2f, 3f}}),
+                new BossScene("Ant_19", "start_battle_entry", "Savage Beastfly in Chapel of The Beast", new string[]{"Bone Flyer Giant"}, new float[][]{new float[]{680f, 680*1.2f}}),
+                new BossScene("Shellwood_18", "start_battle_entry", "Sister Splinter", new string[]{"Splinter Queen"}, new float[][]{new float[]{724f, 724*1.2f}}),
+                new BossScene("Bone_15", "start_battle_entry", "Skull Tyrant", new string[]{"Skull King"}, new float[][]{new float[]{727f, 727*1.2f}}),
+                new BossScene("Belltown_Shrine", "start_battle_entry", "Widow", new string[]{"Spinner Boss"}, new float[][]{new float[]{1512f, 1512*1.2f}}),
+                new BossScene("Slab_16b", "start_battle_entry", "Broodmother", new string[]{"Slab Fly Broodmother"}, new float[][]{new float[]{2f, 3f}}),
+                new BossScene("Cog_Dancers", "start_battle_entry", "Cogwork Dancers", new string[]{"Dancer A", "Dancer B"}, new float[][]{new float[]{444f, 444*1.2f}, new float[]{444f, 444*1.2f}}),
+                new BossScene("Dust_Chef", "start_battle_entry", "Disgraced Chef Lugoli", new string[]{"Roachkeeper Chef (1)"}, new float[][]{new float[]{970f, 970*1.2f}}),
+                new BossScene("Belltown_08", "start_battle_entry", "Father of the Flame", new string[]{"None"}, new float[][]{new float[]{2f, 3f}}),
+                new BossScene("Slab_10b", "start_battle_entry", "First Sinner", new string[]{"First Weaver"}, new float[][]{new float[]{2f, 3f}}),
+                new BossScene("Dock_09", "start_battle_entry", "Forebrothers Signis & Gron", new string[]{"Dock Guard Slasher", "Dock Guard Thrower"}, new float[][]{new float[]{890f, 890*1.2f}, new float[]{643f, 643*1.2f}}),
+                new BossScene("Library_09", "start_battle_entry", "Garmond & Zaza", new string[]{"Garmond Fighter"}, new float[][]{new float[]{2f, 3f}}),
+                new BossScene("Cradle_03", "start_battle_entry", "Grand Mother Silk", new string[]{"Silk Boss"}, new float[][]{new float[]{2f, 3f}}),
+                new BossScene("Shadow_18", "start_battle_entry", "Groal the Great", new string[]{"Swamp Shaman"}, new float[][]{new float[]{2f, 3f}}),
+                new BossScene("Song_Tower_01", "start_battle_entry", "Lace in the Cradle", new string[]{"Lace Boss2 New"}, new float[][]{new float[]{2f, 3f}}),
+                new BossScene("Coral_27", "start_battle_entry", "Raging Conchfly", new string[]{"Coral Conch Driller Giant Solo"}, new float[][]{new float[]{820f, 820*1.2f}}),
+                new BossScene("Bone_East_08", "start_battle_entry", "Savage Beastfly in Far Fields", new string[]{"Bone Flyer Giant"}, new float[][]{new float[]{2f, 3f}}),
+                new BossScene("Hang_17b", "start_battle_entry", "Second Sentiel", new string[]{"Song Knight"}, new float[][]{new float[]{2f, 3f}}),
+                new BossScene("Greymoor_08", "start_battle_entry", "Shakra", new string[]{"Mapper Spar NPC"}, new float[][]{new float[]{2f, 3f}}),
+                new BossScene("Ward_02", "start_battle_entry", "The Unravelled", new string[]{"Conductor Boss"}, new float[][]{new float[]{2f, 3f}}),
+                new BossScene("Library_13", "start_battle_entry", "Trobbio", new string[]{"Trobbio"}, new float[][]{new float[]{2f, 3f}}),
+                new BossScene("Coral_29", "start_battle_entry", "Voltvyrm", new string[]{"Zap Core Enemy"}, new float[][]{new float[]{2f, 3f}}),
+                new BossScene("Bellway_Centipede_Arena", "start_battle_entry", "Bell Eater", new string[]{"Giant Centipede Head", "Giant Centipede Butt"}, new float[][]{new float[]{2f, 3f}, new float[]{2f, 3f}}, is3ActBoss: true),
+                new BossScene("Clover_10", "start_battle_entry", "Clover Dancers", new string[]{"Dancer A"}, new float[][]{new float[]{2f, 3f}}, is3ActBoss: true),
+                new BossScene("Room_CrowCourt_02", "start_battle_entry", "Crawfather", new string[]{"Crawfather"}, new float[][]{new float[]{1300f, 1300*1.2f}}, is3ActBoss: true),
+                new BossScene("Memory_Coral_Tower", "start_battle_entry", "Crust King Khann", new string[]{"Coral King"}, new float[][]{new float[]{1650f, 1650*1.2f}}, is3ActBoss: true),
+                new BossScene("Bone_East_18b", "start_battle_entry", "Gurr the Outcast", new string[]{"Bone Hunter Trapper"}, new float[][]{new float[]{1000f, 1000*1.2f}}, is3ActBoss: true),
+                new BossScene("Coral_33", "start_battle_entry", "Lost Garmond", new string[]{"Garmond Black Threaded Fighter"}, new float[][]{new float[]{2f, 3f}}, is3ActBoss: true),
+                new BossScene("Abyss_Cocoon", "start_battle_entry", "Lost Lace", new string[]{"Lost Lace Boss"}, new float[][]{new float[]{2f, 3f}}, is3ActBoss: true),
+                new BossScene("Shellwood_11b_Memory", "start_battle_entry", "Nyleth", new string[]{"Flower Queen Boss"}, new float[][]{new float[]{1250f, 1250*1.2f}}, is3ActBoss: true),
+                new BossScene("Clover_19", "start_battle_entry", "Palestag", new string[]{"Cloverstag White Boss"}, new float[][]{new float[]{2f, 3f}}, is3ActBoss: true),
+                new BossScene("Peak_07", "start_battle_entry", "Pinstress", new string[]{"Pinstress Boss"}, new float[][]{new float[]{2f, 3f}}, is3ActBoss: true),
+                new BossScene("Crawl_10", "start_battle_entry", "Plasmified Zango", new string[]{"Blue Assistant"}, new float[][]{new float[]{2f, 3f}}, is3ActBoss: true),
+                new BossScene("Shellwood_22", "start_battle_entry", "Shrine Guardian Seth", new string[]{"Seth"}, new float[][]{new float[]{1185f, 1185*1.2f}}, is3ActBoss: true),
+                new BossScene("Memory_Ant_Queen", "start_battle_entry", "Skarrsinger Karmelita", new string[]{"Hunter Queen Boss"}, new float[][]{new float[]{1500f, 1500*1.2f}}, is3ActBoss: true),
+                new BossScene("Library_13", "start_battle_entry", "Tormented Trobbio", new string[]{"Tormented Trobbio"}, new float[][]{new float[]{2f, 3f}}, is3ActBoss: true),
+                new BossScene("Coral_39", "start_battle_entry", "Watcher at the Edge", new string[]{"Coral Warrior Grey"}, new float[][]{new float[]{2f, 3f}}, is3ActBoss: true),
+
+                new BossScene("BossScene_Rest", "rest_scene_entry", "RestScene", new string[0], new float[0][]),
             };
 
-            var dict = new Dictionary<string, BossInfo>();
-            foreach(var bossInfo in bossesInfo)
+            var dict = new Dictionary<string, BossScene>();
+            foreach(var BossScene in bossesInfo)
             {
-                dict[bossInfo.bossName] = bossInfo;
+                dict[BossScene.bossName] = BossScene;
             }
             bosses = dict;
         }
@@ -109,8 +111,8 @@ namespace Gods_Of_Pharloom
     {
         public static GameObject sequenceGO;
         public static bool isInSequence = false;
-        public static BossInfo[] bossSequence;
-        public static BossInfo currentBoss;
+        public static BossScene[] bossSequence;
+        public static BossScene currentBoss;
         public static int currentBossIndex = 0;
         public static string backEntry;
         public static string backScene;
@@ -184,6 +186,7 @@ namespace Gods_Of_Pharloom
                     sequenceController.SendEvent("END SEQUENCE");
                     return;
                 }
+                currentBoss = bossSequence[currentBossIndex];
 
                 NextBoss();
                 sequenceController.SendEvent("NEXT");
@@ -327,7 +330,7 @@ namespace Gods_Of_Pharloom
 
             Reset();
         }
-        public static void SetSequence(BossInfo[] bossSequence, string backEntry, string backScene, bool isPantheon = false,
+        public static void SetSequence(BossScene[] bossSequence, string backEntry, string backScene, bool isPantheon = false,
                 bool isHoG = false, string difficultMode = "", bool startImmediately = true)
         {
             Reset();

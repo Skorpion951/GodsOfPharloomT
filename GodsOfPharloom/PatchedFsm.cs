@@ -74,22 +74,30 @@ public class PatchedFsm
     {
         public string objName;
         public string fsmName;
+        public int objNameHash;
+        public int fsmNameHash;
         public Func<Fsm, bool> method;
         public FsmPatch(string objName, string fsmName, Func<Fsm, bool> method)
         {
             this.objName = objName;
             this.fsmName = fsmName;
             this.method = method;
+
+            this.objNameHash = objName.GetHashCode();
+            this.fsmNameHash = fsmName.GetHashCode();
         }
     }
     public static string bossDeadEvent = "BOSS DEAD EVENT MOD";
     public string sceneName;
+    public int sceneNameHash;
     public FsmPatch[] fsms;
 
     PatchedFsm(string sceneName, FsmPatch[] fsms)
     {
         this.sceneName = sceneName;
         this.fsms = fsms;
+
+        this.sceneNameHash = this.sceneName.GetHashCode();
     }
     public static PatchedFsm[] patchedFsms = new PatchedFsm[]{
         new PatchedFsm("DontDestroyOnLoad", new FsmPatch[]
@@ -104,7 +112,7 @@ public class PatchedFsm
         new PatchedFsm(BossStatueInfo.hog_sceneName, new FsmPatch[]
         {
             new FsmPatch("Detect Range", "Detect Hero", PatchFsm_DetectRangeBenchControl),
-            new FsmPatch("RestBench", "Trap Bench", PatchFsm_TrapBenchDestroy),
+            // new FsmPatch("RestBench", "Trap Bench", PatchFsm_TrapBenchDestroy),
             new FsmPatch("thread_memory", "Deep Memory Pre Enter Effect", PatchFsm_ThreadMemoryPreEnterEffect),
             new FsmPatch("thread_memory", "FSM", PatchFsm_ThreadMemoryFSM),
         }),
@@ -129,20 +137,20 @@ public class PatchedFsm
             new FsmPatch("Mossbone Mother Ambient Corpse(Clone)", "Death", PatchFsm_MossMotherDoubleCorpseControl),
             new FsmPatch("Mossbone Mother B Ambient Corpse(Clone)", "Death", PatchFsm_MossMotherDoubleCorpseControl),
         }),
-        new PatchedFsm("Bone_05_Boss", new FsmPatch[]
+        new PatchedFsm("Bone_05_boss", new FsmPatch[]
         {
             new FsmPatch("Bone Beast", "Control", PatchFsm_BellBeast),
             new FsmPatch("Boss Scene", "Return State", PatchFsm_BellBeastReturnState),
             new FsmPatch("Return Battle", "Start Return Battle", PatchFsm_BellBeastStartReturnBattle),
             new FsmPatch("Bone Beast Corpse(Clone)", "Death", PatchFsm_BellBeastCorpseControl),
         }),
-        new PatchedFsm("Bone_East_08_Boss_Golem", new FsmPatch[]
+        new PatchedFsm("Bone_East_08_boss_golem", new FsmPatch[]
         {
             new FsmPatch("song_golem", "Control", PatchFsm_FourthChorus)
         }),
         new PatchedFsm("Bone_East_08", new FsmPatch[]
         {
-            new FsmPatch("Boss Scene", "Control", PatchFsm_BossScene)
+            new FsmPatch("Boss Scene", "Control", PatchFsm_BoneEast08BossScene)
         }),
         new PatchedFsm("Coral_11", new FsmPatch[]
         {
@@ -209,7 +217,7 @@ public class PatchedFsm
         {
             new FsmPatch("Boss Scene", "Sequence", PatchFsm_CogDancersBossScene),
         }),
-        new PatchedFsm("Cog_Dancers_Boss", new FsmPatch[]
+        new PatchedFsm("Cog_Dancers_boss", new FsmPatch[]
         {
             new FsmPatch("Dancer Control", "Control", PatchFsm_CogDancersDancerControl),
             new FsmPatch("Dancer A", "Control", PatchFsm_CogDancersDancerAB),
@@ -276,7 +284,7 @@ public class PatchedFsm
             new FsmPatch("Coral Conch Driller Giant Solo", "Control", PatchFsm_RagingConchfly),
             new FsmPatch("Corpse Coral Conch Driller Giant Solo(Clone)", "Death", PatchFsm_RagingConchflyCorpseControl),
         }),
-        new PatchedFsm("Bone_East_08_Boss_Beastfly", new FsmPatch[]
+        new PatchedFsm("Bone_East_08_boss_beastfly", new FsmPatch[]
         {
             new FsmPatch("Bone Flyer Giant", "Control", PatchFsm_SavageBeastfly2),
             new FsmPatch("Corpse Giant Bone Flyer Quest(Clone)", "Death", PatchFsm_SavageBeastfly2CorpseControl),
@@ -287,7 +295,7 @@ public class PatchedFsm
             new FsmPatch("Boss Scene - To Additive Load", "Control", PatchFsm_SecondSentielBossSceneControl),
             new FsmPatch("Corpse Song Knight(Clone)", "Death", PatchFsm_SecondSentielCorpseControl),
         }),
-        new PatchedFsm("Greymoor_08_Mapper", new FsmPatch[]
+        new PatchedFsm("Greymoor_08_mapper", new FsmPatch[]
         {
             new FsmPatch("Mapper Spar NPC", "Attack Enemies", PatchFsm_ShakraAttackEnemies),
             new FsmPatch("Mapper Call Pole", "Control", PatchFsm_ShakraCallPole),
@@ -296,7 +304,7 @@ public class PatchedFsm
         {
             new FsmPatch("Pipe_Vent_Hatch", "Open At Battle End", PatchFsm_TheUnravelledPipeControl),
         }),
-        new PatchedFsm("Ward_02_Boss", new FsmPatch[]
+        new PatchedFsm("Ward_02_boss", new FsmPatch[]
         {
             new FsmPatch("Boss Scene", "Control", PatchFsm_TheUnravelledBossScene),
             new FsmPatch("Conductor Boss", "Control", PatchFsm_TheUnravelledControl),
@@ -857,7 +865,7 @@ public class PatchedFsm
         };
         var waitAction = new Wait
         {
-            time = BossInfo.waitForBossDeathAnim,
+            time = BossScene.waitForBossDeathAnim,
             finishEvent = FsmEvent.GetFsmEvent("FINISHED")
         };
 
@@ -875,6 +883,8 @@ public class PatchedFsm
             }
         };
 
+        blow.Actions[9].Enabled = false; //disable boss death music
+
         blow.Transitions[0].ToFsmState = customState1;
 
         SetTransitionToState(stagger, blow, 0);
@@ -885,6 +895,7 @@ public class PatchedFsm
     {
         var steam = fsm.GetState("Steam");
         var blow = fsm.GetState("Blow");
+        var blow2 = fsm.GetState("Blow 2");
         var waitFrame = fsm.GetState("Wait Frame");
         var stagger = fsm.GetState("Stagger");
 
@@ -899,7 +910,7 @@ public class PatchedFsm
             return false;
         }
 
-        var customActionSendEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
@@ -915,6 +926,7 @@ public class PatchedFsm
     {
         var steam = fsm.GetState("Steam");
         var blow = fsm.GetState("Blow");
+        var blow2 = fsm.GetState("Blow 2");
         var state1 = fsm.GetState("State 1");
         var blackThread = fsm.GetState("Black Thread?");
 
@@ -927,7 +939,7 @@ public class PatchedFsm
         };
         var waitAction = new Wait
         {
-            time = BossInfo.waitForBossDeathAnim,
+            time = BossScene.waitForBossDeathAnim,
             finishEvent = FsmEvent.GetFsmEvent("FINISHED")
         };
 
@@ -1003,7 +1015,7 @@ public class PatchedFsm
         };
         var waitAction = new Wait
         {
-            time = BossInfo.waitForBossDeathAnim,
+            time = BossScene.waitForBossDeathAnim,
             finishEvent = FsmEvent.GetFsmEvent("FINISHED")
         };
 
@@ -1046,11 +1058,13 @@ public class PatchedFsm
         ((Wait)(roarClamp.Actions[11])).time = 0.1f;
         // ((Wait)deathFall.Actions[1]).time = 1.25f;
 
-        var customActionSendEvent = new CustomLogicFsm(fsm);
+        var customActionSendEvent = new CustomLogicFsm(fsm, 1f, true);
         customActionSendEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
         };
+
+        explode.Actions[8].Enabled = false; //disable boss death music
 
         deathLand.Actions = InsertInArray(deathLand.Actions, customActionSendEvent, 0);
 
@@ -1060,7 +1074,7 @@ public class PatchedFsm
 
         return true;
     }
-    public static bool PatchFsm_BossScene(Fsm fsm)
+    public static bool PatchFsm_BoneEast08BossScene(Fsm fsm)
     {
         var init = fsm.GetState("Init");
         var meetReady = fsm.GetState("Meet Ready");
@@ -1069,25 +1083,19 @@ public class PatchedFsm
         var remeetReady = fsm.GetState("Remeet Ready");
         var beastfly = fsm.GetState("Beastfly?");
 
-        if(Gods_Of_Pharloom.BossSequence.currentBoss == BossInfo.bosses["Savage Beastfly in Far Fields"])
+        if(BossSequence.currentBoss == BossScene.bosses["Savage Beastfly in Far Fields"])
         {
-            var customAction = new CustomLogicFsm(fsm);
-            customAction.action += (Fsm fsm) =>
+            var go = fsm.GameObject;
+
+            var children = go.transform;
+
+            foreach(Transform child in children)
             {
-                var go = fsm.GameObject;
-
-                var children = go.transform;
-
-                foreach(Transform child in children)
-                {
-                    if(child.name == "Lava Plats" ||
-                    child.name == "Pre Activation Floor" ||
-                    child.name == "Battle End Floor"
-                    ) child.gameObject.SetActive(false);
-                }
-            };
-
-            init.Actions = InsertInArray(init.Actions, customAction, 16);
+                if(child.name == "Lava Plats" ||
+                child.name == "Pre Activation Floor" ||
+                child.name == "Battle End Floor"
+                ) child.gameObject.SetActive(false);
+            }
         }
 
         ((Wait)(remeet1.Actions[7])).time = 0.01f;
@@ -1133,19 +1141,37 @@ public class PatchedFsm
         {
             fsm.FsmComponent.SendEvent("REMEET READY");
         };
+        var customActionStartBeastflyBattle = new CustomLogicFsm(fsm);
+        customActionStartBeastflyBattle.action += (Fsm fsm) =>
+        {
+            fsm.GetFsmGameObject("Big Drop Bomb").Value.SetActive(false);
+            fsm.GetFsmGameObject("Big Drop Bomb Return").Value.SetActive(false);
+
+            if(BossSequence.currentBoss == BossScene.bosses["Savage Beastfly in Far Fields"]) fsm.FsmComponent.SendEvent("DEFEATED");
+        };
+
+        init.Actions[16].Enabled = false; // disable bool test
+        init.Actions[18].Enabled = false; // disable bool test
+        init.Actions[19].Enabled = false; // disable bool test
+
+        beastfly.Actions[0].Enabled = false; //disable quest test
+        beastfly.Actions[1].Enabled = false; //disable quest test
 
         remeetReady.Actions = InsertInArray(remeetReady.Actions,
                               customActionCreateTriggerForStart, remeetReady.Actions.Length);
         
         init.Actions = InsertInArray(init.Actions, customActionStartBattle, init.Actions.Length);
+        init.Actions = InsertInArray(init.Actions, customActionStartBeastflyBattle, 17);
 
-        if(Gods_Of_Pharloom.BossSequence.currentBoss == BossInfo.bosses["Fourth Chorus"])
+        beastfly.Transitions = new FsmTransition[0]; //big rock bomb won't activate
+
+        if(Gods_Of_Pharloom.BossSequence.currentBoss == BossScene.bosses["Fourth Chorus"])
         {
             SetTransitionToState(init, customState, 0);
             SetTransitionToState(init, customState, 1);
             SetTransitionToState(init, customState, 2);
         }
-        if(Gods_Of_Pharloom.BossSequence.currentBoss == BossInfo.bosses["Savage Beastfly in Far Fields"])
+        if(Gods_Of_Pharloom.BossSequence.currentBoss == BossScene.bosses["Savage Beastfly in Far Fields"])
         {
             SetTransitionToState(init, beastfly, 0);
             SetTransitionToState(init, beastfly, 1);
@@ -1242,7 +1268,7 @@ public class PatchedFsm
         };
         var waitAction = new Wait
         {
-            time = BossInfo.waitForBossDeathAnim,
+            time = BossScene.waitForBossDeathAnim,
             finishEvent = FsmEvent.GetFsmEvent("FINISHED")
         };
 
@@ -1269,6 +1295,8 @@ public class PatchedFsm
             }
         };
 
+        blow.Actions[9].Enabled = false; //disable boss death music
+
         SetTransitionToState(stagger, blow, 0);
 
         return true;
@@ -1279,27 +1307,30 @@ public class PatchedFsm
         var refight = fsm.GetState("Refight");
         var dormant = fsm.GetState("Dormant");
 
-        var customActionCreateTriggerForStart = new CustomLogicFsm(fsm);
-        customActionCreateTriggerForStart.action += (Fsm fsm) =>
-        {
-            var pos = fsm.GameObject.transform.position;
+        // var customActionCreateTriggerForStart = new CustomLogicFsm(fsm);
+        // customActionCreateTriggerForStart.action += (Fsm fsm) =>
+        // {
+        //     var pos = fsm.GameObject.transform.position;
 
-            var customTrigger = CreateTrigger("Bone_East_12");
-            var triggerPos = customTrigger.transform.position;
-            customTrigger.transform.position = new Vector3(pos.x, pos.y, pos.z);
+        //     var customTrigger = CreateTrigger("Bone_East_12");
+        //     var triggerPos = customTrigger.transform.position;
+        //     customTrigger.transform.position = new Vector3(pos.x, pos.y, pos.z);
 
-            var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
-            triggerComponent.fsm = fsm;
+        //     var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
+        //     triggerComponent.fsm = fsm;
 
-            triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
-            {
-                fsm.FsmComponent.SendEvent("ENTER");
-            };
-        };
+        //     triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
+        //     {
+        //         fsm.FsmComponent.SendEvent("ENTER");
+        //     };
+        // };
+        
+        dormant.Actions[3].Enabled = false; //off lace voice loop at start
 
         SetTransitionToState(enctountred, refight, 0);
+        dormant.Transitions[0].FsmEvent = FsmEvent.GetFsmEvent(TransitionPointInfo.eventName);
 
-        dormant.Actions = InsertInArray(dormant.Actions, customActionCreateTriggerForStart, dormant.Actions.Length);
+        // dormant.Actions = InsertInArray(dormant.Actions, customActionCreateTriggerForStart, dormant.Actions.Length);
 
         return true;
     }
@@ -1321,7 +1352,8 @@ public class PatchedFsm
 
         SetTransitionToState(stagger, blow, 0);
 
-        jumpAntic.Actions = InsertInArray(jumpAntic.Actions, customActionSendEvent, 0);
+        jumpAntic.Actions = new FsmStateAction[]{customActionSendEvent};
+        jumpAntic.Transitions = new FsmTransition[0];
 
         return true;
     }
@@ -1380,7 +1412,7 @@ public class PatchedFsm
         };
         var waitAction = new Wait
         {
-            time = BossInfo.waitForBossDeathAnim,
+            time = BossScene.waitForBossDeathAnim,
             finishEvent = FsmEvent.GetFsmEvent("FINISHED")
         };
 
@@ -1438,7 +1470,7 @@ public class PatchedFsm
         };
         var waitAction = new Wait
         {
-            time = BossInfo.waitForBossDeathAnim,
+            time = BossScene.waitForBossDeathAnim,
             finishEvent = FsmEvent.GetFsmEvent("FINISHED")
         };
 
@@ -1464,6 +1496,8 @@ public class PatchedFsm
                 FsmEvent = FsmEvent.GetFsmEvent("FINISHED")
             }
         };
+
+        blow.Actions[5].Enabled = false; //disable boss death music
 
         SetTransitionToState(stagger, blow, 0);
         SetTransitionToState(blow, fall, 0);
@@ -1651,7 +1685,7 @@ public class PatchedFsm
         };
         var waitAction = new Wait
         {
-            time = BossInfo.waitForBossDeathAnim,
+            time = BossScene.waitForBossDeathAnim,
             finishEvent = FsmEvent.GetFsmEvent("FINISHED")
         };
 
@@ -1668,6 +1702,8 @@ public class PatchedFsm
                 ToFsmState = customState2
             }
         };
+
+        blow.Actions[9].Enabled = false; //disable death music
 
         // SetTransitionToState(stagger, blow, 0);
         SetTransitionToState(blow, customState1, 0);
@@ -1733,7 +1769,7 @@ public class PatchedFsm
         };
         var waitAction = new Wait
         {
-            time = BossInfo.waitForBossDeathAnim,
+            time = BossScene.waitForBossDeathAnim,
             finishEvent = FsmEvent.GetFsmEvent("FINISHED")
         };
 
@@ -1750,6 +1786,8 @@ public class PatchedFsm
                 ToFsmState = customState2
             }
         };
+
+        blow.Actions[10].Enabled = false; //disable death music
 
         SetTransitionToState(stagger, blow, 0);
         SetTransitionToState(blow, customState1, 0);
@@ -1850,11 +1888,13 @@ public class PatchedFsm
         var blow = fsm.GetState("Blow");
         var land = fsm.GetState("Land");
 
-        var customActionSendEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
         };
+
+        blow.Actions[6].Enabled = false; //disable death music
 
         SetTransitionToState(stagger, blow, 0);
 
@@ -1887,7 +1927,7 @@ public class PatchedFsm
             fsm.FsmComponent.SendEvent("BIND");
         };
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             GameCameras.instance.HUDIn();
@@ -1946,11 +1986,13 @@ public class PatchedFsm
         var blow = fsm.GetState("Blow");
         var land = fsm.GetState("Land");
 
-        var customActionSendEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
         };
+
+        blow.Actions[7].Enabled = false; //disable death music
 
         SetTransitionToState(stagger, blow, 0);
 
@@ -2011,6 +2053,7 @@ public class PatchedFsm
         var lightOpen = fsm.GetState("Light Open");
         var end = fsm.GetState("End");
         var windup4 = fsm.GetState("Windup 4");
+        var finalKill = fsm.GetState("Final Kill");
 
         ((EaseFloat)(lightOpen.Actions[3])).time = 0.01f;
 
@@ -2025,11 +2068,13 @@ public class PatchedFsm
         ((Wait)(returnDancers.Actions[4])).time = 0.3f;
         ((Wait)(dancersStunned.Actions[6])).time = 0.3f;
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
         };
+
+        finalKill.Actions[2].Enabled = false; //disable death music
 
         end.Actions = new FsmStateAction[]{customActionSendBossDeadEvent};
 
@@ -2205,11 +2250,13 @@ public class PatchedFsm
         var land = fsm.GetState("Land");
         var splashIn = fsm.GetState("Splash In");
 
-        var customActionSendEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
         };
+
+        blow.Actions[3].Enabled = false; //disable death music
 
         SetTransitionToState(stagger, blow, 0);
 
@@ -2259,11 +2306,13 @@ public class PatchedFsm
         // ((Wait)(brokenPause.Actions[3])).time = 0.01f;
         ((Wait)(flareUp.Actions[11])).time = 0.5f;
 
-        var customActionSendEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim);
+        var customActionSendEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim);
         customActionSendEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
         };
+
+        coreExplode.Actions[11].Enabled = false; //disable death music
 
         init.Actions = RemoveFromArray(init.Actions, 40);
         bodyBurn.Actions = RemoveFromArray(bodyBurn.Actions, 9);
@@ -2377,7 +2426,7 @@ public class PatchedFsm
         var blow = fsm.GetState("Blow");
         var activateSpireNPC = fsm.GetState("Activate Spire NPC");
 
-        var customActionSendEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim);
+        var customActionSendEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim);
         customActionSendEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
@@ -2396,6 +2445,7 @@ public class PatchedFsm
     {
         var init = fsm.GetState("Init");
         var battleReady = fsm.GetState("Battle Ready");
+        var endPause = fsm.GetState("End Pause");
 
         var customAction = new CustomLogicFsm(fsm);
         customAction.action += (Fsm fsm) =>
@@ -2403,6 +2453,8 @@ public class PatchedFsm
             var introMinions = ((FindNamedChild)init.Actions[11]).storeResult.Value;
             introMinions.SetActive(false);
         };
+
+        endPause.Actions[5].Enabled = false; //disable death music
 
         init.Actions = InsertInArray(init.Actions, customAction, init.Actions.Length - 1);
 
@@ -2454,7 +2506,7 @@ public class PatchedFsm
         var deathFly = fsm.GetState("Death Fly");
         var lavaBurst = fsm.GetState("Lava Burst");
 
-        var customActionSendEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendEvent.action += (Fsm fsm) =>
         {
             var children = fsm.GameObject.transform.parent;
@@ -2482,7 +2534,7 @@ public class PatchedFsm
         var deathFly = fsm.GetState("Death Fly");
         var lavaBurst = fsm.GetState("Lava Burst");
 
-        var customActionSendEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendEvent.action += (Fsm fsm) =>
         {
             var children = fsm.GameObject.transform.parent;
@@ -2539,7 +2591,7 @@ public class PatchedFsm
             };
         };
 
-        var customActionSendEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
@@ -2668,7 +2720,7 @@ public class PatchedFsm
         {
             fsm.FsmComponent.SendEvent("BIND");
         };
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
@@ -2807,11 +2859,13 @@ public class PatchedFsm
             };
         };
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
         };
+
+        blow.Actions[8].Enabled = false; //disable death music
 
         init.Actions = InsertInArray(init.Actions, customActionCreateTriggerAndSetupBattleScene, 
             init.Actions.Length - 1);
@@ -2884,7 +2938,7 @@ public class PatchedFsm
         var setTalkPos = fsm.GetState("Set Talk Pos");
         var land = fsm.GetState("Land");
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
@@ -2975,11 +3029,13 @@ public class PatchedFsm
         var blow = fsm.GetState("Blow");
         var land = fsm.GetState("Land");
 
-        var customActionSendEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
         };
+
+        blow.Actions[9].Enabled = false; //disable death music
 
         SetTransitionToState(stagger, blow, 0);
 
@@ -3019,11 +3075,13 @@ public class PatchedFsm
         var steam = fsm.GetState("Steam");
         var blow = fsm.GetState("Blow");
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
         };
+
+        blow.Actions[11].Enabled = false; //disable death music
 
         blow.Actions = InsertInArray(blow.Actions, customActionSendBossDeadEvent, blow.Actions.Length);
 
@@ -3071,7 +3129,7 @@ public class PatchedFsm
         var blow = fsm.GetState("Blow");
         var land = fsm.GetState("Land");
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
@@ -3127,7 +3185,7 @@ public class PatchedFsm
             };
         };
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
@@ -3221,11 +3279,13 @@ public class PatchedFsm
 
         SetTransitionToState(die, deathBlow, 0);
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
         };
+
+        deathBlow.Actions[10].Enabled = false; //disable death music
 
         deathBlow.Actions = InsertInArray(deathBlow.Actions, customActionSendBossDeadEvent, 0);
 
@@ -3267,7 +3327,7 @@ public class PatchedFsm
             fsm.FsmComponent.SendEvent("END");
         };
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
@@ -3327,11 +3387,13 @@ public class PatchedFsm
         ((Wait)introAntic.Actions[1]).time = 0f;
         ((Wait)roar.Actions[13]).time = 0.1f;
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
         };
+
+        blow.Actions[10].Enabled = false; //disable death music
 
         SetTransitionToState(deathHit, blow, 0);
 
@@ -3389,7 +3451,7 @@ public class PatchedFsm
         // };
 
         // init.Actions = InsertInArray(init.Actions, customActionReplaceStartRage, init.Actions.Length - 1);
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
@@ -3467,7 +3529,7 @@ public class PatchedFsm
         var blow = fsm.GetState("Blow");
         var land = fsm.GetState("Land");
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
@@ -3588,11 +3650,13 @@ public class PatchedFsm
         var blow = fsm.GetState("Blow");
         var land = fsm.GetState("Land");
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
         };
+
+        blow.Actions[6].Enabled = false; //disable death music
 
         land.Actions = InsertInArray(land.Actions, customActionSendBossDeadEvent, 0);
 
@@ -3622,7 +3686,7 @@ public class PatchedFsm
 
         ((IntCompare)yank.Actions[2]).integer2 = 2;
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
@@ -3748,11 +3812,13 @@ public class PatchedFsm
         var blow = fsm.GetState("Blow");
         var land = fsm.GetState("Land");
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
         };
+
+        blow.Actions[11].Enabled = false; //disable death music
 
         land.Actions = InsertInArray(land.Actions, customActionSendBossDeadEvent, 0);
 
@@ -3785,7 +3851,7 @@ public class PatchedFsm
         var land = fsm.GetState("Land");
         var activateNPC = fsm.GetState("Activate NPC");
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
@@ -3980,7 +4046,7 @@ public class PatchedFsm
         var blow = fsm.GetState("Blow");
         var land = fsm.GetState("Land");
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
@@ -4015,7 +4081,7 @@ public class PatchedFsm
         var blow = fsm.GetState("Blow");
         var disappear = fsm.GetState("Disappear");
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
@@ -4042,7 +4108,7 @@ public class PatchedFsm
         ((Wait)roar.Actions[3]).time = 0.1f;
         ((Wait)recover.Actions[1]).time = 0f;
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
@@ -4117,7 +4183,7 @@ public class PatchedFsm
         ((WalkLeftRight)walkSlow.Actions[0]).startLeft = true;
         // fsm.GameObject.transform.localScale = new Vector3(-1, 1, 1);
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
@@ -4159,7 +4225,7 @@ public class PatchedFsm
         var blow = fsm.GetState("Blow");
         var splashIn = fsm.GetState("Splash In");
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
@@ -4208,7 +4274,7 @@ public class PatchedFsm
         var blow = fsm.GetState("Blow");
         var land = fsm.GetState("Land");
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
@@ -4276,7 +4342,7 @@ public class PatchedFsm
         ((AnimatePositionBy)leave.Actions[0]).time = ((AnimatePositionBy)leave.Actions[0]).time.Value / speed;
         ((Wait)leaveEnd.Actions[5]).time = 0.1f;
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
@@ -4362,7 +4428,7 @@ public class PatchedFsm
         ((Wait)fadeAway.Actions[2]).time = 0.1f;
         ((Wait)land.Actions[7]).time = 0.1f;
 
-        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossInfo.waitForBossDeathAnim, true);
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
