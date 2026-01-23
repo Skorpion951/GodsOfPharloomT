@@ -177,8 +177,8 @@ public class CustomScene
 
             AddRespawnMarkerToTeleportMap(sceneName, item.gateName);
         }
-
         
+        tp.respawnMarker = go.AddComponent<HazardRespawnMarker>();    
         tp.targetScene = item.targetScene;
         tp.dontWalkOutOfDoor = item.dontWalkOutOfDoor;
         tp.hardLandOnExit = item.hardLandOnExit;
@@ -186,7 +186,6 @@ public class CustomScene
         tp.InteractLabel = item.InteractLabel;
         tp.isADoor = item.isADoor;
         tp.OnDoorEnter = new UnityEngine.Events.UnityEvent();
-        tp.respawnMarker = go.AddComponent<HazardRespawnMarker>();
         tp.Activate();
 
         return tp;

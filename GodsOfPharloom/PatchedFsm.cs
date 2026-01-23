@@ -13,6 +13,7 @@ using System.Drawing;
 using GenericVariableExtension;
 using InControl.NativeDeviceProfiles;
 using System.Collections;
+using UniverseLib.Utility;
 
 namespace Gods_Of_Pharloom;
 
@@ -146,7 +147,8 @@ public class PatchedFsm
         }),
         new PatchedFsm("Bone_East_08_boss_golem", new FsmPatch[]
         {
-            new FsmPatch("song_golem", "Control", PatchFsm_FourthChorus)
+            new FsmPatch("song_golem", "Control", PatchFsm_FourthChorus),
+            new FsmPatch("SG_head", "Phase Control", PatchFsm_FourthChorusSGHead),
         }),
         new PatchedFsm("Bone_East_08", new FsmPatch[]
         {
@@ -157,6 +159,7 @@ public class PatchedFsm
             new FsmPatch("Driller A", "Control", PatchFsm_GreatConchfliesDriller),
             new FsmPatch("Driller B", "Control", PatchFsm_GreatConchfliesDriller),
             new FsmPatch("Boss Scene", "Control", PatchFsm_GreatConchfliesBattleScene),
+            new FsmPatch("Boss Scene", "Boss AI", PatchFsm_GreatConchfliesBattleSceneBossAI),
             new FsmPatch("Corpse Coral Conch Driller Giant(Clone)", "Death", PatchFsm_GreatConchfliesCorpseControl)
         }),
         new PatchedFsm("Bone_East_12", new FsmPatch[]
@@ -368,6 +371,7 @@ public class PatchedFsm
         new PatchedFsm("Shellwood_11b_Memory", new FsmPatch[]
         {
             new FsmPatch("Boss Scene", "Control", PatchFsm_NylethBossSceneControl),
+            new FsmPatch("Flower Queen Boss", "Control", PatchFsm_NylethControl),
             new FsmPatch("Corpse Flower Queen(Clone)", "Death", PatchFsm_NylethCorpseControl),
         }),
         new PatchedFsm("Clover_19", new FsmPatch[]
@@ -384,10 +388,12 @@ public class PatchedFsm
         new PatchedFsm("Crawl_10", new FsmPatch[]
         {
             new FsmPatch("Blue Assistant", "Control", PatchFsm_PlasmifiedZango),
+            new FsmPatch("Blue Assistant", "Phase Control", PatchFsm_PlasmifiedZangoPhaseControl),
         }),
         new PatchedFsm("Shellwood_22", new FsmPatch[]
         {
             new FsmPatch("Seth", "Control", PatchFsm_SethControl),
+            new FsmPatch("Seth", "Phase Control", PatchFsm_SethPhaseControl),
             new FsmPatch("Corpse Seth(Clone)", "Death", PatchFsm_SethCorpseControl),
         }),
         new PatchedFsm("Memory_Ant_Queen", new FsmPatch[]
@@ -705,7 +711,6 @@ public class PatchedFsm
 
     public static bool PatchFsm_MossMother(Fsm fsm)
     {
-
         var init = fsm.GetState("Init");
         var dormantState = fsm.GetState("Dormant");
         var returnReadyState = fsm.GetState("Return Ready");
@@ -724,8 +729,7 @@ public class PatchedFsm
         {
             var pos = fsm.GameObject.transform.position;
 
-            var bossSceneChild = ((GetParent)init.Actions[4]).storeResult.Value;
-            var bossScene = bossSceneChild.transform.parent;
+            var bossScene = fsm.GameObject.transform.parent.parent.gameObject;
             var battleSceneComponent = bossScene.GetComponent<BattleScene>();
             battleSceneComponent.battleStartPause = 0;
 
@@ -742,6 +746,27 @@ public class PatchedFsm
             };
         };
 
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Moss Mother";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            if(!hp.IsNullOrDestroyed())
+                fsm.GameObject.GetComponent<HealthManager>().hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+
+            fsm.GetFsmInt("HP").Value = hp;
+
+            hp -= phases[0].hp;
+            fsm.GetFsmInt("HP P2").Value = hp;
+
+            hp -= phases[1].hp;
+            fsm.GetFsmInt("HP Call Buddy").Value = hp;
+
+            hp -= phases[2].hp;
+            fsm.GetFsmInt("HP Half").Value = hp;
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
         
         var initToDormant = init.Transitions.FirstOrDefault(i => {
             return i.ToState == dormantState.Name;
@@ -774,7 +799,7 @@ public class PatchedFsm
         var customActionInitDisableCocoon = new CustomLogicFsm(fsm);
         customActionInitDisableCocoon.action = (Fsm fsm) =>
         {
-            var cocoon = ((FindChild)init.Actions[8]).storeResult.Value;
+            var cocoon = fsm.GameObject.transform.Find("Cocoon").gameObject;
             cocoon.SetActive(false);
         };
 
@@ -794,8 +819,7 @@ public class PatchedFsm
         {
             var pos = fsm.GameObject.transform.position;
 
-            var bossSceneChild = ((GetParent)init.Actions[4]).storeResult.Value;
-            var bossScene = bossSceneChild.transform.parent;
+            var bossScene = fsm.GameObject.transform.parent.parent.gameObject;
             var battleSceneComponent = bossScene.GetComponent<BattleScene>();
             battleSceneComponent.battleStartPause = 0;
 
@@ -816,6 +840,27 @@ public class PatchedFsm
         returnReady2.Actions = InsertInArray(returnReady2.Actions, customActionCreateTriggerForStart, returnReady2.Actions.Length);
         returnIn2.Actions = InsertInArray(returnIn2.Actions, customActionSetPosition, 4);
 
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Moss Mother";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            if(!hp.IsNullOrDestroyed())
+                fsm.GameObject.GetComponent<HealthManager>().hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+
+            fsm.GetFsmInt("HP").Value = hp;
+
+            hp -= phases[0].hp;
+            fsm.GetFsmInt("HP P2").Value = hp;
+
+            hp -= phases[1].hp;
+            fsm.GetFsmInt("HP Call Buddy").Value = hp;
+
+            hp -= phases[2].hp;
+            fsm.GetFsmInt("HP Half").Value = hp;
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
         
         SetTransitionToState(init, returnReady2, 0);
 
@@ -840,6 +885,28 @@ public class PatchedFsm
         };
 
         init.Actions = InsertInArray(init.Actions, customActionInit, init.Actions.Length - 1);
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Moss Mother";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            if(!hp.IsNullOrDestroyed())
+                fsm.GameObject.GetComponent<HealthManager>().hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+
+            fsm.GetFsmInt("HP").Value = hp;
+
+            hp -= phases[0].hp;
+            fsm.GetFsmInt("HP P2").Value = hp;
+
+            hp -= phases[1].hp;
+            fsm.GetFsmInt("HP Call Buddy").Value = hp;
+
+            hp -= phases[2].hp;
+            fsm.GetFsmInt("HP Half").Value = hp;
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -975,6 +1042,23 @@ public class PatchedFsm
         // init.Transitions[0].ToState = emergeAnticC.Name;
         // init.Transitions[0].ToFsmState = emergeAnticC;
 
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Bell Beast";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            if(!hp.IsNullOrDestroyed())
+                fsm.GameObject.GetComponent<HealthManager>().hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+
+            hp -= phases[0].hp;
+            fsm.GetFsmInt("P2 HP").Value = hp;
+
+            hp -= phases[1].hp;
+            fsm.GetFsmInt("Rage HP").Value = hp;
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
         return true;
     }
     public static bool PatchFsm_BellBeastReturnState(Fsm fsm)
@@ -1074,6 +1158,37 @@ public class PatchedFsm
 
         return true;
     }
+    public static bool PatchFsm_FourthChorusSGHead(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var HPCheck1 = fsm.GetState("HP Check 1");
+        var HPCheck2 = fsm.GetState("HP Check 2");
+        var HPCheck3 = fsm.GetState("HP Check 3");
+        
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Fourth Chorus";
+            var currentDif = BossStatueInfo.currentDifficultMode;
+            int hp = EnemyHp.enemies[enemyName].hpFullDict[currentDif];
+            if(!hp.IsNullOrDestroyed())
+                fsm.GameObject.GetComponent<HealthManager>().hp = EnemyHp.enemies[enemyName].hpFullDict[currentDif];
+
+            var phases = EnemyHp.enemies[enemyName].phases;
+
+            hp -= phases[0].hp;
+            ((CompareHP)HPCheck1.Actions[0]).integer2 = hp;
+
+            hp -= phases[1].hp;
+            ((CompareHP)HPCheck2.Actions[0]).integer2 = hp;
+            
+            hp -= phases[2].hp;
+            ((CompareHP)HPCheck3.Actions[0]).integer2 = hp;
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, 0);
+
+        return true;
+    }
     public static bool PatchFsm_BoneEast08BossScene(Fsm fsm)
     {
         var init = fsm.GetState("Init");
@@ -1101,41 +1216,6 @@ public class PatchedFsm
         ((Wait)(remeet1.Actions[7])).time = 0.01f;
         ((Wait)(remeet2.Actions[2])).time = 0f;
 
-        var wait = new Wait
-        {
-            time = 0.5f,
-            finishEvent = FsmEvent.GetFsmEvent("FINISHED")
-        };
-
-        var customState = new FsmState(fsm);
-        customState.Actions = new FsmStateAction[]{wait};
-        customState.Transitions = new FsmTransition[]
-        {
-            new FsmTransition
-            {
-                FsmEvent = FsmEvent.GetFsmEvent("FINISHED"),
-                ToFsmState = remeetReady
-            }
-        };
-
-        var customActionCreateTriggerForStart = new CustomLogicFsm(fsm);
-        customActionCreateTriggerForStart.action += (Fsm fsm) =>
-        {
-            var pos = fsm.GameObject.transform.position;
-
-            var customTrigger = CreateTrigger("Bone_East_08");
-            var triggerPos = customTrigger.transform.position;
-            customTrigger.transform.position = new Vector3(80f, 7f, pos.z);
-
-            var triggerComponent = customTrigger.AddComponent<CustomTrigger>();
-            triggerComponent.fsm = fsm;
-
-            triggerComponent.action += (Fsm fsm, FsmStateAction fsmAction) =>
-            {
-                fsm.FsmComponent.SendEvent("ENTER");
-            };
-        };
-
         var customActionStartBattle = new CustomLogicFsm(fsm);
         customActionStartBattle.action += (Fsm fsm) =>
         {
@@ -1149,6 +1229,13 @@ public class PatchedFsm
 
             if(BossSequence.currentBoss == BossScene.bosses["Savage Beastfly in Far Fields"]) fsm.FsmComponent.SendEvent("DEFEATED");
         };
+        var customActionChangeHazardRespawnToOrigPos = new CustomLogicFsm(fsm);
+        customActionChangeHazardRespawnToOrigPos.action += (_) =>
+        {
+            PlayerData.instance.hazardRespawnLocation = new Vector3(80.32f, 8.49f, 0);
+        };
+
+        remeetReady.Transitions[0].FsmEvent = FsmEvent.GetFsmEvent(TransitionPointInfo.eventName);
 
         init.Actions[16].Enabled = false; // disable bool test
         init.Actions[18].Enabled = false; // disable bool test
@@ -1156,21 +1243,13 @@ public class PatchedFsm
 
         beastfly.Actions[0].Enabled = false; //disable quest test
         beastfly.Actions[1].Enabled = false; //disable quest test
-
-        remeetReady.Actions = InsertInArray(remeetReady.Actions,
-                              customActionCreateTriggerForStart, remeetReady.Actions.Length);
         
         init.Actions = InsertInArray(init.Actions, customActionStartBattle, init.Actions.Length);
         init.Actions = InsertInArray(init.Actions, customActionStartBeastflyBattle, 17);
+        init.Actions = InsertInArray(init.Actions, customActionChangeHazardRespawnToOrigPos, 0);
 
-        beastfly.Transitions = new FsmTransition[0]; //big rock bomb won't activate
+        beastfly.Transitions = new FsmTransition[0]; //big bomb won't activate
 
-        if(Gods_Of_Pharloom.BossSequence.currentBoss == BossScene.bosses["Fourth Chorus"])
-        {
-            SetTransitionToState(init, customState, 0);
-            SetTransitionToState(init, customState, 1);
-            SetTransitionToState(init, customState, 2);
-        }
         if(Gods_Of_Pharloom.BossSequence.currentBoss == BossScene.bosses["Savage Beastfly in Far Fields"])
         {
             SetTransitionToState(init, beastfly, 0);
@@ -1219,6 +1298,29 @@ public class PatchedFsm
         };
 
         restartReady.Actions = InsertInArray(restartReady.Actions, customActionCreateTriggerForStart, restartReady.Actions.Length - 1);
+
+        return true;
+    }
+    public static bool PatchFsm_GreatConchfliesBattleSceneBossAI(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var idlePause = fsm.GetState("Idle Pause");
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Great Conchflies";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GetFsmGameObject("Driller A").Value.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+
+                ((IntTestToBool)idlePause.Actions[1]).int2 = phases[1].hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -1303,6 +1405,7 @@ public class PatchedFsm
     }
     public static bool PatchFsm_Lace1(Fsm fsm)
     {
+        var init = fsm.GetState("Init");
         var enctountred = fsm.GetState("Encountered?");
         var refight = fsm.GetState("Refight");
         var dormant = fsm.GetState("Dormant");
@@ -1329,6 +1432,24 @@ public class PatchedFsm
 
         SetTransitionToState(enctountred, refight, 0);
         dormant.Transitions[0].FsmEvent = FsmEvent.GetFsmEvent(TransitionPointInfo.eventName);
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Lace in Deep Docks";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+
+                hp -= phases[0].hp;
+
+                fsm.GetFsmInt("Rage HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         // dormant.Actions = InsertInArray(dormant.Actions, customActionCreateTriggerForStart, dormant.Actions.Length);
 
@@ -1359,6 +1480,7 @@ public class PatchedFsm
     }
     public static bool PatchFsm_LastJudge(Fsm fsm)
     {
+        var init = fsm.GetState("Init");
         var introRoar = fsm.GetState("Intro Roar");
         var introFallAnticQ = fsm.GetState("Intro Fall Antic Q");
         var firstIdle = fsm.GetState("First Idle");
@@ -1377,6 +1499,28 @@ public class PatchedFsm
 
         SetTransitionToState(firstIdle, idle, 0);
         SetTransitionToState(firstIdle, idle, 1);
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "The Last Judge";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+
+                fsm.GetFsmInt("HP").Value = hp;
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("HP P2").Value = hp;
+
+                hp -= phases[1].hp;
+                fsm.GetFsmInt("HP P3").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -1402,8 +1546,8 @@ public class PatchedFsm
         var break2 = fsm.GetState("Break 2");
         var break3 = fsm.GetState("Break 3");
 
-        ((Wait)steam1.Actions[3]).time = 0.01f;
-        ((Wait)steam2.Actions[3]).time = 0.01f;
+        // ((Wait)steam1.Actions[3]).time = 0.01f;
+        // ((Wait)steam2.Actions[3]).time = 0.01f;
 
         var customActionSendEvent = new CustomLogicFsm(fsm);
         customActionSendEvent.action += (Fsm fsm) =>
@@ -1440,11 +1584,29 @@ public class PatchedFsm
     }
     public static bool PatchFsm_Moorwing(Fsm fsm)
     {
+        var init = fsm.GetState("Init");
         var roar = fsm.GetState("Roar");
         var quickRoar = fsm.GetState("Quick Roar");
 
         ((Wait)(roar.Actions[2])).time = 0.1f;
         ((Wait)(quickRoar.Actions[0])).time = 0.1f;
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Moorwing";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -1507,6 +1669,7 @@ public class PatchedFsm
     }
     public static bool PatchFsm_Phantom(Fsm fsm)
     {
+        var init = fsm.GetState("Init");
         var hornetL = fsm.GetState("Hornet L");
         var hornetR = fsm.GetState("Hornet R");
         var parryReady = fsm.GetState("Parry Ready");
@@ -1551,6 +1714,26 @@ public class PatchedFsm
         SetTransitionToState(bloodStream, deathExplode, 0);
 
         fadeToBlack.Transitions = new FsmTransition[0];
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Phantom";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("Dragoon HP").Value = hp;
+
+                hp -= phases[1].hp;
+                fsm.GetFsmInt("Rage HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -1619,6 +1802,7 @@ public class PatchedFsm
 
 
         var init = fsm.GetState("Init");
+        var setHP = fsm.GetState("Set HP");
         var choice = fsm.GetState("Choice");
         var idlyFlyAudio = fsm.GetState("Idly Fly Audio?");
         var rematch = fsm.GetState("Rematch?");
@@ -1659,6 +1843,53 @@ public class PatchedFsm
             }
         };
 
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Savage Beastfly in Chapel of The Beast";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+
+                hp -= phases[1].hp;
+                fsm.GetFsmInt("P3 HP").Value = hp;
+
+                var summons = fsm.GameObject.transform.parent.Find("Summon Enemies");
+                foreach(Transform summon in summons)
+                {
+                    var summonHPManager = summon.GetComponent<HealthManager>();
+                    
+                    if (healthManager.IsNullOrDestroyed()) continue;
+
+                    if(summon.name.StartsWith("Bone Crawler Smn"))
+                    {
+                        var summonHP = EnemyHp.enemies["Kilik"].hpFullDict[BossStatueInfo.currentDifficultMode];
+                        summonHPManager.hp = summonHP;
+                        typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(summonHPManager, summonHP);
+                    }
+                    else if(summon.name.StartsWith("Bone Flyer Smn"))
+                    {
+                        var summonHP = EnemyHp.enemies["Beastfly"].hpFullDict[BossStatueInfo.currentDifficultMode];
+                        summonHPManager.hp = summonHP;
+                        typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(summonHPManager, summonHP);
+                    }
+                    else if(summon.name.StartsWith("Bone Circler Vicious Smn"))
+                    {
+                        var summonHP = EnemyHp.enemies["Vicious Caranid"].hpFullDict[BossStatueInfo.currentDifficultMode];
+                        summonHPManager.hp = summonHP;
+                        typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(summonHPManager, summonHP);
+                    }
+                }
+            }
+        };
+        setHP.Actions = InsertInArray(setHP.Actions, initHp, setHP.Actions.Length);
 
         return true;
     }
@@ -1720,6 +1951,41 @@ public class PatchedFsm
         ((Wait)(introShake.Actions[1])).time = 0f;
         ((Wait)(emergeAntic.Actions[1])).time = 0f;
         ((Wait)(roar4.Actions[4])).time = 0.1f;
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Sister Splinter";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+
+                hp -= phases[1].hp;
+                fsm.GetFsmInt("P3 HP").Value = hp;
+
+                var summons = fsm.GameObject.transform.parent.Find("Summons");
+                foreach(Transform summon in summons)
+                {
+                    var summonHPManager = summon.GetComponent<HealthManager>();
+                    
+                    if (healthManager.IsNullOrDestroyed()) continue;
+
+                    if(summon.name.StartsWith("Stick Insect Flyer"))
+                    {
+                        var summonHP = EnemyHp.enemies["Splinterbark"].hpFullDict[BossStatueInfo.currentDifficultMode];
+                        summonHPManager.hp = summonHP;
+                        typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(summonHPManager, summonHP);
+                    }
+                }
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -1873,6 +2139,20 @@ public class PatchedFsm
 
         stateCheck.Actions = InsertInArray(stateCheck.Actions, customActionSendEvent, 4);
 
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Skull Tyrant";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
         return true;
     }
     public static bool PatchFsm_SkullTyrantAudioTension(Fsm fsm)
@@ -1942,6 +2222,26 @@ public class PatchedFsm
         canBind.Actions = InsertInArray(canBind.Actions, customActionSkipBind, canBind.Actions.Length);
         fade.Actions = InsertInArray(fade.Actions, customActionSendBossDeadEvent, fade.Actions.Length);
 
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Widow";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+
+                hp -= phases[1].hp;
+                fsm.GetFsmInt("P3 HP").Value = hp;
+                fsm.GameObject.LocateMyFSM("Fake Death").Fsm.GetFsmInt("P3 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -1976,6 +2276,23 @@ public class PatchedFsm
 
         ((Wait)(entryAntic.Actions[5])).time = 0.01f;
         ((Wait)(roar.Actions[8])).time = 0.1f;
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Broodmother";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -2115,6 +2432,32 @@ public class PatchedFsm
 
         windup4.Actions = InsertInArray(windup4.Actions, customActionFinished, windup4.Actions.Length);
 
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Cogwork Dancers";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                // healthManager.hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+
+                hp = phases[0].hp;
+                fsm.GetFsmInt("Phase 1 HP").Value = hp;
+
+                hp = phases[1].hp;
+                fsm.GetFsmInt("Phase 2 HP").Value = hp;
+
+                hp = phases[2].hp;
+                fsm.GetFsmInt("Phase 3 HP").Value = hp;
+
+                hp = phases[3].hp;
+                fsm.GetFsmInt("Phase 4 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, 0);
+
         return true;
     }
     public static bool PatchFsm_CogDancersDancerAB(Fsm fsm)
@@ -2240,6 +2583,23 @@ public class PatchedFsm
 
         init.Actions = InsertInArray(init.Actions, customAction, init.Actions.Length - 1);
 
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Disgraced Chef Lugoli";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
         return true;
     }
     public static bool PatchFsm_DustChefCorpseControl(Fsm fsm)
@@ -2325,6 +2685,38 @@ public class PatchedFsm
 
         SetTransitionToState(init, setHp, 1);
 
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Father of the Flame";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                // healthManager.hp = hp;
+
+                fsm.GetFsmGameObject("Brazier Arm BL").Value.LocateMyFSM("wisp_brazier_arm")
+                    .Fsm.GetFsmInt("HP").Value = phases[0].hp;
+                
+                fsm.GetFsmGameObject("Brazier Arm TL").Value.LocateMyFSM("wisp_brazier_arm")
+                    .Fsm.GetFsmInt("HP").Value = phases[1].hp;
+
+                fsm.GetFsmGameObject("Brazier Arm TR").Value.LocateMyFSM("wisp_brazier_arm")
+                    .Fsm.GetFsmInt("HP").Value = phases[2].hp;
+
+                fsm.GetFsmGameObject("Brazier Arm BR").Value.LocateMyFSM("wisp_brazier_arm")
+                    .Fsm.GetFsmInt("HP").Value = phases[3].hp;
+
+                var lanternsTotalHP = phases[0].hp + phases[1].hp + phases[2].hp + phases[3].hp;
+                fsm.GetFsmInt("Lanterns Total HP").Value = lanternsTotalHP;
+                fsm.GetFsmInt("Lanterns Half HP").Value = phases[4].hp;
+
+                fsm.GameObject.LocateMyFSM("Take Damage").Fsm.GetFsmInt("HP").Value = phases[5].hp;
+            }
+        };
+        setHp.Actions = InsertInArray(setHp.Actions, initHp, 9);
+
         return true;
     }
     public static bool PatchFsm_FatherOfFlameGateControl(Fsm fsm)
@@ -2353,6 +2745,28 @@ public class PatchedFsm
         ((Wait)(roar.Actions[4])).time = 0.1f;
         ((Wait)(p2TelePause.Actions[1])).time = 0f;
         ((Wait)(p2Roar.Actions[5])).time = 1f;
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "First Sinner";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+
+                fsm.GetFsmInt("Bind Heal Amount").Value = (int)(hp * 0.1f);
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("Can Bind HP").Value = hp;
+
+                hp -= phases[1].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, 13);
 
         return true;
     }
@@ -2525,6 +2939,70 @@ public class PatchedFsm
 
         // lavaBurst.Actions = RemoveFromArray(lavaBurst.Actions, 2);
 
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Forebrothers_Sigins";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+
+                hp -= phases[1].hp;
+                fsm.GetFsmInt("P3 HP").Value = hp;
+
+                hp -= phases[2].hp;
+                fsm.GetFsmInt("P4 HP").Value = hp;
+
+                var summons1 = fsm.GameObject.transform.Find("Minions");
+                var summons2 = fsm.GameObject.transform.Find("Minions2");
+                foreach(Transform summon in summons1)
+                {
+                    var summonHPManager = summon.GetComponent<HealthManager>();
+                    
+                    if (healthManager.IsNullOrDestroyed()) continue;
+
+                    if(summon.name.StartsWith("Dock Flyer"))
+                    {
+                        var summonHP = EnemyHp.enemies["Flintstone Flyer"].hpFullDict[BossStatueInfo.currentDifficultMode];
+                        summonHPManager.hp = summonHP;
+                        typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(summonHPManager, summonHP);
+                    }
+                    else if(summon.name.StartsWith("Shield Dockworker"))
+                    {
+                        var summonHP = EnemyHp.enemies["Smokerock Sifter"].hpFullDict[BossStatueInfo.currentDifficultMode];
+                        summonHPManager.hp = summonHP;
+                        typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(summonHPManager, summonHP);
+                    }
+                }
+                foreach(Transform summon in summons2)
+                {
+                    var summonHPManager = summon.GetComponent<HealthManager>();
+                    
+                    if (healthManager.IsNullOrDestroyed()) continue;
+
+                    if(summon.name.StartsWith("Dock Flyer"))
+                    {
+                        var summonHP = EnemyHp.enemies["Flintstone Flyer"].hpFullDict[BossStatueInfo.currentDifficultMode];
+                        summonHPManager.hp = summonHP;
+                        typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(summonHPManager, summonHP);
+                    }
+                    else if(summon.name.StartsWith("Shield Dockworker"))
+                    {
+                        var summonHP = EnemyHp.enemies["Smokerock Sifter"].hpFullDict[BossStatueInfo.currentDifficultMode];
+                        summonHPManager.hp = summonHP;
+                        typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(summonHPManager, summonHP);
+                    }
+                }
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
         return true;
     }
     public static bool PatchFsm_ForebrothersSignisAndGronThrower(Fsm fsm)
@@ -2552,6 +3030,20 @@ public class PatchedFsm
         deathFly.Actions = InsertInArray(deathFly.Actions, customActionSendEvent, 0);
 
         // lavaBurst.Actions = RemoveFromArray(lavaBurst.Actions, 2);
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Forebrothers_Gron";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -2603,6 +3095,21 @@ public class PatchedFsm
 
         setup1.Actions = RemoveFromArray(setup1.Actions, 2);
 
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Garmond & Zaza";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
         return true;
     }
     public static bool PatchFsm_GarmondAndZazaSceneControl(Fsm fsm)
@@ -2639,7 +3146,6 @@ public class PatchedFsm
         ((Wait)(introRoar.Actions[4])).time = 0.1f;
         ((Wait)(titleUp.Actions[2])).time = 0.1f;
         ((Wait)(moveStop.Actions[1])).time = 0f;
-        
 
         return true;
     }
@@ -2786,6 +3292,39 @@ public class PatchedFsm
         ((Wait)(staggerHit.Actions[14])).time = 0f;
         // ((AccelerateToY)(staggerFall.Actions[3])).targetSpeed = -90f;
 
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Grand Mother Silk";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
+
+                hp = phases[0].hp;
+                fsm.GetFsmInt("P1 HP").Value = hp;
+
+                hp = phases[1].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+
+                hp = phases[2].hp;
+                fsm.GetFsmInt("P3 HP").Value = hp;
+
+                hp = phases[3].hp;
+                fsm.GetFsmInt("P4 HP").Value = hp;
+
+                hp = phases[4].hp;
+                fsm.GetFsmInt("P5 HP").Value = hp;
+
+                hp = phases[5].hp;
+                fsm.GetFsmInt("P6 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
         return true;
     }
     public static bool PatchFsm_SilkBossChallengeControl(Fsm fsm)
@@ -2822,6 +3361,7 @@ public class PatchedFsm
         var entryAntic = fsm.GetState("Entry Antic");
         var entryRoar = fsm.GetState("Entry Roar");
         var dormant = fsm.GetState("Dormant");
+        var chomp = fsm.GetState("Chomp");
         var deathHit = fsm.GetState("Death Hit");
         var vomitHornet = fsm.GetState("Vomit Hornet");
         var blow = fsm.GetState("Blow");
@@ -2865,17 +3405,49 @@ public class PatchedFsm
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
         };
 
+        var customActionIsHoG = new CustomLogicFsm(fsm);
+        customActionIsHoG.action += (_) =>
+        {
+            if(BossStatueInfo.currentDifficultMode == "Ascended")
+            {
+                var pd = PlayerData.instance;
+                if(pd.health + pd.healthBlue <= 2) fsm.FsmComponent.SendEvent("UNGRAB");
+            }
+            if(BossStatueInfo.currentDifficultMode == "Radiant")
+            {
+                fsm.FsmComponent.SendEvent("UNGRAB");
+            }
+        };
+
         blow.Actions[8].Enabled = false; //disable death music
 
         init.Actions = InsertInArray(init.Actions, customActionCreateTriggerAndSetupBattleScene, 
             init.Actions.Length - 1);
         
         blow.Actions = InsertInArray(blow.Actions, customActionSendBossDeadEvent, 0);
+        chomp.Actions = InsertInArray(chomp.Actions, customActionIsHoG, 0);
 
         SetTransitionToState(dormant, entryAntic, 0);
         SetTransitionToState(deathHit, vomitHornet, 0);
 
         blow.Transitions = new FsmTransition[0];
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Groal the Great";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -2927,6 +3499,26 @@ public class PatchedFsm
         };
 
         SetTransitionToState(init, startBattleWait, 1);
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Lace in the Cradle";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+
+                hp -= phases[1].hp;
+                fsm.GetFsmInt("P3 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -3020,6 +3612,23 @@ public class PatchedFsm
         var pos = fsm.GameObject.transform.position;
         fsm.GameObject.transform.position = new Vector3(pos.x + 3, pos.y, pos.z);
 
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Raging Conchfly";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
         return true;
     }
     public static bool PatchFsm_RagingConchflyCorpseControl(Fsm fsm)
@@ -3058,6 +3667,7 @@ public class PatchedFsm
         }
 
         var init = fsm.GetState("Init");
+        var setHP = fsm.GetState("Set HP");
         var rematchPause = fsm.GetState("Rematch Pause");
         var entryAntic = fsm.GetState("Entry Antic");
         var rematchRoar = fsm.GetState("Rematch Roar");
@@ -3066,6 +3676,41 @@ public class PatchedFsm
         ((Wait)(rematchPause.Actions[2])).time = 0f;
         ((Wait)(entryAntic.Actions[6])).time = 0.1f;
         // ((Wait)(rematchRoar.Actions[3])).time = 0.1f;
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Savage Beastfly in Far Fields";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+
+                hp -= phases[1].hp;
+                fsm.GetFsmInt("P3 HP").Value = hp;
+
+                var summons = fsm.GameObject.transform.parent.parent.parent.Find("Summon Enemies");
+                foreach(Transform summon in summons)
+                {
+                    var summonHPManager = summon.GetComponent<HealthManager>();
+                    
+                    if (healthManager.IsNullOrDestroyed()) continue;
+
+                    if(summon.name.StartsWith("Bone Spitter"))
+                    {
+                        var summonHP = EnemyHp.enemies["Tarmite"].hpFullDict[BossStatueInfo.currentDifficultMode];
+                        summonHPManager.hp = summonHP;
+                        typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(summonHPManager, summonHP);
+                    }
+                }
+            }
+        };
+        setHP.Actions = InsertInArray(setHP.Actions, initHp, setHP.Actions.Length);
 
         return true;
     }
@@ -3101,6 +3746,23 @@ public class PatchedFsm
 
         SetTransitionToState(init, encountered, 1);
         SetTransitionToState(init, encountered, 2);
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Second Sentiel";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length - 1);
 
         return true;
     }
@@ -3223,6 +3885,21 @@ public class PatchedFsm
         endBattle.Actions = new FsmStateAction[0];
         endBattle.Transitions = new FsmTransition[0];
 
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Shakra";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length - 1);
+
         return true;
     }
     public static bool PatchFsm_ShakraCallPole(Fsm fsm)
@@ -3244,20 +3921,39 @@ public class PatchedFsm
         var p3Shake = fsm.GetState("P3 Shake");
         var headpieceAntic = fsm.GetState("Headpiece Antic");
         var headpiecePause = fsm.GetState("Headpiece Pause");
+        var twinSlammers = fsm.GetState("Twin Slammers");
+        var slammerAndSlasher = fsm.GetState("Slammer, Slasher");
+        var enemyPhaseEndPause = fsm.GetState("Enemy Phase End Pause");
         var headpieceSuck = fsm.GetState("Headpiece Suck");
         var deathExplode = fsm.GetState("Death Explode");
 
         ((Wait)arenaStart.Actions[4]).time = 0f;
         ((Wait)encounteredStart.Actions[1]).time = 0f;
-        ((Wait)spearSuckPause.Actions[0]).time = 0f;
         ((Wait)p3Shake2.Actions[2]).time = 0.1f;
         ((Wait)suckSpears.Actions[1]).time = 0.1f;
-        ((Wait)posSuckSpearsPause.Actions[0]).time = 0.1f;
         ((Wait)p3Shake.Actions[3]).time = 0.01f;
-        ((Wait)headpieceAntic.Actions[3]).time = 0.01f;
-        ((Wait)headpiecePause.Actions[0]).time = 0f;
-        ((Wait)headpieceSuck.Actions[0]).time = 0.01f;
+        ((Wait)headpieceAntic.Actions[3]).Enabled = false;
+        ((Wait)headpiecePause.Actions[0]).Enabled = false;
+        ((Wait)headpieceSuck.Actions[0]).Enabled = false;
         ((Translate)headpieceSuck.Actions[3]).y = -1000f;
+        ((Wait)twinSlammers.Actions[0]).Enabled = false;
+        ((SendEventByName)twinSlammers.Actions[1]).delay = 0f;
+        ((SendEventByName)twinSlammers.Actions[2]).delay = 0.5f;
+        ((Wait)spearSuckPause.Actions[0]).time = 0f;
+        ((Wait)posSuckSpearsPause.Actions[0]).Enabled = false;
+        ((Wait)slammerAndSlasher.Actions[1]).Enabled = false;
+        ((SendEventByName)slammerAndSlasher.Actions[2]).delay = 0;
+        ((SendEventByName)slammerAndSlasher.Actions[3]).delay = 1f;
+        ((Wait)enemyPhaseEndPause.Actions[0]).Enabled = false;
+
+        var wait = new Wait
+        {
+            time = 0.1f,
+            finishEvent = FsmEvent.GetFsmEvent("FINISHED")
+        };
+
+        headpieceAntic.Actions = InsertInArray(headpieceAntic.Actions, wait, headpieceAntic.Actions.Length);
+        headpieceSuck.Actions = InsertInArray(headpieceSuck.Actions, wait, headpieceSuck.Actions.Length);
 
         SetTransitionToState(arenaStart, encounteredStart, 0);
         SetTransitionToState(encounteredStart, p3Shake, 0);
@@ -3285,9 +3981,30 @@ public class PatchedFsm
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
         };
 
-        deathBlow.Actions[10].Enabled = false; //disable death music
+        deathBlow.Actions[9].Enabled = false; //disable death music
 
         deathBlow.Actions = InsertInArray(deathBlow.Actions, customActionSendBossDeadEvent, 0);
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "The Unravelled";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+
+                hp -= phases[1].hp;
+                fsm.GetFsmInt("P3 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length - 1);
 
         return true;
     }
@@ -3356,6 +4073,24 @@ public class PatchedFsm
             }
         };
 
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Trobbio";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
         return true;
     }
     public static bool PatchFsm_TrobbioGrandStageSceneControl(Fsm fsm)
@@ -3409,6 +4144,26 @@ public class PatchedFsm
                 ToFsmState = introPause
             }
         };
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Voltvyrm";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+
+                hp -= phases[1].hp;
+                fsm.GetFsmInt("P3 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -3475,6 +4230,41 @@ public class PatchedFsm
 
         spitHeadOut.Transitions = new FsmTransition[0];
 
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Bell Eater";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                var head = fsm.GetFsmGameObject("Head").Value;
+                var butt = fsm.GetFsmGameObject("Butt").Value;
+                var HPManager1 = head.GetComponent<HealthManager>();
+                var HPManager2 = butt.GetComponent<HealthManager>();
+
+                HPManager1.hp = phases[0].hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(HPManager1, phases[0].hp);
+                HPManager2.hp = phases[1].hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(HPManager2, phases[1].hp);
+
+                fsm.GetFsmInt("P1 HP").Value = hp;
+
+                fsm.GetFsmInt("Head HP").Value = phases[0].hp;
+                fsm.GetFsmInt("Butt HP").Value = phases[1].hp;
+
+                var totalHP = (fsm.GetFsmInt("Total HP").Value = phases[0].hp + phases[1].hp);
+
+                totalHP -= phases[2].hp;
+                fsm.GetFsmInt("P1 HP").Value = totalHP;
+
+                totalHP -= phases[3].hp;
+                fsm.GetFsmInt("P2 HP").Value = totalHP;
+            }
+        };
+        setHp.Actions = InsertInArray(setHp.Actions, initHp, setHp.Actions.Length);
+
         return true;
     }
     public static bool PatchFsm_CloverDancersGreenPrinceBossNPC(Fsm fsm)
@@ -3504,6 +4294,32 @@ public class PatchedFsm
         
         ((Wait)(returnDancers.Actions[4])).time = 0.3f;
         ((Wait)(dancersStunned.Actions[6])).time = 0.3f;
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Clover Dancers";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                var HPManager1 = fsm.GetFsmGameObject("Dancer A").Value.GetComponent<HealthManager>();
+                var HPManager2 = fsm.GetFsmGameObject("Dancer B").Value.GetComponent<HealthManager>();
+
+                HPManager1.hp = phases[0].hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(HPManager1, phases[0].hp);
+                HPManager2.hp = phases[0].hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(HPManager2, phases[0].hp);
+
+                hp = phases[0].hp;
+                fsm.GetFsmInt("Phase 1 HP").Value = hp;
+
+                hp = phases[1].hp;
+                fsm.GetFsmInt("Phase 2 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -3589,6 +4405,61 @@ public class PatchedFsm
         SetTransitionToState(BGPeakEnd, emergeAnnounce, 0);
 
         BGIdle.Transitions = RemoveFromArray(BGIdle.Transitions, 1);
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Crawfather";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+
+                var pinWielders = fsm.GetFsmGameObject("Pin Wielder").Value.transform;
+                var daggers = fsm.GetFsmGameObject("Dagger").Value.transform;
+                var tinies = fsm.GetFsmGameObject("Tinies").Value.transform;
+                
+                var pinWielderHP = EnemyHp.enemies["Pin Wielder Craw"].hpFullDict[BossStatueInfo.currentDifficultMode];
+                foreach(Transform pinWielder in pinWielders)
+                {
+                    var HPManager = pinWielder.gameObject.GetComponent<HealthManager>();
+                    if (!HPManager.IsNullOrDestroyed())
+                    {
+                        HPManager.hp = pinWielderHP;
+                        typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(HPManager, pinWielderHP);
+                    }
+                }
+
+                var daggerHP = EnemyHp.enemies["Dagger Craw"].hpFullDict[BossStatueInfo.currentDifficultMode];
+                foreach(Transform dagger in daggers)
+                {
+                    var HPManager = dagger.gameObject.GetComponent<HealthManager>();
+                    if (!HPManager.IsNullOrDestroyed())
+                    {
+                        HPManager.hp = daggerHP;
+                        typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(HPManager, daggerHP);
+                    }
+                }
+
+                var tinieHP = EnemyHp.enemies["Tinie Craw"].hpFullDict[BossStatueInfo.currentDifficultMode];
+                foreach(Transform tinie in tinies)
+                {
+                    var HPManager = tinie.gameObject.GetComponent<HealthManager>();
+                    if (!HPManager.IsNullOrDestroyed())
+                    {
+                        HPManager.hp = tinieHP;
+                        typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(HPManager, tinieHP);
+                    }
+                }
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -3706,6 +4577,29 @@ public class PatchedFsm
 
         getItem.Actions = RemoveFromArray(getItem.Actions, 1);
 
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Crust King Khann";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
+
+                fsm.GetFsmInt("HP").Value = hp;
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+
+                hp -= phases[1].hp;
+                fsm.GetFsmInt("P3 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
         return true;
     }
     public static bool PatchFsm_CrustKingKhanBossSceneControl(Fsm fsm)
@@ -3740,6 +4634,7 @@ public class PatchedFsm
     public static bool PatchFsm_GurrTheOutcastControl(Fsm fsm)
     {
         var init = fsm.GetState("Init");
+        var setHPs = fsm.GetState("Set HPs");
         var posChoice = fsm.GetState("Pos Choice");
         var pos2 = fsm.GetState("Pos 2");
         var ambushAntic = fsm.GetState("Ambush Antic");
@@ -3775,6 +4670,29 @@ public class PatchedFsm
 
         SetTransitionToState(posChoice, pos2, 0);
         SetTransitionToState(posChoice, pos2, 2);
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Gurr the Outcast";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
+
+                fsm.GetFsmInt("HP").Value = hp;
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+
+                hp -= phases[1].hp;
+                fsm.GetFsmInt("Rage HP").Value = hp;
+            }
+        };
+        setHPs.Actions = InsertInArray(setHPs.Actions, initHp, setHPs.Actions.Length);
 
         return true;
     }
@@ -3840,6 +4758,21 @@ public class PatchedFsm
         var sting = fsm.GetState("Sting");
 
         ((Wait)sting.Actions[2]).time = 0.01f;
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Lost Garmond";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -3954,6 +4887,30 @@ public class PatchedFsm
         //remove silk mother scream
         wavePause.Actions = RemoveFromArray(wavePause.Actions, 2);
 
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Lost Lace";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+
+                hp -= phases[1].hp;
+                fsm.GetFsmInt("P3 HP").Value = hp;
+
+                hp -= phases[2].hp;
+                fsm.GetFsmInt("P4 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
         return true;
     }
     public static bool PatchFsm_LostLaceDeathControl(Fsm fsm)
@@ -3962,6 +4919,27 @@ public class PatchedFsm
         var midDeathSplash = fsm.GetState("Mid Death Splash");
 
         ((Wait)midDeathSplash.Actions[8]).time = 0.2f;
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Lost Lace";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+
+                hp -= phases[1].hp;
+                fsm.GetFsmInt("P3 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -4039,6 +5017,30 @@ public class PatchedFsm
 
         return true;
     }
+    public static bool PatchFsm_NylethControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Nyleth";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
+        return true;
+    }
     public static bool PatchFsm_NylethCorpseControl(Fsm fsm)
     {
         var stagger = fsm.GetState("Stagger");
@@ -4071,6 +5073,24 @@ public class PatchedFsm
         rest.Transitions[0].FsmEvent = FsmEvent.GetFsmEvent(TransitionPointInfo.eventName);
 
         ((Wait)roar.Actions[11]).time = 0.1f;
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Palestag";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
+
+                hp = phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -4121,6 +5141,24 @@ public class PatchedFsm
         roarAntic.Actions = RemoveFromArray(roarAntic.Actions, 3);
 
         recoverEnd.Transitions = new FsmTransition[0];
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Pinstress";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -4198,6 +5236,44 @@ public class PatchedFsm
 
         return true;
     }
+    public static bool PatchFsm_PlasmifiedZangoPhaseControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Plasmified Zango";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
+
+                var lifeBloodState = fsm.GameObject.GetComponent<LifebloodState>();
+                typeof(LifebloodState).GetField("maxHP", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(lifeBloodState, hp);
+
+                fsm.GetFsmInt("Init HP").Value = hp;
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+
+                hp -= phases[1].hp;
+                fsm.GetFsmInt("P3 HP").Value = hp;
+
+                hp -= phases[2].hp;
+                fsm.GetFsmInt("P4 HP").Value = hp;
+
+                hp -= phases[3].hp;
+                fsm.GetFsmInt("P5 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
+        return true;
+    }
     public static bool PatchFsm_SethControl(Fsm fsm)
     {
         var init = fsm.GetState("Init");
@@ -4215,6 +5291,33 @@ public class PatchedFsm
                 ToFsmState = wakeAntic
             }
         };
+
+        return true;
+    }
+    public static bool PatchFsm_SethPhaseControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Shrine Guardian Seth";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+
+                hp -= phases[1].hp;
+                fsm.GetFsmInt("P3 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -4250,6 +5353,27 @@ public class PatchedFsm
         ((Wait)roar.Actions[5]).time = 0.1f;
 
         SetTransitionToState(challengePause, launchInAntic, 0);
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Skarrsinger Karmelita";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+
+                hp -= phases[1].hp;
+                fsm.GetFsmInt("P3 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -4320,6 +5444,27 @@ public class PatchedFsm
                 ToFsmState = state
             }
         };
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Tormented Trobbio";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("CrossFlash HP").Value = hp;
+
+                hp -= phases[1].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }
@@ -4398,6 +5543,24 @@ public class PatchedFsm
         };
 
         sleep.Actions = InsertInArray(sleep.Actions, customActionStartTrigger, sleep.Actions.Length);
+
+        var initHp = new CustomLogicFsm(fsm);
+        initHp.action += (_) =>
+        {
+            var enemyName = "Watcher at the Edge";
+            var hp = EnemyHp.enemies[enemyName].hpFullDict[BossStatueInfo.currentDifficultMode];
+            var phases = EnemyHp.enemies[enemyName].phases;
+            var healthManager = fsm.GameObject.GetComponent<HealthManager>();
+            if(!hp.IsNullOrDestroyed())
+            {
+                healthManager.hp = hp;
+                typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
+
+                hp -= phases[0].hp;
+                fsm.GetFsmInt("P2 HP").Value = hp;
+            }
+        };
+        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         return true;
     }

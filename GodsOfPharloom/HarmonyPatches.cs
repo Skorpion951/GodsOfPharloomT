@@ -118,17 +118,6 @@ namespace Gods_Of_Pharloom
                 __result = nailDamage;
             }
         }
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(HealthManager), "TakeDamage")]
-        public static bool HealthManagerTakeDamage_Prefix(HealthManager __instance, ref HitInstance hitInstance)
-        {
-            if (PlayerDataMod.instance.bindings["Needle Binding"])
-            {
-                
-            }
-
-            return true;
-        }
 
         //Set Custom Bosses Hp
 

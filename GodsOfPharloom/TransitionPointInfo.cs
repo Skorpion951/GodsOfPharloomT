@@ -23,7 +23,8 @@ public class TransitionPointInfo
                 InteractableBase.PromptLabels InteractLabel = InteractableBase.PromptLabels.Enter, bool isADoor = false,
                 bool isOneTimeTransition = false, bool dontWalkOutOfDoor = false, bool hardLandOnExit = false,
                 bool noInputOnStart = false, bool alwaysEnterRight = true, bool forceMemoryZone = true,
-                Action afterTransition = null, bool doSendEventAfterTransition = true, bool doCreateRespawnMarker = true)
+                Action afterTransition = null, bool doSendEventAfterTransition = true, bool doCreateRespawnMarker = true,
+                bool doCreateHazardRespawnMarker = true)
     {
         this.gateName = gateName;
         this.position = position;
