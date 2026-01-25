@@ -1229,11 +1229,6 @@ public class PatchedFsm
 
             if(BossSequence.currentBoss == BossScene.bosses["Savage Beastfly in Far Fields"]) fsm.FsmComponent.SendEvent("DEFEATED");
         };
-        var customActionChangeHazardRespawnToOrigPos = new CustomLogicFsm(fsm);
-        customActionChangeHazardRespawnToOrigPos.action += (_) =>
-        {
-            PlayerData.instance.hazardRespawnLocation = new Vector3(80.32f, 8.49f, 0);
-        };
 
         remeetReady.Transitions[0].FsmEvent = FsmEvent.GetFsmEvent(TransitionPointInfo.eventName);
 
@@ -1246,7 +1241,6 @@ public class PatchedFsm
         
         init.Actions = InsertInArray(init.Actions, customActionStartBattle, init.Actions.Length);
         init.Actions = InsertInArray(init.Actions, customActionStartBeastflyBattle, 17);
-        init.Actions = InsertInArray(init.Actions, customActionChangeHazardRespawnToOrigPos, 0);
 
         beastfly.Transitions = new FsmTransition[0]; //big bomb won't activate
 

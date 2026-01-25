@@ -7,6 +7,8 @@ using UnityEngine.InputSystem;
 using System.Reflection;
 using UnityEngine.AddressableAssets;
 using HarmonyLib;
+using System.Collections;
+using UniverseLib.Utility;
 
 namespace Gods_Of_Pharloom
 {
@@ -130,9 +132,8 @@ namespace Gods_Of_Pharloom
             difficultMode = "";
             isPantheon = false;
             isHoG = false;
-            
 
-            sequenceController.SetState("Dormant");
+            if(!sequenceController.IsNullOrDestroyed()) sequenceController.SetState("Dormant");
         }
         public static void Start()
         {
@@ -143,6 +144,7 @@ namespace Gods_Of_Pharloom
         public static void CreateSequenceController()
         {
             var go = new GameObject("BossSequence");
+            sequenceGO = go;
             GameObject.DontDestroyOnLoad(go);
 
             var fsmComponent = go.gameObject.AddComponent<PlayMakerFSM>();
@@ -227,7 +229,7 @@ namespace Gods_Of_Pharloom
                 new FsmTransition
                 {
                     FsmEvent = FsmEvent.GetFsmEvent("HORNET DEFEATED"),
-                    ToFsmState = endSequence
+                    ToFsmState = dormant
                 }
             };
 
@@ -250,6 +252,48 @@ namespace Gods_Of_Pharloom
             endSequence.Actions = new FsmStateAction[]{endSequenceAction};
 
             fsm.States = new FsmState[]{dormant, startSequence, idle, next, endSequence};
+
+            //create hornet transition listener
+            CreateTransitionListener();
+
+            fsm.FsmComponent.enabled = true;
+        }
+        static void CreateTransitionListener()
+        {
+            var fsmComponent = sequenceGO.gameObject.AddComponent<PlayMakerFSM>();
+            fsmComponent.enabled = false;
+
+            var fsm = fsmComponent.Fsm;
+
+            var startState = new FsmState(fsm);
+            startState.Name = "Start State";
+
+            var doAfterTransition = new FsmState(fsm);
+            doAfterTransition.Name = "Do After Transition";
+
+            fsm.StartState = startState.Name;
+
+            var doAfterTransitionAction = new PatchedFsm.CustomLogicFsm(fsm);
+            doAfterTransitionAction.action = (Fsm fsm) =>
+            {
+                var animation = TransitionParticlesAnimation.transitionParticles;
+                if (!animation.IsNullOrDestroyed())
+                {
+                    TransitionParticlesAnimation.Play();
+                    TransitionParticlesAnimation.Stop();
+                }
+            };
+
+            doAfterTransition.Actions = new FsmStateAction[]{doAfterTransitionAction};
+            fsm.States = new FsmState[]{startState, doAfterTransition};
+            fsm.GlobalTransitions = new FsmTransition[]
+            {
+                new FsmTransition
+                {
+                    FsmEvent = FsmEvent.GetFsmEvent(TransitionPointInfo.eventName),
+                    ToFsmState = doAfterTransition
+                }
+            };
 
             fsm.FsmComponent.enabled = true;
         }
@@ -294,6 +338,10 @@ namespace Gods_Of_Pharloom
         }
         public static void NextBoss()
         {
+            sequenceController.StartCoroutine(INextBoss());
+        }
+        public static IEnumerator INextBoss()
+        {
             if (currentBoss.is3ActBoss)
             {
                 PlayerData.instance.blackThreadWorld = true;
@@ -302,6 +350,10 @@ namespace Gods_Of_Pharloom
             {
                 PlayerData.instance.blackThreadWorld = false;
             }
+
+            TransitionParticlesAnimation.Play();
+            yield return new WaitForSeconds(1);
+            TransitionParticlesAnimation.Pause();
 
             var sceneLoadInfo = new GameManager.SceneLoadInfo
             {
@@ -312,11 +364,16 @@ namespace Gods_Of_Pharloom
             };
 
             GameManager.instance.BeginSceneTransition(sceneLoadInfo);
+
+            yield break;
         }
         public static void EndSequence()
         {
-            if(isHoG)
+            if (isHoG)
+            {
                 PlayerDataMod.instance.badges[currentBoss.bossName].badges[BossStatueInfo.currentDifficultMode] = true;
+                GodsOfPharloomMod.instance.SaveModData();
+            }
             
             var sceneLoadInfo = new GameManager.SceneLoadInfo
             {

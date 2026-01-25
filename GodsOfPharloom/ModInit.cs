@@ -125,6 +125,8 @@ namespace Gods_Of_Pharloom
                 }
             }
 
+            TransitionParticlesAnimation.Init();
+
             Logger.LogInfo($"Plugin is loaded!");
         }
 
@@ -422,6 +424,8 @@ namespace Gods_Of_Pharloom
             isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false, afterTransition: () =>
             {
                 GameObject.Find("Temp plat").SetActive(false);
+
+                PlayerData.instance.hazardRespawnLocation = new Vector3(80.32f, 8.49f, 0);
             }));
             Bone_East_08.isSkongScene = true;
             Bone_East_08.AfterSceneLoaded += (Scene scene) => {
