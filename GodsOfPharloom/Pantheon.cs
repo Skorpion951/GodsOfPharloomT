@@ -196,7 +196,10 @@ public class Pantheon : MonoBehaviour
                 var pdm = PlayerDataMod.instance;
                 var pd = PlayerData.instance;
 
-                if(currentButton == PantheonMenu.beginButton) fsm.FsmComponent.SendEvent("START BOSS SEQUENCE");
+                if(currentButton == PantheonMenu.beginButton){
+                    PantheonMenu.pantheonMenu.SetActive(false);
+                    fsm.FsmComponent.SendEvent("START BOSS SEQUENCE");
+                }
                 else if(currentButton == PantheonMenu.needleButton) PantheonMenu.ToggleBinding(PantheonMenu.needleButton);
                 else if(currentButton == PantheonMenu.silkButton) PantheonMenu.ToggleBinding(PantheonMenu.silkButton);
                 else if(currentButton == PantheonMenu.toolsButton)

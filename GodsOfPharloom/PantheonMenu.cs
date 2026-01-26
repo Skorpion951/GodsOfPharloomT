@@ -11,6 +11,7 @@ using HutongGames.PlayMaker.Actions;
 using System.Windows.Forms;
 using UniverseLib.Utility;
 using UniverseLib;
+using System.Collections;
 
 namespace Gods_Of_Pharloom;
 
@@ -20,7 +21,7 @@ public class PantheonMenu : MonoBehaviour
     public static GameObject pantheonMenu;
     public static List<GameObject> buttons;
     public static GameObject selectArrow;
-    public static Text pantheonName;
+    public static TMProOld.TextMeshPro pantheonName;
     public static GameObject currentButton;
     public static GameObject needleButton;
     public static GameObject silkButton;
@@ -34,18 +35,66 @@ public class PantheonMenu : MonoBehaviour
     {
         instance = this;
         
+        this.StartCoroutine(Init());
+    }
+
+    IEnumerator Init()
+    {
         pantheonMenu = this.transform.Find("PantheonMenuCanvas").gameObject;
         selectArrow = pantheonMenu.transform.Find("select_arrow").gameObject;
-        pantheonName = pantheonMenu.transform.Find("PantheonNameText").gameObject.GetComponent<Text>();
+
+        GameObject textTemplate = null;
+        while (true)
+        {
+            textTemplate = GameObject.Find("_GameCameras/HudCamera/In-game/Inventory/Inv/Description Pane/Text Name");
+            if(!textTemplate.IsNullOrDestroyed()) break;
+            yield return null;
+        }
+
+        pantheonName = GameObject.Instantiate(textTemplate, parent: pantheonMenu.transform).GetComponent<TMProOld.TextMeshPro>();
+        pantheonName.transform.position = new Vector3(-2.2129f, 4.0634f, -0.723f);
+
+        var bindingsText = GameObject.Instantiate(textTemplate, parent: pantheonMenu.transform).GetComponent<TMProOld.TextMeshPro>();
+        bindingsText.text = "Bindings";
+        bindingsText.transform.position = new Vector3(-2.12f, 2.3192f, -0.723f);
 
         var buttonsChildren = pantheonMenu.transform.Find("Buttons");
         buttons = new List<GameObject>();
 
         needleButton = buttonsChildren.Find("Needle Binding").gameObject;
+        var needlePos = needleButton.transform.position;
+        var needleBindingText = GameObject.Instantiate(textTemplate, parent: needleButton.transform).GetComponent<TMProOld.TextMeshPro>();
+        needleBindingText.name = "Text";
+        needleBindingText.text = "Needle";
+        needleBindingText.transform.position = new Vector3(-1.6373f, needlePos.y + 0.44f, 0);
+
         silkButton = buttonsChildren.Find("Silk Binding").gameObject;
+        var silkPos = silkButton.transform.position;
+        var silkBindingText = GameObject.Instantiate(textTemplate, parent: silkButton.transform).GetComponent<TMProOld.TextMeshPro>();
+        silkBindingText.name = "Text";
+        silkBindingText.text = "Silk";
+        silkBindingText.transform.position = new Vector3(-1.6373f, silkPos.y + 0.44f, 0);
+
         toolsButton = buttonsChildren.Find("Tools Binding").gameObject;
+        var toolsPos = toolsButton.transform.position;
+        var toolsBindingText = GameObject.Instantiate(textTemplate, parent: toolsButton.transform).GetComponent<TMProOld.TextMeshPro>();
+        toolsBindingText.name = "Text";
+        toolsBindingText.text = "Tools";
+        toolsBindingText.transform.position = new Vector3(-1.6373f, toolsPos.y + 0.44f, 0);
+
         maskButton = buttonsChildren.Find("Mask Binding").gameObject;
+        var maskPos = maskButton.transform.position;
+        var maskBindingText = GameObject.Instantiate(textTemplate, parent: maskButton.transform).GetComponent<TMProOld.TextMeshPro>();
+        maskBindingText.name = "Text";
+        maskBindingText.text = "Shell";
+        maskBindingText.transform.position = new Vector3(-1.6373f, maskPos.y + 0.44f, 0);
+
         beginButton = buttonsChildren.Find("Begin").gameObject;
+        var beginPos = beginButton.transform.position;
+        var beginText = GameObject.Instantiate(textTemplate, parent: beginButton.transform).GetComponent<TMProOld.TextMeshPro>();
+        beginText.name = "Text";
+        beginText.text = "BEGIN";
+        beginText.transform.position = new Vector3(-2f, -3.1f, -0.723f);
 
         currentButton = needleButton;
         bindings = new GameObject[]{needleButton, silkButton, toolsButton, maskButton};

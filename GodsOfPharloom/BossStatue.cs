@@ -10,6 +10,7 @@ using UnityEngine.UI;
 using HutongGames.PlayMaker.Actions;
 using System.Windows.Forms;
 using UniverseLib.Utility;
+using System.Collections;
 
 namespace Gods_Of_Pharloom
 {
@@ -41,10 +42,10 @@ namespace Gods_Of_Pharloom
         public static string difficultyModeCanvasGOName = "DifficultyModeCanvas";
         public static bool isInfiniteChallenge = false;
         public static GameObject difficultyModeCanvas;
-        public static GameObject bossNameGO;
         public static GameObject attunedBadge;
         public static GameObject ascendedBadge;
         public static GameObject radiantBadge;
+        public static TMProOld.TextMeshPro bossName;
         public static Dictionary<string, Dictionary<string, GameObject>> menuModesGOs; //attuned, ascended, radiant etc.
         public Dictionary<string, GameObject> statueModeSpriteGOs; //attuned, ascended, radiant etc.
         public static GameObject selectArrow;
@@ -89,6 +90,11 @@ namespace Gods_Of_Pharloom
 
         void Awake()
         {
+            this.StartCoroutine(Init());
+        }
+
+        IEnumerator Init()
+        {
             if(BossStatueInfo.difficultyModeCanvas.IsNullOrDestroyed())
             {
                 var rootObjects = this.gameObject.scene.GetRootGameObjects();
@@ -99,6 +105,18 @@ namespace Gods_Of_Pharloom
                         BossStatueInfo.difficultyModeCanvas = obj;
                         var children = obj.transform;
 
+                        GameObject textTemplate = null;
+                        while (true)
+                        {
+                            textTemplate = GameObject.Find("_GameCameras/HudCamera/In-game/Inventory/Inv/Description Pane/Text Name");
+                            if(!textTemplate.IsNullOrDestroyed()) break;
+                            yield return null;
+                        }
+
+                        BossStatueInfo.bossName = GameObject.Instantiate(textTemplate, parent: obj.transform).GetComponent<TMProOld.TextMeshPro>();
+                        BossStatueInfo.bossName.transform.position = new Vector3(3.6391f, 4.4801f, 0f);
+
+
                         foreach(Transform child in children)
                         {
                             if(child.gameObject.name == "Modes")
@@ -108,6 +126,11 @@ namespace Gods_Of_Pharloom
                                 var children2 = child;
                                 foreach(Transform child2 in children2)
                                 {
+                                    var modeName = GameObject.Instantiate(textTemplate, parent: child2.transform).GetComponent<TMProOld.TextMeshPro>();
+                                    modeName.text = child2.name;
+                                    var spritePos = child2.Find("SpriteMode").position;
+                                    modeName.transform.position = new Vector3(4.5146f, spritePos.y + 0.4f, 0);
+
                                     var children3 = child2;
                                     var dict = new Dictionary<string, GameObject>();
                                     foreach(Transform child3 in children3)
@@ -118,10 +141,6 @@ namespace Gods_Of_Pharloom
                                 }
 
                                 BossStatueInfo.menuModesGOs = modes;
-                                continue;
-                            }
-                            if(child.gameObject.name == "BossNameText"){
-                                BossStatueInfo.bossNameGO = child.gameObject;
                                 continue;
                             }
                             if(child.gameObject.name == "select_arrow") BossStatueInfo.selectArrow = child.gameObject;
@@ -223,8 +242,8 @@ namespace Gods_Of_Pharloom
                 {
                     item.Value["SpriteMode"].SetActive(PlayerDataMod.instance.badges[instance.boss.bossName].badges[item.Key]);
                 }
-                var text = BossStatueInfo.bossNameGO.GetComponent<Text>();
-                text.text = instance.boss.bossName;
+
+                BossStatueInfo.bossName.text = instance.boss.bossName;
                 BossStatueInfo.difficultyModeCanvas.SetActive(true);
             };
             interactAction.updateAction += () =>
@@ -283,6 +302,7 @@ namespace Gods_Of_Pharloom
             var startBossFightAction = new PatchedFsm.CustomLogicFsm(fsm);
             startBossFightAction.action += (Fsm fsm) =>
             {
+                BossStatueInfo.difficultyModeCanvas.SetActive(false);
                 BossSequence.SetSequence(new BossScene[]{instance.boss}, $"back_entry{instance.statueIndex}", BossStatueInfo.hog_sceneName, isHoG: true);
             };
 

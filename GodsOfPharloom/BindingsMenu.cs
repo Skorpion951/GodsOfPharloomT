@@ -306,7 +306,7 @@ public class BindingsMenu
                 customBrokenSpool.transform.localScale = prefab.transform.localScale;
                 customBrokenSpool.transform.position = prefab.transform.position;
 
-                customBrokenSpool.SetActive(true);
+                customBrokenSpool.SetActive(false);
 
                 Material brokenSpoolMaterial = customBrokenSpool.GetComponent<MeshRenderer>().material;
 
@@ -331,16 +331,17 @@ public class BindingsMenu
             {
                 while(pd.silkMax <= silkAmountStart)
                 {
+                    customBrokenSpool.SetActive(true);
+
                     spoolParent.Find("Active").gameObject.SetActive(false);
                     spoolParent.Find("Broken").gameObject.SetActive(false);
                     spoolParent.Find("Bind Notch").gameObject.SetActive(false);
 
                     yield return null;
                 }
-
-                gc.HUDOut();
-                gc.HUDIn();
+                customBrokenSpool.SetActive(false);
             }
+            
 
             yield return null;
         }

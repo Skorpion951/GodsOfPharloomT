@@ -1251,6 +1251,22 @@ public class PatchedFsm
             SetTransitionToState(init, beastfly, 2);
         }
 
+        //create 2 colliders to prevent leave boss arena
+        var col1 = new GameObject("Collider1", new []{typeof(BoxCollider2D)});
+        var col2 = new GameObject("Collider2", new []{typeof(BoxCollider2D)});
+
+        SceneManager.MoveGameObjectToScene(col1, fsm.GameObject.scene);
+        SceneManager.MoveGameObjectToScene(col2, fsm.GameObject.scene);
+
+        col1.transform.position = new Vector3(66.4712f, 8.5f, -0.1f);
+        col2.transform.position = new Vector3(96.0651f, 8.5f, -0.1f);
+
+        var boxCol1 = col1.GetComponent<BoxCollider2D>();
+        var boxCol2 = col2.GetComponent<BoxCollider2D>();
+
+        boxCol1.size = new Vector2(1, 50);
+        boxCol2.size = new Vector2(1, 50);
+
         return true;
     }
     public static bool PatchFsm_GreatConchfliesBattleScene(Fsm fsm)
@@ -1601,6 +1617,17 @@ public class PatchedFsm
             }
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
+        //create collider to prevent leave boss arena
+        var col1 = new GameObject("Collider1", new []{typeof(BoxCollider2D)});
+
+        SceneManager.MoveGameObjectToScene(col1, fsm.GameObject.scene);
+
+        col1.transform.position = new Vector3(104.465f, 16f, -0.1f);
+
+        var boxCol1 = col1.GetComponent<BoxCollider2D>();
+
+        boxCol1.size = new Vector2(1, 100);
 
         return true;
     }
@@ -2146,6 +2173,13 @@ public class PatchedFsm
             }
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
+        //create collider to prevent hornet leave boss arena
+        var blackSprite = (GameObject)GameObject.Instantiate((GameObject)Preload.bundleResources["Black"], fsm.GameObject.scene);
+        var collider = blackSprite.AddComponent<BoxCollider2D>();
+        blackSprite.layer = 8;
+        blackSprite.transform.position = new Vector3(24.2221f, 15, -0.3f);
+        blackSprite.transform.localScale = new Vector3(25.2948f, 31.931f, 1);
 
         return true;
     }
@@ -3104,6 +3138,22 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
+        //create 2 colliders to prevent leave boss arena
+        var col1 = new GameObject("Collider1", new []{typeof(BoxCollider2D)});
+        var col2 = new GameObject("Collider2", new []{typeof(BoxCollider2D)});
+
+        SceneManager.MoveGameObjectToScene(col1, fsm.GameObject.scene);
+        SceneManager.MoveGameObjectToScene(col2, fsm.GameObject.scene);
+
+        col1.transform.position = new Vector3(60.3714f, 16f, -0.1f);
+        col2.transform.position = new Vector3(90.1236f, 16f, -0.1f);
+
+        var boxCol1 = col1.GetComponent<BoxCollider2D>();
+        var boxCol2 = col2.GetComponent<BoxCollider2D>();
+
+        boxCol1.size = new Vector2(1, 100);
+        boxCol2.size = new Vector2(1, 100);
+
         return true;
     }
     public static bool PatchFsm_GarmondAndZazaSceneControl(Fsm fsm)
@@ -3893,6 +3943,22 @@ public class PatchedFsm
             }
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length - 1);
+
+        //create 2 colliders to prevent leave boss arena
+        var col1 = new GameObject("Collider1", new []{typeof(BoxCollider2D)});
+        var col2 = new GameObject("Collider2", new []{typeof(BoxCollider2D)});
+
+        SceneManager.MoveGameObjectToScene(col1, fsm.GameObject.scene);
+        SceneManager.MoveGameObjectToScene(col2, fsm.GameObject.scene);
+
+        col1.transform.position = new Vector3(104.465f, 16f, -0.1f);
+        col2.transform.position = new Vector3(7.571f, 16f, -0.1f);
+
+        var boxCol1 = col1.GetComponent<BoxCollider2D>();
+        var boxCol2 = col2.GetComponent<BoxCollider2D>();
+
+        boxCol1.size = new Vector2(1, 100);
+        boxCol2.size = new Vector2(1, 100);
 
         return true;
     }
@@ -5154,6 +5220,32 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
+        //create colliders to prevent leave boss arena
+        var col1 = new GameObject("Collider1");
+        var col2 = new GameObject("Collider2");
+        var damageCol1 = new GameObject("DamageCollider1");
+
+        SceneManager.MoveGameObjectToScene(col1, fsm.GameObject.scene);
+        SceneManager.MoveGameObjectToScene(col2, fsm.GameObject.scene);
+
+        col1.transform.position = new Vector3(35.2f, 103f, -0.1f);
+        col2.transform.position = new Vector3(65f, 95f, -0.1f);
+        damageCol1.transform.position = new Vector3(53.086f, 80f, -0.1f);
+        damageCol1.layer = 22;
+
+        var boxCol1 = col1.AddComponent<BoxCollider2D>();
+        var boxCol2 = col2.AddComponent<BoxCollider2D>();
+
+        var damageBoxCol3 = damageCol1.AddComponent<BoxCollider2D>();
+        var damageHero1 = damageCol1.AddComponent<DamageHero>();
+
+        boxCol1.size = new Vector2(100, 1);
+        boxCol2.size = new Vector2(1, 100);
+        damageBoxCol3.size = new Vector2(100, 1);
+
+        damageHero1.hazardType = HazardType.SPIKES;
+        damageHero1.OnDamagedHero = new UnityEvent();
+
         return true;
     }
     public static bool PatchFsm_PinstressControl(Fsm fsm)
@@ -5228,6 +5320,17 @@ public class PatchedFsm
         var pos = fsm.GameObject.transform.position;
         fsm.GameObject.transform.position = new Vector3(pos.x + 10, pos.y, pos.z);
 
+        //create colliders to prevent leave boss arena
+        var col1 = new GameObject("Collider1", new []{typeof(BoxCollider2D)});
+
+        SceneManager.MoveGameObjectToScene(col1, fsm.GameObject.scene);
+
+        col1.transform.position = new Vector3(40.5f, 8f, -0.1f);
+
+        var boxCol1 = col1.GetComponent<BoxCollider2D>();
+
+        boxCol1.size = new Vector2(1, 100);
+
         return true;
     }
     public static bool PatchFsm_PlasmifiedZangoPhaseControl(Fsm fsm)
@@ -5285,6 +5388,17 @@ public class PatchedFsm
                 ToFsmState = wakeAntic
             }
         };
+
+        //create colliders to prevent leave boss arena
+        var col1 = new GameObject("Collider1");
+
+        SceneManager.MoveGameObjectToScene(col1, fsm.GameObject.scene);
+
+        col1.transform.position = new Vector3(180f, 7f, -0.1f);
+
+        var boxCol1 = col1.AddComponent<BoxCollider2D>();
+
+        boxCol1.size = new Vector2(1, 100);
 
         return true;
     }
@@ -5555,6 +5669,17 @@ public class PatchedFsm
             }
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
+        //create colliders to prevent leave boss arena
+        var col1 = new GameObject("Collider1", new []{typeof(BoxCollider2D)});
+
+        SceneManager.MoveGameObjectToScene(col1, fsm.GameObject.scene);
+
+        col1.transform.position = new Vector3(174.5f, 8f, -0.1f);
+
+        var boxCol1 = col1.GetComponent<BoxCollider2D>();
+
+        boxCol1.size = new Vector2(1, 100);
 
         return true;
     }
