@@ -5229,7 +5229,7 @@ public class PatchedFsm
         SceneManager.MoveGameObjectToScene(col2, fsm.GameObject.scene);
 
         col1.transform.position = new Vector3(35.2f, 103f, -0.1f);
-        col2.transform.position = new Vector3(65f, 95f, -0.1f);
+        col2.transform.position = new Vector3(59f, 95f, -0.1f);
         damageCol1.transform.position = new Vector3(53.086f, 80f, -0.1f);
         damageCol1.layer = 22;
 
@@ -5455,12 +5455,15 @@ public class PatchedFsm
         var init = fsm.GetState("Init");
         var challengePause = fsm.GetState("Challenge Pause");
         var launchInAntic = fsm.GetState("Launch In Antic");
+        var entryPos = fsm.GetState("Entry Pos");
+        var enterR = fsm.GetState("Enter R");
         var roar = fsm.GetState("Roar");
 
         ((Wait)challengePause.Actions[1]).time = 0;
         ((Wait)roar.Actions[5]).time = 0.1f;
 
         SetTransitionToState(challengePause, launchInAntic, 0);
+        SetTransitionToState(entryPos, enterR, 0);
 
         var initHp = new CustomLogicFsm(fsm);
         initHp.action += (_) =>

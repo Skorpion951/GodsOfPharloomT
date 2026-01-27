@@ -125,7 +125,7 @@ namespace Gods_Of_Pharloom
                 }
             }
 
-            TransitionParticlesAnimation.Init();
+            TransitionSequence.Init();
 
             Logger.LogInfo($"Plugin is loaded!");
         }
@@ -707,7 +707,7 @@ namespace Gods_Of_Pharloom
 
             var Memory_Ant_Queen = new CustomScene("Memory_Ant_Queen");
             Memory_Ant_Queen.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(148.4f, 19.57f, 0), "", "", isADoor: true, 
-            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: true));
             Memory_Ant_Queen.isSkongScene = true;
             Memory_Ant_Queen.AfterSceneLoaded += (Scene scene) => {Memory_Ant_Queen.isSceneActive = true;};
             customScenes.Add(Memory_Ant_Queen);

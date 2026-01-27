@@ -91,29 +91,11 @@ public class BindingsMenu
         {
             ToggleBinding(toolsBinding.gameObject);
 
-            TryActivateToolsBinding();
-
             UpdateMenuBindingsDisplay();
         }},
         {"Mask Binding", (_) =>
         {
-            if(isHealthIncreasing) return;
             ToggleBinding(maskBinding.gameObject);
-
-            var pd = PlayerData.instance;
-            var pdm = PlayerDataMod.instance;
-            if(pd == null || pdm == null) return;
-
-            if(pdm.bindings["Mask Binding"])
-            {
-                pdm.previousHealthCount = pd.maxHealth;
-
-                GodsOfPharloomMod.instance.StartCoroutine(TrySetHeroHealth(maskBindingCount));
-            }
-            else
-            {
-                GodsOfPharloomMod.instance.StartCoroutine(TrySetHeroHealth(pdm.previousHealthCount));
-            }
 
             UpdateMenuBindingsDisplay();
         }},
@@ -371,6 +353,52 @@ public class BindingsMenu
             yield return null;
         }
     }
+    public static IEnumerator UpdateToolsBinding()
+    {
+        while (true)
+        {
+            if(PlayerDataMod.instance.bindings["Tools Binding"])
+            {
+                if (!TryActivateToolsBinding())
+                {
+                    yield return null;
+                    continue;
+                }
+
+                while(PlayerDataMod.instance.bindings["Tools Binding"])
+                {
+                    yield return null;
+                }
+
+                TryActivateToolsBinding();
+            }
+
+            yield return null;
+        }
+    }
+    public static IEnumerator UpdateMaskBinding()
+    {
+        var pd = PlayerData.instance;
+        var pdm = PlayerDataMod.instance;
+
+        while (true)
+        {
+            if(pdm.bindings["Mask Binding"])
+            {
+                pdm.previousHealthCount = pd.maxHealth;
+
+                var newHealth = (pd.maxHealth > maskBindingCount) ? maskBindingCount : pd.maxHealth;
+
+                GodsOfPharloomMod.instance.StartCoroutine(TrySetHeroHealth(newHealth));
+
+                while(pdm.bindings["Mask Binding"]) yield return null;
+
+                GodsOfPharloomMod.instance.StartCoroutine(TrySetHeroHealth(pdm.previousHealthCount));
+            }
+
+            yield return null;
+        }
+    }
 
     public static IEnumerator TrySetHeroHealth(int amount)
     {
@@ -426,6 +454,8 @@ public class BindingsMenu
             else yield return null;
         }
 
+        UpdateMenuBindingsDisplay();
+
         isHealthIncreasing = false;
     }
 
@@ -467,75 +497,86 @@ public class BindingsMenu
         }
         GodsOfPharloomMod.Log.LogInfo("End fade msg");
     }
-    public static void TryActivateToolsBinding()
+    public static bool TryActivateToolsBinding()
     {
-        var inventory = GameObject.Find("_GameCameras/HudCamera/In-game/Inventory");
-        var additiveDefendSlot = inventory.transform.Find("Tools/Tool Group/Floating Slots/Defend Slot").gameObject.GetComponent<InventoryToolCrestSlot>();
-        var additiveExploreSlot = inventory.transform.Find("Tools/Tool Group/Floating Slots/Explore Slot").gameObject.GetComponent<InventoryToolCrestSlot>();
-
-        if(PlayerDataMod.instance.bindings["Tools Binding"])
+        try
         {
-            foreach(var crest in ToolItemManager.GetAllCrests())
+            var inventory = GameObject.Find("_GameCameras/HudCamera/In-game/Inventory");
+            var additiveDefendSlot = inventory.transform.Find("Tools/Tool Group/Floating Slots/Defend Slot").gameObject.GetComponent<InventoryToolCrestSlot>();
+            var additiveExploreSlot = inventory.transform.Find("Tools/Tool Group/Floating Slots/Explore Slot").gameObject.GetComponent<InventoryToolCrestSlot>();
+
+            if(PlayerDataMod.instance.bindings["Tools Binding"])
             {
-                if(crest == null) continue;
-                var crestSlots = PlayerData.instance.ToolEquips.GetData(crest.name).Slots;
-                if(crestSlots == null) continue;
-                
-                var crestPreviousState = new List<string>();
-
-                var newCrestState = new List<string>();
-
-                foreach(var slot in crestSlots)
+                foreach(var crest in ToolItemManager.GetAllCrests())
                 {
-                    var tool = ToolItemManager.GetToolByName(slot.EquippedTool);
-                    if(tool == null)
+                    if(crest == null) continue;
+                    var crestSlots = PlayerData.instance.ToolEquips.GetData(crest.name).Slots;
+                    if(crestSlots == null) continue;
+                    
+                    var crestPreviousState = new List<string>();
+
+                    var newCrestState = new List<string>();
+
+                    foreach(var slot in crestSlots)
                     {
-                        crestPreviousState.Add("");
-                        newCrestState.Add("");
-                    }
-                    else
-                    {
-                        var name = tool.name != null ? tool.name : "";
-                        crestPreviousState.Add(name);
-                        if(tool.Type == ToolItemType.Skill)
+                        var tool = ToolItemManager.GetToolByName(slot.EquippedTool);
+                        if(tool == null)
                         {
-                            newCrestState.Add(name);
+                            crestPreviousState.Add("");
+                            newCrestState.Add("");
                         }
-                        else newCrestState.Add("");
+                        else
+                        {
+                            var name = tool.name != null ? tool.name : "";
+                            crestPreviousState.Add(name);
+                            if(tool.Type == ToolItemType.Skill)
+                            {
+                                newCrestState.Add(name);
+                            }
+                            else newCrestState.Add("");
+                        }
                     }
+
+                    crestsPreviousState[crest.name] = crestPreviousState;
+
+                    ToolItemManager.SetEquippedTools(crest.name, newCrestState);
                 }
 
-                crestsPreviousState[crest.name] = crestPreviousState;
+                crestsPreviousState[additiveDefendSlot.name] = new List<string>{additiveDefendSlot.SaveData.EquippedTool};
+                crestsPreviousState[additiveExploreSlot.name] = new List<string>{additiveExploreSlot.SaveData.EquippedTool};
+                ToolItemManager.SetExtraEquippedTool("Defend1", "");
+                ToolItemManager.SetExtraEquippedTool("Explore1", "");
 
-                ToolItemManager.SetEquippedTools(crest.name, newCrestState);
+                ToolItemManager.SendEquippedChangedEvent();
+
+                return true;
             }
-
-            crestsPreviousState[additiveDefendSlot.name] = new List<string>{additiveDefendSlot.SaveData.EquippedTool};
-            crestsPreviousState[additiveExploreSlot.name] = new List<string>{additiveExploreSlot.SaveData.EquippedTool};
-            ToolItemManager.SetExtraEquippedTool("Defend1", "");
-            ToolItemManager.SetExtraEquippedTool("Explore1", "");
-
-            ToolItemManager.SendEquippedChangedEvent();
-        }
-        else
-        {
-            foreach(var crestState in crestsPreviousState)
+            else
             {
-                if(crestState.Key == additiveDefendSlot.name)
+                foreach(var crestState in crestsPreviousState)
                 {
-                    ToolItemManager.SetExtraEquippedTool("Defend1", crestState.Value[0]);
-                    continue;
+                    if(crestState.Key == additiveDefendSlot.name)
+                    {
+                        ToolItemManager.SetExtraEquippedTool("Defend1", crestState.Value[0]);
+                        continue;
+                    }
+                    if(crestState.Key == additiveExploreSlot.gameObject.name)
+                    {
+                        ToolItemManager.SetExtraEquippedTool("Explore1", crestState.Value[0]);
+                        continue;
+                    }
+                    ToolItemManager.SetEquippedTools(crestState.Key, crestState.Value);
                 }
-                if(crestState.Key == additiveExploreSlot.gameObject.name)
-                {
-                    ToolItemManager.SetExtraEquippedTool("Explore1", crestState.Value[0]);
-                    continue;
-                }
-                ToolItemManager.SetEquippedTools(crestState.Key, crestState.Value);
-            }
-            crestsPreviousState = new Dictionary<string, List<string>>();
+                crestsPreviousState = new Dictionary<string, List<string>>();
 
-            ToolItemManager.SendEquippedChangedEvent();
+                ToolItemManager.SendEquippedChangedEvent();
+
+                return true;
+            }
+        }
+        catch(Exception ex)
+        {
+            return false;
         }
     }
     public static void ToggleBinding(GameObject bindingObj)
@@ -663,9 +704,20 @@ public class BindingsMenu
 
     public static void InitBindingsMenu()
     {
-        GodsOfPharloomMod.instance.StartCoroutine(IInitBindingsMenu());
+        if(menuBindings != null) GameObject.Destroy(menuBindings);
+        var inventoryOrig = GameObject.Find("_GameCameras/HudCamera/In-game/Inventory");
+        menuBindings = GameObject.Instantiate(inventoryOrig);
+        GameObject.DontDestroyOnLoad(menuBindings);
+        menuBindings.name = "Bindings Menu";
+        menuBindingsFsm = menuBindings.GetComponent<PlayMakerFSM>().Fsm;
 
-        GodsOfPharloomMod.instance.StartCoroutine(UpdateSilkBinding());
+        menuBindingsFsm.FsmComponent.StartCoroutine(IInitBindingsMenu());
+
+        menuBindingsFsm.FsmComponent.StartCoroutine(UpdateSilkBinding());
+
+        menuBindingsFsm.FsmComponent.StartCoroutine(UpdateToolsBinding());
+        
+        menuBindingsFsm.FsmComponent.StartCoroutine(UpdateMaskBinding());
     }
     public static void UpdateMenuBindingsDisplay()
     {
@@ -801,12 +853,7 @@ public class BindingsMenu
     }
     public static IEnumerator IInitBindingsMenu()
     {
-        if(menuBindings != null) GameObject.Destroy(menuBindings);
         var inventoryOrig = GameObject.Find("_GameCameras/HudCamera/In-game/Inventory");
-        menuBindings = GameObject.Instantiate(inventoryOrig);
-        GameObject.DontDestroyOnLoad(menuBindings);
-        menuBindings.name = "Bindings Menu";
-        menuBindingsFsm = menuBindings.GetComponent<PlayMakerFSM>().Fsm;
         
         var closed = menuBindingsFsm.GetState("Closed");
         closed.Transitions = new FsmTransition[0];

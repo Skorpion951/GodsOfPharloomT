@@ -6,20 +6,17 @@ using HutongGames.PlayMaker.Actions;
 using Steamworks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Reflection;
-using UnityEngine.Events;
-using HarmonyLib;
-using System.Drawing;
-using GenericVariableExtension;
-using InControl.NativeDeviceProfiles;
 using System.Collections;
 using UniverseLib.Utility;
 
 namespace Gods_Of_Pharloom;
 
-public class TransitionParticlesAnimation
+public class TransitionSequence
 {
     public static ParticleSystem transitionParticles;
+    public static AudioSource transitionStartAudio;
+    public static AudioSource transitionEndAudio;
+    public static bool audioStarted = false;
 
     public static void Init()
     {
@@ -42,6 +39,39 @@ public class TransitionParticlesAnimation
         particlesObj.transform.position = new Vector3(camPos.x, camPos.y, -2f);
 
         transitionParticles = particlesObj.GetComponent<ParticleSystem>();
+
+        var go = new GameObject();
+        GameObject.DontDestroyOnLoad(go);
+
+        transitionStartAudio = go.AddComponent<AudioSource>();
+        transitionEndAudio = go.AddComponent<AudioSource>();
+
+        transitionStartAudio.priority = 90;
+        transitionEndAudio.priority = 90;
+        transitionStartAudio.maxDistance = 9999;
+        transitionEndAudio.maxDistance = 9999;
+
+        transitionStartAudio.clip = (AudioClip)Preload.bundleResources["gg_room_transition"];
+        transitionEndAudio.clip = (AudioClip)Preload.bundleResources["gg_transition_out"];
+    }
+
+    public static void FadeAudio(AudioSource audio, float time)
+    {
+        GodsOfPharloomMod.instance.StartCoroutine(IFadeAudio(audio, time));
+    }
+    public static IEnumerator IFadeAudio(AudioSource audio, float time)
+    {
+        float startVolume = audio.volume;
+
+        while (audio.volume > 0f)
+        {
+            audio.volume -= startVolume * Time.unscaledDeltaTime / time;
+
+            yield return null;
+        }
+
+        audio.volume = startVolume;
+        audio.Stop();
     }
 
     public static void Play()

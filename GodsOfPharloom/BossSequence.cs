@@ -260,11 +260,22 @@ namespace Gods_Of_Pharloom
             var doAfterTransitionAction = new PatchedFsm.CustomLogicFsm(fsm);
             doAfterTransitionAction.action = (Fsm fsm) =>
             {
-                var animation = TransitionParticlesAnimation.transitionParticles;
+                var animation = TransitionSequence.transitionParticles;
                 if (!animation.IsNullOrDestroyed())
                 {
-                    TransitionParticlesAnimation.Play();
-                    TransitionParticlesAnimation.Stop();
+                    TransitionSequence.Play();
+                    TransitionSequence.Stop();
+                }
+
+                if(TransitionSequence.audioStarted)
+                {
+                    TransitionSequence.audioStarted = false;
+
+                    var startAudio = TransitionSequence.transitionStartAudio;
+                    var endAudio = TransitionSequence.transitionEndAudio;
+
+                    if(!startAudio.IsNullOrDestroyed()) TransitionSequence.FadeAudio(startAudio, 0.5f);
+                    if(!endAudio.IsNullOrDestroyed()) endAudio.Play();
                 }
 
                 if(GodsOfPharloomMod.currentScene.name == BossStatueInfo.hog_sceneName || 
@@ -344,9 +355,14 @@ namespace Gods_Of_Pharloom
                 PlayerData.instance.blackThreadWorld = false;
             }
 
-            TransitionParticlesAnimation.Play();
+            TransitionSequence.Play();
+            TransitionSequence.transitionStartAudio.Play();
+            TransitionSequence.audioStarted = true;
             yield return new WaitForSeconds(1);
-            TransitionParticlesAnimation.Pause();
+
+            TransitionSequence.Pause();
+            yield return null;
+            yield return null;
 
             var sceneLoadInfo = new GameManager.SceneLoadInfo
             {

@@ -205,8 +205,6 @@ public class Pantheon : MonoBehaviour
                 else if(currentButton == PantheonMenu.toolsButton)
                 {
                     PantheonMenu.ToggleBinding(PantheonMenu.toolsButton);
-
-                    BindingsMenu.TryActivateToolsBinding();
                 }
                 else if(currentButton == PantheonMenu.maskButton)
                 {
