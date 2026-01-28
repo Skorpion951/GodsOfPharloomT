@@ -280,6 +280,9 @@ namespace Gods_Of_Pharloom
                 pComp.pantheonName = "Pantheon 5";
                 pComp.Init();
 
+                HeroController.instance.MaxHealth();
+                HeroController.instance.MaxRegenSilkInstant();
+
                 GG_Pharloom_Atrium.isSceneActive = true;
             };
             customScenes.Add(GG_Pharloom_Atrium);
@@ -348,6 +351,9 @@ namespace Gods_Of_Pharloom
                 }
                 this.StartCoroutine(enumerator());
                 /////////////////////
+                
+                HeroController.instance.MaxHealth();
+                HeroController.instance.MaxRegenSilkInstant();
 
                 GG_Pharloom_HoG.isSceneActive = true;
             };

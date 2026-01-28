@@ -18,6 +18,7 @@ using UnityExplorer.CacheObject.Views;
 using TeamCherry.NestedFadeGroup;
 using Mono.Posix;
 using UniverseLib.Utility;
+using GlobalSettings;
 
 namespace Gods_Of_Pharloom;
 
@@ -34,6 +35,13 @@ public class BindingsMenu
     public static InventoryItemCollectable silkBinding;
     public static InventoryItemCollectable toolsBinding;
     public static InventoryItemCollectable maskBinding;
+    public static InventoryItemCollectable cloaklessMode;
+    public static InventoryItemCollectable cursedMode;
+    public static InventoryItemCollectable needleArt;
+    public static InventoryItemCollectable toolsBugUpgrade;
+    public static InventoryItemCollectable toolsKitUpgrade;
+    public static InventoryItemCollectable crestlessHornet;
+    public static InventoryItemCollectable cursedHornet;
     public static InventoryItemNail needle;
     public static NestedFadeGroup toolsMsgWhileBindingEffect;
     public static NestedFadeGroup bindingsMsgWhileInSequence;
@@ -228,6 +236,63 @@ public class BindingsMenu
 
             UpdateMenuBindingsDisplay();
         }},
+        {"Needle Art", (_) =>
+        {
+            var pd = PlayerData.instance;
+            if(pd == null) return;
+
+            pd.hasChargeSlash = !pd.hasChargeSlash;
+            
+            UpdateMenuBindingsDisplay();
+        }},
+        {"Tools Upgrade", (_) =>
+        {
+            var pd = PlayerData.instance;
+            if(pd == null) return;
+
+            var newToolsUpgradeState = (pd.ToolPouchUpgrades + 1 > 4) ? 0 : pd.ToolPouchUpgrades + 1;
+            pd.ToolPouchUpgrades = newToolsUpgradeState;
+            
+            UpdateMenuBindingsDisplay();
+        }},
+        {"Tools Kit Upgrade", (_) =>
+        {
+            var pd = PlayerData.instance;
+            if(pd == null) return;
+
+            var newToolsUpgradeState = (pd.ToolKitUpgrades + 1 > 4) ? 0 : pd.ToolKitUpgrades + 1;
+            pd.ToolKitUpgrades = newToolsUpgradeState;
+            
+            UpdateMenuBindingsDisplay();
+        }},
+        {"Crestless Hornet", (_) =>
+        {
+            if(Gameplay.CloaklessCrest.IsEquipped)
+            {
+                ToolCrest defaultCrest = Gameplay.HunterCrest3;
+                if(!defaultCrest.IsUnlocked) defaultCrest = Gameplay.HunterCrest2;
+                if(!defaultCrest.IsUnlocked) defaultCrest = Gameplay.HunterCrest;
+                
+                ToolItemManager.AutoEquip(defaultCrest, false, false);
+            }
+            else ToolItemManager.AutoEquip(Gameplay.CloaklessCrest, false, false);
+            
+            UpdateMenuBindingsDisplay();
+        }},
+        {"Cursed Hornet", (_) =>
+        {
+            if(Gameplay.CursedCrest.IsEquipped)
+            {
+                ToolCrest defaultCrest = Gameplay.HunterCrest3;
+                if(!defaultCrest.IsUnlocked) defaultCrest = Gameplay.HunterCrest2;
+                if(!defaultCrest.IsUnlocked) defaultCrest = Gameplay.HunterCrest;
+                
+                ToolItemManager.AutoEquip(defaultCrest, false, false);
+            }
+            else ToolItemManager.AutoEquip(Gameplay.CursedCrest, false, false);
+            
+            UpdateMenuBindingsDisplay();
+        }},
     };
 
     public static IEnumerator UpdateSilkSpool()
@@ -343,7 +408,11 @@ public class BindingsMenu
                 }
                 while(PlayerDataMod.instance.bindings["Silk Binding"])
                 {
-                    pd.silkMax = (pd.silkMax > 9) ? 9 : pd.silkMax;
+                    if(pd.silkMax > 9)
+                    {
+                        pd.silkMax = 9;
+                        UpdateMenuBindingsDisplay();
+                    }
                     yield return null;
                 }
             }
@@ -712,17 +781,12 @@ public class BindingsMenu
         menuBindingsFsm = menuBindings.GetComponent<PlayMakerFSM>().Fsm;
 
         menuBindingsFsm.FsmComponent.StartCoroutine(IInitBindingsMenu());
-
-        menuBindingsFsm.FsmComponent.StartCoroutine(UpdateSilkBinding());
-
-        menuBindingsFsm.FsmComponent.StartCoroutine(UpdateToolsBinding());
-        
-        menuBindingsFsm.FsmComponent.StartCoroutine(UpdateMaskBinding());
     }
     public static void UpdateMenuBindingsDisplay()
     {
         var pd = PlayerData.instance;
         var pdm = PlayerDataMod.instance;
+        var hc = HeroController.instance;
 
         //hero health
         if(heartPieces != null) heartPieces.transform.Find("Amount Text").gameObject.GetComponent<TMProOld.TextMeshPro>().text = $"{PlayerData.instance.maxHealth}";
@@ -732,8 +796,8 @@ public class BindingsMenu
         amountText.text = $"{pd.silkMax}";
 
         //needle state
-        needle.GetType().GetMethod("UpdateState", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(needle, null);
-        needle.GetType().GetMethod("UpdateDisplay", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(needle, null);
+        foreach(Transform child in needle.transform) child.gameObject.SetActive(false);
+        needle.transform.Find($"Nail{pd.nailUpgrades + 1}").gameObject.SetActive(true);
 
         //sprint
         float conditionVal = pd.hasDash ? 0f : 0.5f;
@@ -816,6 +880,27 @@ public class BindingsMenu
                 binding.transform.Find("Group/Parent/Deactivated").gameObject.SetActive(!isActive);
             }
         }
+
+        //needle art
+        conditionVal = pd.hasChargeSlash ? 0f : 0.5f;
+        color = new Color(1f-conditionVal, 1f-conditionVal, 1f-conditionVal, 1);
+        needleArt.transform.Find("Icon").GetComponent<SpriteRenderer>().color = color;
+
+        //tools upgrade
+        toolsBugUpgrade.transform.Find("Amount Text").GetComponent<TMProOld.TextMeshPro>().text = $"{pd.ToolPouchUpgrades}";
+
+        //tools kit upgrade
+        toolsKitUpgrade.transform.Find("Amount Text").GetComponent<TMProOld.TextMeshPro>().text = $"{pd.ToolKitUpgrades}";
+
+        //crestless hornet
+        conditionVal = Gameplay.CloaklessCrest.IsEquipped ? 0f : 0.5f;
+        color = new Color(1f-conditionVal, 1f-conditionVal, 1f-conditionVal, 1);
+        crestlessHornet.transform.Find("Icon").GetComponent<SpriteRenderer>().color = color;
+
+        //cursed hornet
+        conditionVal = Gameplay.CursedCrest.IsEquipped ? 0f : 0.5f;
+        color = new Color(1f-conditionVal, 1f-conditionVal, 1f-conditionVal, 1);
+        cursedHornet.transform.Find("Icon").GetComponent<SpriteRenderer>().color = color;
     }
     public static InventoryItemCollectable CreateButtonInv(string objName, GameObject template, Vector3 pos, string textLable = "", string textDescription = "")
     {
@@ -826,6 +911,7 @@ public class BindingsMenu
         button.transform.Find("Group/Amount Text").gameObject.SetActive(false);
         button.transform.Find("Group/New Item Orb").gameObject.SetActive(false);
         button.transform.Find("Group/generic_flash_ui").gameObject.SetActive(false);
+        button.transform.Find("Group/Parent/Icon").gameObject.SetActive(false);
 
         var invItemCollect = button.GetComponent<InventoryItemCollectable>();
 
@@ -922,6 +1008,9 @@ public class BindingsMenu
         var flashUI_template = template.transform.Find("Group/generic_flash_ui");
         Preload.preloads["generic_flash_ui"] = GameObject.Instantiate(flashUI_template.gameObject, parent: Preload.handler.transform);
 
+        var dividerL = inv.transform.Find("Divider L").gameObject;
+        dividerL.transform.position = new Vector3(-2.89f, -0.14f, 36.14f);
+
         needle = inv.transform.Find("Inv_Items/Needle").GetComponent<InventoryItemNail>();
 
         foreach(Transform item in equipment.transform)
@@ -947,27 +1036,38 @@ public class BindingsMenu
         bindingsMsgWhileInSequenceText.text = "Can't toggle bindings while in boss sequence.";
         invPane.OnPaneStart += () => {bindingsMsgWhileInSequence.AlphaSelf = 0;};
 
-        needleBinding = CreateButtonInv("Needle Binding", template, new Vector3(-4.1f, 4.195f, 4.3f), "Needle Binding", "Reduces needle damage.");
-        silkBinding = CreateButtonInv("Silk Binding", template, new Vector3(-2f, 4.195f, 4.3f), "Silk Binding", "Makes silk spool broken.");
-        toolsBinding = CreateButtonInv("Tools Binding", template, new Vector3(0f, 4.195f, 4.3f), "Tools Binding", "Removes tools.");
-        maskBinding = CreateButtonInv("Mask Binding", template, new Vector3(2f, 4.195f, 4.3f), "Mask Binding", "Reduces the number of masks to 5.");
+        needleBinding = CreateButtonInv("Needle Binding", template, new Vector3(-1.8f, 4.195f, 4.3f), "Needle Binding", "Reduces needle damage.");
+        silkBinding = CreateButtonInv("Silk Binding", template, new Vector3(0.2f, 4.195f, 4.3f), "Silk Binding", "Makes silk spool broken.");
+        toolsBinding = CreateButtonInv("Tools Binding", template, new Vector3(2.3f, 4.195f, 4.3f), "Tools Binding", "Removes tools.");
+        maskBinding = CreateButtonInv("Mask Binding", template, new Vector3(4.4f, 4.195f, 4.3f), "Mask Binding", "Reduces the number of masks to 5.");
+        cloakStates = CreateButtonInv("Cloak States", template, new Vector3(-4.4933f, 0.5f, 4.3f), "", "");
+        needleArt = CreateButtonInv("Needle Art", template, new Vector3(-9.7017f, 3.8097f, 4.3f), "Needle Art", "");
+        toolsBugUpgrade = CreateButtonInv("Tools Upgrade", template, new Vector3(-6.7017f, 0.5097f, 4.3f), "Tools Pouch", "Basic pouch designed for holding tools, traps and crafting materials.");
+        toolsKitUpgrade = CreateButtonInv("Tools Kit Upgrade", template, new Vector3(-8.7969f, 0.5501f, 4.3f), "Crafting Kit", "");
+        crestlessHornet = CreateButtonInv("Crestless Hornet", template, new Vector3(-1.4495f, 2.1501f, 4.3f), "Crestless", "");
+        cursedHornet = CreateButtonInv("Cursed Hornet", template, new Vector3(1.2651f, 2.1501f, 4.3f), "Curse", "");
 
         // 0 - up, 1 - down, 2 - left, 3 - right
-        needleBinding.Selectables = new InventoryItemSelectable[4]{null, null, spoolPieces, silkBinding};
-        silkBinding.Selectables = new InventoryItemSelectable[4]{null, null, needleBinding, toolsBinding};
-        toolsBinding.Selectables = new InventoryItemSelectable[4]{null, null, silkBinding, maskBinding};
+        needleBinding.Selectables = new InventoryItemSelectable[4]{null, crestlessHornet, spoolPieces, silkBinding};
+        silkBinding.Selectables = new InventoryItemSelectable[4]{null, cursedHornet, needleBinding, toolsBinding};
+        toolsBinding.Selectables = new InventoryItemSelectable[4]{null, cursedHornet, silkBinding, maskBinding};
         maskBinding.Selectables = new InventoryItemSelectable[4]{null, null, toolsBinding, maskBinding};
 
         var grid = equipment.GetComponent<InventoryItemGrid>();
         List<InventoryItemSelectableDirectional> gridCollection = new List<InventoryItemSelectableDirectional>();
-        var gridCollectionOld = ((List<InventoryItemGrid.GridSection>)grid.GetType().GetField("collections", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(grid));
+        var gridCollectionOld = (List<InventoryItemGrid.GridSection>)grid.GetType().GetField("collections", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(grid);
 
         gridCollection.Add(needleBinding.GetComponent<InventoryItemCollectable>());
         gridCollection.Add(silkBinding.GetComponent<InventoryItemCollectable>());
         gridCollection.Add(toolsBinding.GetComponent<InventoryItemCollectable>());
         gridCollection.Add(maskBinding.GetComponent<InventoryItemCollectable>());
 
-        gridCollectionOld[0].Items = gridCollection;
+        if(gridCollectionOld.Count > 0) gridCollectionOld[0].Items = gridCollection;
+        else
+        {
+            gridCollectionOld.Add(new InventoryItemGrid.GridSection());
+            gridCollectionOld[0].Items = gridCollection;
+        }
 
         needleBinding.transform.parent = equipment.transform.parent;
         silkBinding.transform.parent = equipment.transform.parent;
@@ -1054,6 +1154,7 @@ public class BindingsMenu
         }
         var heartPiecesAmountText = GameObject.Instantiate(template.transform.Find("Group/Amount Text"), parent: heartPieces.transform).gameObject;
         heartPiecesAmountText.transform.position = new Vector3(-9.4864f, 5.8192f, 41.4f);
+        heartPieces.transform.position = new Vector3(-6.6854f, 3.62f, 38.18f);
         heartPiecesAmountText.name = "Amount Text";
         heartPiecesAmountText.SetActive(true);
 
@@ -1069,6 +1170,7 @@ public class BindingsMenu
         }
         var spoolPiecesAmountText = GameObject.Instantiate(template.transform.Find("Group/Amount Text"), parent: spoolPieces.transform).gameObject;
         spoolPiecesAmountText.transform.position = new Vector3(-6.7864f, 5.8192f, 41.4f);
+        spoolPieces.transform.position = new Vector3(-4.3445f, 3.71f, 38.18f);
         spoolPiecesAmountText.name = "Amount Text";
         spoolPiecesAmountText.SetActive(true);
 
@@ -1102,9 +1204,8 @@ public class BindingsMenu
         }
         menuBindingsFsm.FsmComponent.StartCoroutine(ActivateSilkHeartsEveryFrame());
 
-        cloakStates = CreateButtonInv("Cloak States", template, new Vector3(-7.1054f, 0.4297f, 4.3f), "", "");
         cloakStates.transform.parent = inv.transform;
-        cloakStates.Selectables = new InventoryItemSelectable[4]{spoolPieces, silkHeartsSpool, needle, needleBinding};
+        cloakStates.Selectables = new InventoryItemSelectable[4]{spoolPieces, silkHeartsSpool, toolsBugUpgrade, needleBinding};
         spoolPieces.Selectables[1] = cloakStates; //down
         needle.Selectables[3] = cloakStates; //right
         cloakStates.OnSelected += (_) =>
@@ -1134,6 +1235,65 @@ public class BindingsMenu
         cloakState3.name = "CloakState_3";
         cloakState3.GetComponent<SpriteRenderer>().sprite = (Sprite)Preload.bundleResources["CloakState_3"];
 
+        needleArt.transform.localScale = new Vector3(2, 1.5f, 1);
+        needleArt.transform.parent = inv.transform;
+        needleArt.Selectables = new InventoryItemSelectable[4]{needleArt, toolsKitUpgrade, needle, heartPieces};
+        heartPieces.Selectables[2] = needleArt;
+        var needleArtSprite = GameObject.Instantiate(iconTemplate, parent: needleArt.transform);
+        needleArtSprite.transform.localScale = new Vector3(0.3f, 0.4f, 1);
+        needleArtSprite.SetActive(true);
+        needleArtSprite.name = "Icon";
+        needleArtSprite.GetComponent<SpriteRenderer>().sprite = (Sprite)Preload.bundleResources["needle_charge_prompt"];
+
+        toolsBugUpgrade.transform.parent = inv.transform;
+        toolsBugUpgrade.Selectables = new InventoryItemSelectable[4]{heartPieces, silkHeartsSpool, toolsKitUpgrade, cloakStates};
+        heartPieces.Selectables[1] = toolsBugUpgrade;
+        var toolsBugUpgradeSprite = GameObject.Instantiate(iconTemplate, parent: toolsBugUpgrade.transform);
+        toolsBugUpgradeSprite.SetActive(true);
+        toolsBugUpgradeSprite.name = "Icon";
+        toolsBugUpgradeSprite.GetComponent<SpriteRenderer>().sprite = (Sprite)Preload.bundleResources["tools_bug_upgrade"];
+        var toolsBugUpgradesAmountText = GameObject.Instantiate(template.transform.Find("Group/Amount Text"), parent: toolsBugUpgrade.transform).gameObject;
+        toolsBugUpgradesAmountText.name = "Amount Text";
+        toolsBugUpgradesAmountText.transform.position = new Vector3(-6.7718f, 1.9447f, 4.3f);
+
+        toolsKitUpgrade.transform.parent = inv.transform;
+        toolsKitUpgrade.Selectables = new InventoryItemSelectable[4]{needleArt, silkHeartsSpool, needle, toolsBugUpgrade};
+        needle.Selectables[3] = toolsKitUpgrade;
+        var toolsKitUpgradeSprite = GameObject.Instantiate(iconTemplate, parent: toolsKitUpgrade.transform);
+        toolsKitUpgradeSprite.SetActive(true);
+        toolsKitUpgradeSprite.name = "Icon";
+        toolsKitUpgradeSprite.GetComponent<SpriteRenderer>().sprite = (Sprite)Preload.bundleResources["tools_upgrade_sack"];
+        var toolsKitUpgradeAmountText = GameObject.Instantiate(template.transform.Find("Group/Amount Text"), parent: toolsKitUpgrade.transform).gameObject;
+        toolsKitUpgradeAmountText.name = "Amount Text";
+        toolsKitUpgradeAmountText.transform.position = new Vector3(-8.9062f, 1.9447f, 4.3f);
+
+        crestlessHornet.transform.parent = inv.transform;
+        crestlessHornet.transform.localScale = new Vector3(1.5f, 1.3f, 1f);
+        crestlessHornet.Selectables = new InventoryItemSelectable[4]{needleBinding, crestlessHornet, cloakStates, cursedHornet};
+        var crestlessHornetSprite = GameObject.Instantiate(iconTemplate, parent: crestlessHornet.transform);
+        crestlessHornetSprite.transform.position = new Vector3(-1.5495f, 2.4501f, 4.3f);
+        crestlessHornetSprite.transform.localScale = new Vector3(0.8f, 1, 1);
+        crestlessHornetSprite.SetActive(true);
+        crestlessHornetSprite.name = "Icon";
+        crestlessHornetSprite.GetComponent<SpriteRenderer>().sprite = (Sprite)Preload.bundleResources["cloakless_hornet_attack"];
+
+        IEnumerator MakeNeedleStateAlwaysActive()
+        {
+            while (true)
+            {
+                needle.gameObject.SetActive(true);
+                yield return null;
+            }
+        }
+        menuBindingsFsm.FsmComponent.StartCoroutine(MakeNeedleStateAlwaysActive());
+
+        cursedHornet.transform.parent = inv.transform;
+        cursedHornet.Selectables = new InventoryItemSelectable[4]{toolsBinding, cursedHornet, crestlessHornet, cursedHornet};
+        var cursedHornetSprite = GameObject.Instantiate(iconTemplate, parent: cursedHornet.transform);
+        cursedHornetSprite.SetActive(true);
+        cursedHornetSprite.name = "Icon";
+        cursedHornetSprite.GetComponent<SpriteRenderer>().sprite = (Sprite)Preload.bundleResources["CurseWitch"];
+
         foreach(var item in new InventoryItemCollectable[]{needleBinding, silkBinding, toolsBinding, maskBinding})
         {
             ToggleBinding(item.gameObject);
@@ -1156,5 +1316,11 @@ public class BindingsMenu
 
             UpdateMenuBindingsDisplay();
         };
+
+        menuBindingsFsm.FsmComponent.StartCoroutine(UpdateSilkBinding());
+
+        menuBindingsFsm.FsmComponent.StartCoroutine(UpdateToolsBinding());
+        
+        menuBindingsFsm.FsmComponent.StartCoroutine(UpdateMaskBinding());
     }
 }

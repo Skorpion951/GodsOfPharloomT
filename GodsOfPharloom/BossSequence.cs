@@ -277,13 +277,6 @@ namespace Gods_Of_Pharloom
                     if(!startAudio.IsNullOrDestroyed()) TransitionSequence.FadeAudio(startAudio, 0.5f);
                     if(!endAudio.IsNullOrDestroyed()) endAudio.Play();
                 }
-
-                if(GodsOfPharloomMod.currentScene.name == BossStatueInfo.hog_sceneName || 
-                   GodsOfPharloomMod.currentScene.name == "GG_Pharloom_Atrium")
-                {
-                    HeroController.instance.MaxHealth();
-                    HeroController.instance.MaxRegenSilkInstant();
-                }
             };
 
             doAfterTransition.Actions = new FsmStateAction[]{doAfterTransitionAction};
