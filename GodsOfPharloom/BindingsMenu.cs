@@ -983,6 +983,12 @@ public class BindingsMenu
         silkHeartsSpool = inv.transform.Find("Inv_Items/Needle Shift/Spool Group/Spool").gameObject.GetComponent<InventoryItemSpool>();
         silkHeartsSpool.gameObject.SetActive(true);
         silkHeartsSpool.transform.Find("New Item Orb")?.gameObject.SetActive(false);
+        silkHeartsSpool.GetComponent<InventoryItemButtonPrompt>().enabled = false;
+        silkHeartsSpool.OnSelected += (_) =>
+        {
+            var silkSpoolDescSection = menuBindings.transform.Find("Inv/Silk Spool Desc Section(Clone)");
+            if(!silkSpoolDescSection.IsNullOrDestroyed()) silkSpoolDescSection.gameObject.SetActive(true);
+        };
 
         foreach(Transform child in inv.transform.Find("Inv_Items/Needle Shift/Spool Group/Radial Layout"))
         {
@@ -1184,8 +1190,13 @@ public class BindingsMenu
                     if(child.name == "Heart") child.gameObject.SetActive(true);
                     else child.gameObject.SetActive(false);
                 }
+                var silkSpoolDescSection = menuBindings.transform.Find("Inv/Silk Spool Desc Section(Clone)");
+                if (!silkSpoolDescSection.IsNullOrDestroyed())
+                {
+                    silkSpoolDescSection.Find("Silk Hearts").gameObject.SetActive(true);
+                }
                 var hearts = silkHeartsSpool.transform.Find("Heart");
-                var hearts2 = menuBindings.transform.Find("Inv/Silk Spool Desc Section(Clone)/Silk Hearts/Counter");
+                var hearts2 = (!silkSpoolDescSection.IsNullOrDestroyed()) ? silkSpoolDescSection.Find("Silk Hearts/Counter") : null;
                 foreach(Transform child in hearts) child.gameObject.SetActive(false);
                 if(hearts2 != null)
                 {
