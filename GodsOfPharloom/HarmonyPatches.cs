@@ -692,6 +692,8 @@ namespace Gods_Of_Pharloom
         {
             if(!__instance.transform.IsChildOf(BindingsMenu.menuBindings.transform)) return true;
 
+            if(BindingsMenu.TryShowSequenceMsg()) return false;
+
             if(BindingsMenu.submitActions.TryGetValue(__instance.gameObject.name, out Action<bool> val))
             {
                 val?.Invoke(false);
@@ -705,6 +707,8 @@ namespace Gods_Of_Pharloom
         private static bool InventoryItemSelectableSubmit_Prefix(InventoryItemSelectable __instance)
         {
             if(!__instance.transform.IsChildOf(BindingsMenu.menuBindings.transform)) return true;
+
+            if(BindingsMenu.TryShowSequenceMsg()) return false;
 
             if(BindingsMenu.submitActions.TryGetValue(__instance.gameObject.name, out Action<bool> val))
             {

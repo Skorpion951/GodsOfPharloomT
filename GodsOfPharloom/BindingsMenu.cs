@@ -45,6 +45,7 @@ public class BindingsMenu
     public static InventoryItemNail needle;
     public static NestedFadeGroup toolsMsgWhileBindingEffect;
     public static NestedFadeGroup bindingsMsgWhileInSequence;
+    public static bool isMsgFading = false;
     public static int maskBindingCount = 5;
     public static bool isHealthIncreasing = false;
     public static InventoryItemHeartPieces heartPieces;
@@ -77,11 +78,7 @@ public class BindingsMenu
     {
         {"Tools Buttons Msg", (_) =>
         {
-            GodsOfPharloomMod.instance.StartCoroutine(TryFadeMsg(toolsMsgWhileBindingEffect));
-        }},
-        {"Bindings Buttons Msg", (_) =>
-        {
-            GodsOfPharloomMod.instance.StartCoroutine(TryFadeMsg(bindingsMsgWhileInSequence));
+            TryFadeMsg(toolsMsgWhileBindingEffect);
         }},
         {"Needle Binding", (_) =>
         {
@@ -531,12 +528,18 @@ public class BindingsMenu
 
         isHealthIncreasing = false;
     }
-
-    public static IEnumerator TryFadeMsg(NestedFadeGroup fadeComp, float fadeTime = 0.15f)
+    
+    public static void TryFadeMsg(NestedFadeGroup fadeComp, float fadeTime = 0.15f)
+    {
+        menuBindingsFsm.FsmComponent.StartCoroutine(ITryFadeMsg(fadeComp, fadeTime));
+    }
+    public static IEnumerator ITryFadeMsg(NestedFadeGroup fadeComp, float fadeTime)
     {
         GodsOfPharloomMod.Log.LogInfo("Started try fade msg");
-        if(fadeComp.AlphaSelf > 0f) yield break;
+        if(isMsgFading) yield break;
         GodsOfPharloomMod.Log.LogInfo("Continued try fade msg");
+
+        isMsgFading = true;
 
         var timer = 0f;
 
@@ -568,7 +571,17 @@ public class BindingsMenu
 
             yield return null;
         }
+
+        isMsgFading = false;
         GodsOfPharloomMod.Log.LogInfo("End fade msg");
+    }
+    public static bool TryShowSequenceMsg()
+    {
+        if(!BossSequence.isInSequence) return false;
+
+        TryFadeMsg(bindingsMsgWhileInSequence);
+
+        return true;
     }
     public static bool TryActivateToolsBinding()
     {

@@ -283,6 +283,8 @@ namespace Gods_Of_Pharloom
                 HeroController.instance.MaxHealth();
                 HeroController.instance.MaxRegenSilkInstant();
 
+                BossSequence.Reset();
+
                 GG_Pharloom_Atrium.isSceneActive = true;
             };
             customScenes.Add(GG_Pharloom_Atrium);
@@ -354,6 +356,8 @@ namespace Gods_Of_Pharloom
                 
                 HeroController.instance.MaxHealth();
                 HeroController.instance.MaxRegenSilkInstant();
+
+                BossSequence.Reset();
 
                 GG_Pharloom_HoG.isSceneActive = true;
             };

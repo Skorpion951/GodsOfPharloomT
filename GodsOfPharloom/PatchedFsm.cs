@@ -2249,6 +2249,7 @@ public class PatchedFsm
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
             GameCameras.instance.HUDIn();
+            PlayerData.instance.disableInventory = false;
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
         };
 
@@ -3096,6 +3097,7 @@ public class PatchedFsm
         var enemyRoar = fsm.GetState("Enemy Roar");
         var setup1 = fsm.GetState("Setup 1");
         var setup2 = fsm.GetState("Setup 2");
+        var deathAir = fsm.GetState("Death Air");
         var deathLand = fsm.GetState("Death Land");
 
         // ((Wait)(setup1.Actions[15])).time = 0.001f;
@@ -3129,7 +3131,7 @@ public class PatchedFsm
 
         citNPC.Actions = InsertInArray(citNPC.Actions, customAction, citNPC.Actions.Length - 1);
 
-        deathLand.Actions = InsertInArray(deathLand.Actions, customActionSendEvent, 0);
+        deathAir.Actions = InsertInArray(deathAir.Actions, customActionSendEvent, 0);
 
         setup1.Actions = RemoveFromArray(setup1.Actions, 2);
 
@@ -3193,6 +3195,7 @@ public class PatchedFsm
         var introRoar = fsm.GetState("Intro Roar");
         var titleUp = fsm.GetState("Title Up");
         var moveStop = fsm.GetState("Move Stop");
+        var reriseRoar = fsm.GetState("Rerise Roar");
         
         ((Wait)(init.Actions[8])).time = 0f;
         ((AnimatePositionBy)(introUp.Actions[7])).time = 0.1f;
@@ -3200,6 +3203,14 @@ public class PatchedFsm
         ((Wait)(introRoar.Actions[4])).time = 0.1f;
         ((Wait)(titleUp.Actions[2])).time = 0.1f;
         ((Wait)(moveStop.Actions[1])).time = 0f;
+
+        var customActionSpeedUpRoarAnim = new CustomLogicFsm(fsm);
+        customActionSpeedUpRoarAnim.action += (_) =>
+        {
+            fsm.GameObject.GetComponent<tk2dSpriteAnimator>().ClipFps *= 4;
+        };
+
+        reriseRoar.Actions = InsertInArray(reriseRoar.Actions, customActionSpeedUpRoarAnim, reriseRoar.Actions.Length);
 
         return true;
     }
@@ -3275,6 +3286,9 @@ public class PatchedFsm
         ((SendEventToRegister)bindBurst2.Actions[14]).eventName = "";
         ((SendEventToRegister)finalBind.Actions[9]).eventName = "";
 
+        preBindable.Actions[1].Enabled = false; //remove wait
+        preBindable.Actions[2].Enabled = false; //remove send event to bind orb
+
         var customActionSendEventBind = new CustomLogicFsm(fsm);
         customActionSendEventBind.action += (Fsm fsm) =>
         {
@@ -3283,6 +3297,7 @@ public class PatchedFsm
         var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
         {
+            PlayerData.instance.disableInventory = false;
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
         };
 
@@ -3304,7 +3319,6 @@ public class PatchedFsm
         bindBurst4.Actions = RemoveFromArray(bindBurst4.Actions, 11);
         
         //remove waits
-        preBindable.Actions = RemoveFromArray(preBindable.Actions, 1);
         bindBurst1.Actions = RemoveFromArray(bindBurst1.Actions, 5);
         bindBurst2.Actions = RemoveFromArray(bindBurst2.Actions, 6);
         bindBurst3.Actions = RemoveFromArray(bindBurst3.Actions, 5);
@@ -3340,11 +3354,15 @@ public class PatchedFsm
         var staggerPause = fsm.GetState("Stagger Pause");
         var staggerFall = fsm.GetState("Stagger Fall");
         var staggerHit = fsm.GetState("Stagger Hit");
+        var rubbleM = fsm.GetState("Rubble M");
+        var rubbleSides = fsm.GetState("Rubble Sides");
         
         ((Wait)(staggerPause.Actions[1])).time = 0.1f;
         // ((Wait)(staggerFall.Actions[4])).time = 0.1f;
         ((Wait)(staggerHit.Actions[14])).time = 0f;
         // ((AccelerateToY)(staggerFall.Actions[3])).targetSpeed = -90f;
+        // ((Wait)rubbleM.Actions[1]).time = 2f;
+        // ((Wait)rubbleSides.Actions[3]).time = 2f;
 
         var initHp = new CustomLogicFsm(fsm);
         initHp.action += (_) =>
