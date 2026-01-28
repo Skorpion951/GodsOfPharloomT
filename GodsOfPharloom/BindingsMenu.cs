@@ -380,9 +380,13 @@ public class BindingsMenu
                 {
                     customBrokenSpool.SetActive(true);
 
-                    spoolParent.Find("Active").gameObject.SetActive(false);
-                    spoolParent.Find("Broken").gameObject.SetActive(false);
-                    spoolParent.Find("Bind Notch").gameObject.SetActive(false);
+                    var active = spoolParent.Find("Active").gameObject;
+                    var broken = spoolParent.Find("Broken").gameObject;
+                    var bindNotch = spoolParent.Find("Bind Notch").gameObject;
+
+                    if(!active.IsNullOrDestroyed()) active.SetActive(false);
+                    if(!broken.IsNullOrDestroyed()) broken.SetActive(false);
+                    if(!bindNotch.IsNullOrDestroyed()) bindNotch.SetActive(false);
 
                     yield return null;
                 }

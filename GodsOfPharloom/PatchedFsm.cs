@@ -622,6 +622,16 @@ public class PatchedFsm
 
         ((CreateObject)init.Actions[2]).gameObject = Preload.preloads["Deep Memory Pre Enter Effect"];
 
+        var deepMemoryAppear = fsm.GameObject.transform.parent.Find("Deep_Memory_appear");
+        if (!deepMemoryAppear.IsNullOrDestroyed())
+        {
+            var ifTrue = deepMemoryAppear.GetComponent<DeactivateIfPlayerdataFalse>();
+            var ifFalse = deepMemoryAppear.GetComponent<DeactivateIfPlayerdataTrue>();
+            if(ifTrue) ifTrue.enabled = false;
+            if(ifFalse) ifFalse.enabled = false;
+            deepMemoryAppear.gameObject.SetActive(true);
+        }
+
         GameObject effectObj = null;
 
         ParticleSystem roarEmitter = null;
@@ -4843,6 +4853,8 @@ public class PatchedFsm
         var blow = fsm.GetState("Blow");
         var land = fsm.GetState("Land");
         var activateNPC = fsm.GetState("Activate NPC");
+
+        blow.Actions[5].Enabled = false; //remove event sender to open door
 
         var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendBossDeadEvent.action += (Fsm fsm) =>
