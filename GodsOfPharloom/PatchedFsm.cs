@@ -14,6 +14,7 @@ using GenericVariableExtension;
 using InControl.NativeDeviceProfiles;
 using System.Collections;
 using UniverseLib.Utility;
+using UniverseLib;
 
 namespace Gods_Of_Pharloom;
 
@@ -786,6 +787,8 @@ public class PatchedFsm
 
         returnReadyState.Actions = InsertInArray(returnReadyState.Actions, customActionCreateTriggerForStart, returnReadyState.Actions.Length);
 
+        ((StartRoarEmitter)roarState.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+
         return true;
     }
     public static bool PatchFsm_MossMotherDoubleA(Fsm fsm)
@@ -873,6 +876,8 @@ public class PatchedFsm
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
         
         SetTransitionToState(init, returnReady2, 0);
+
+        ((StartRoarEmitter)roarState.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
 
         return true;
     }
@@ -1166,6 +1171,8 @@ public class PatchedFsm
         SetTransitionToState(remeetRoar, roarNoClamp, 0);
         SetTransitionToState(deathAnim, explode, 0);
 
+        ((StartRoarEmitter)roarNoClamp.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+
         return true;
     }
     public static bool PatchFsm_FourthChorusSGHead(Fsm fsm)
@@ -1374,6 +1381,8 @@ public class PatchedFsm
         SetTransitionToState(dormant, introG2, 0);
         SetTransitionToState(dormant, introR2, 1);
 
+        ((StartRoarEmitter)roarG.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+
         return true;
     }
     public static bool PatchFsm_GreatConchfliesCorpseControl(Fsm fsm)
@@ -1542,6 +1551,8 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
+        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+
         return true;
     }
     public static bool PatchFsm_LastJudgeBattleScene(Fsm fsm)
@@ -1638,6 +1649,8 @@ public class PatchedFsm
         var boxCol1 = col1.GetComponent<BoxCollider2D>();
 
         boxCol1.size = new Vector2(1, 100);
+
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
 
         return true;
     }
@@ -1922,6 +1935,8 @@ public class PatchedFsm
         };
         setHP.Actions = InsertInArray(setHP.Actions, initHp, setHP.Actions.Length);
 
+        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+
         return true;
     }
     public static bool PatchFsm_SavageBeastfly1BossScene(Fsm fsm)
@@ -2017,6 +2032,8 @@ public class PatchedFsm
             }
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
+        ((StartRoarEmitter)roar4.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
 
         return true;
     }
@@ -2191,6 +2208,8 @@ public class PatchedFsm
         blackSprite.transform.position = new Vector3(24.2221f, 15, -0.3f);
         blackSprite.transform.localScale = new Vector3(25.2948f, 31.931f, 1);
 
+        ((StartRoarEmitter)wakeRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+
         return true;
     }
     public static bool PatchFsm_SkullTyrantAudioTension(Fsm fsm)
@@ -2237,7 +2256,7 @@ public class PatchedFsm
         // ((Wait)(deathStaggerF.Actions[16])).time = 0.1f;
         ((Wait)(rageScream2.Actions[1])).time = 0.1f;
         ((Wait)(away.Actions[1])).time = 0.01f;
-        ((Wait)(setRage.Actions[3])).time = 0.5f;
+        // ((Wait)(setRage.Actions[3])).time = 0.5f;
 
         var customActionSkipBind = new CustomLogicFsm(fsm);
         customActionSkipBind.action += (Fsm fsm) =>
@@ -2281,6 +2300,9 @@ public class PatchedFsm
             }
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
+        ((StartRoarEmitter)introScream.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)rageScream2.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
 
         return true;
     }
@@ -2332,6 +2354,8 @@ public class PatchedFsm
             }
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
 
         return true;
     }
@@ -2555,6 +2579,8 @@ public class PatchedFsm
         deathSteam.Actions = RemoveFromArray(deathSteam.Actions, 3);
         deathSteam.Actions = RemoveFromArray(deathSteam.Actions, 2);
 
+        ((StartRoarEmitter)doRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+
         return true;
     }
     public static bool PatchFsm_CogDancersBossScene(Fsm fsm)
@@ -2756,6 +2782,8 @@ public class PatchedFsm
         };
         setHp.Actions = InsertInArray(setHp.Actions, initHp, 9);
 
+        ((StartRoarEmitter)intro.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+
         return true;
     }
     public static bool PatchFsm_FatherOfFlameGateControl(Fsm fsm)
@@ -2806,6 +2834,8 @@ public class PatchedFsm
             }
         };
         init.Actions = InsertInArray(init.Actions, initHp, 13);
+
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
 
         return true;
     }
@@ -2927,23 +2957,17 @@ public class PatchedFsm
         var customAction = new CustomLogicFsm(fsm);
         customAction.action += (Fsm fsm) =>
         {
-            var gates = ((FindNamedChild)init.Actions[2]).storeResult.Value;
-            var gate2 = gates.transform.GetChild(1).gameObject;
+            var pos = fsm.GameObject.transform.position;
+            fsm.GameObject.transform.position = new Vector3(39f, pos.y, pos.z);
 
-            if(HeroController.instance.transform.position.x < gate2.transform.position.x)
+            var children = fsm.GameObject.transform;
+            foreach(Transform child in children)
             {
-                var pos = fsm.GameObject.transform.position;
-                fsm.GameObject.transform.position = new Vector3(39f, pos.y, pos.z);
-
-                var children = fsm.GameObject.transform;
-                foreach(Transform child in children)
+                if(child.gameObject.name == "Start Range")
                 {
-                    if(child.gameObject.name == "Start Range")
-                    {
-                        var childPos = child.gameObject.transform.position;
-                        child.gameObject.transform.position = new Vector3(27f, childPos.y, childPos.z);
-                        break;
-                    }
+                    var childPos = child.gameObject.transform.position;
+                    child.gameObject.transform.position = new Vector3(27f, childPos.y, childPos.z);
+                    break;
                 }
             }
         };
@@ -2998,8 +3022,8 @@ public class PatchedFsm
                 hp -= phases[2].hp;
                 fsm.GetFsmInt("P4 HP").Value = hp;
 
-                var summons1 = fsm.GameObject.transform.Find("Minions");
-                var summons2 = fsm.GameObject.transform.Find("Minions2");
+                var summons1 = fsm.GameObject.transform.parent.Find("Minions");
+                var summons2 = fsm.GameObject.transform.parent.Find("Minions 2");
                 foreach(Transform summon in summons1)
                 {
                     var summonHPManager = summon.GetComponent<HealthManager>();
@@ -3041,6 +3065,8 @@ public class PatchedFsm
             }
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
 
         return true;
     }
@@ -3521,6 +3547,8 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
+        ((StartRoarEmitter)entryRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+
         return true;
     }
     public static bool PatchFsm_GroalTheGreatCloseGate(Fsm fsm)
@@ -3700,6 +3728,8 @@ public class PatchedFsm
             }
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
 
         return true;
     }
@@ -4094,6 +4124,8 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length - 1);
 
+        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+
         return true;
     }
     public static bool PatchFsm_TheUnravelledPipeControl(Fsm fsm)
@@ -4253,6 +4285,8 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+
         return true;
     }
     public static bool PatchFsm_BellEaterControl(Fsm fsm)
@@ -4353,6 +4387,8 @@ public class PatchedFsm
         };
         setHp.Actions = InsertInArray(setHp.Actions, initHp, setHp.Actions.Length);
 
+        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+
         return true;
     }
     public static bool PatchFsm_CloverDancersGreenPrinceBossNPC(Fsm fsm)
@@ -4423,6 +4459,8 @@ public class PatchedFsm
         ((Wait)cloverSubRoar.Actions[2]).time = 0.05f;
         ((Wait)cRoar.Actions[2]).time = ((Wait)cRoar.Actions[2]).time.Value / 5f;
         ((Wait)cRoar2.Actions[4]).time = ((Wait)cRoar2.Actions[4]).time.Value / 5f;
+
+        ((StartRoarEmitter)cRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
 
         return true;
     }
@@ -4548,6 +4586,8 @@ public class PatchedFsm
             }
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
 
         return true;
     }
@@ -4688,6 +4728,8 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
+        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+
         return true;
     }
     public static bool PatchFsm_CrustKingKhanBossSceneControl(Fsm fsm)
@@ -4782,6 +4824,8 @@ public class PatchedFsm
         };
         setHPs.Actions = InsertInArray(setHPs.Actions, initHp, setHPs.Actions.Length);
 
+        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+
         return true;
     }
     public static bool PatchFsm_GurrTheOutcastTrapBenchControl(Fsm fsm)
@@ -4861,6 +4905,8 @@ public class PatchedFsm
             }
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
+        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
 
         return true;
     }
@@ -5105,6 +5151,8 @@ public class PatchedFsm
 
         init.Actions = InsertInArray(init.Actions, customActionDisableTerrainIntro, 5);
 
+        ((StartRoarEmitter)scream.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+
         return true;
     }
     public static bool PatchFsm_NylethControl(Fsm fsm)
@@ -5181,6 +5229,8 @@ public class PatchedFsm
             }
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
 
         return true;
     }
@@ -5276,6 +5326,8 @@ public class PatchedFsm
         damageHero1.hazardType = HazardType.SPIKES;
         damageHero1.OnDamagedHero = new UnityEvent();
 
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+
         return true;
     }
     public static bool PatchFsm_PinstressControl(Fsm fsm)
@@ -5361,6 +5413,8 @@ public class PatchedFsm
 
         boxCol1.size = new Vector2(1, 100);
 
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+
         return true;
     }
     public static bool PatchFsm_PlasmifiedZangoPhaseControl(Fsm fsm)
@@ -5429,6 +5483,8 @@ public class PatchedFsm
         var boxCol1 = col1.AddComponent<BoxCollider2D>();
 
         boxCol1.size = new Vector2(1, 100);
+
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
 
         return true;
     }
@@ -5515,6 +5571,8 @@ public class PatchedFsm
             }
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
 
         return true;
     }
@@ -5713,6 +5771,8 @@ public class PatchedFsm
         var boxCol1 = col1.GetComponent<BoxCollider2D>();
 
         boxCol1.size = new Vector2(1, 100);
+
+        ((StartRoarEmitter)wakeRoar2.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
 
         return true;
     }
