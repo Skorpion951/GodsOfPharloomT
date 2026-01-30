@@ -58,6 +58,10 @@ public class BindingsMenu
     public static InventoryItemConditional needolin;
     public static InventoryItemSpool silkHeartsSpool;
     public static InventoryItemCollectable cloakStates;
+    public static AudioSource audioSource;
+    public static AudioClip mainBindingsSoundSelect;
+    public static AudioClip mainBindingsSoundFull;
+    public static AudioClip submitSound1;
     public static string[] cloakLables = new string[]
     {
         "Hunter's Cloak",
@@ -109,6 +113,8 @@ public class BindingsMenu
             var pd = PlayerData.instance;
             if(pd == null) return;
             pd.nailUpgrades = ((pd.nailUpgrades + 1) < 5) ? pd.nailUpgrades + 1 : 0;
+
+            audioSource.PlayOneShot(submitSound1);
             
             UpdateMenuBindingsDisplay();
         }},
@@ -132,6 +138,8 @@ public class BindingsMenu
                 pdm.previousHealthCount = newHeroHealth;
             }
 
+            audioSource.PlayOneShot(submitSound1);
+
             UpdateMenuBindingsDisplay();
         }},
         {"Spool Pieces", (_) =>
@@ -144,6 +152,8 @@ public class BindingsMenu
             newMaxSilk = (newMaxSilk > 9 && pdm.bindings["Silk Binding"]) ? 0 : newMaxSilk;
             pd.silkMax = newMaxSilk;
 
+            audioSource.PlayOneShot(submitSound1);
+
             UpdateMenuBindingsDisplay();
         }},
         {"Sprint", (bool onlyUpdateDisplaying) =>
@@ -152,6 +162,8 @@ public class BindingsMenu
             if(pd == null) return;
 
             if(!onlyUpdateDisplaying) pd.hasDash = !pd.hasDash;
+
+            audioSource.PlayOneShot(submitSound1);
             
             UpdateMenuBindingsDisplay();
         }},
@@ -161,6 +173,8 @@ public class BindingsMenu
             if(pd == null) return;
 
             if(!onlyUpdateDisplaying) pd.hasHarpoonDash = !pd.hasHarpoonDash;
+
+            audioSource.PlayOneShot(submitSound1);
             
             UpdateMenuBindingsDisplay();
         }},
@@ -170,6 +184,8 @@ public class BindingsMenu
             if(pd == null) return;
 
             if(!onlyUpdateDisplaying) pd.HasBoundCrestUpgrader = !pd.HasBoundCrestUpgrader;
+
+            audioSource.PlayOneShot(submitSound1);
             
             UpdateMenuBindingsDisplay();
         }},
@@ -179,6 +195,8 @@ public class BindingsMenu
             if(pd == null) return;
 
             if(!onlyUpdateDisplaying) pd.hasSuperJump = !pd.hasSuperJump;
+
+            audioSource.PlayOneShot(submitSound1);
             
             UpdateMenuBindingsDisplay();
         }},
@@ -188,6 +206,8 @@ public class BindingsMenu
             if(pd == null) return;
 
             if(!onlyUpdateDisplaying) pd.hasWalljump = !pd.hasWalljump;
+
+            audioSource.PlayOneShot(submitSound1);
             
             UpdateMenuBindingsDisplay();
         }},
@@ -197,6 +217,8 @@ public class BindingsMenu
             if(pd == null) return;
 
             if(!onlyUpdateDisplaying) pd.hasNeedolin = !pd.hasNeedolin;
+
+            audioSource.PlayOneShot(submitSound1);
             
             UpdateMenuBindingsDisplay();
         }},
@@ -207,6 +229,8 @@ public class BindingsMenu
 
             var newSilkRegenCount = (pd.silkRegenMax < 3) ? pd.silkRegenMax + 1 : 0;
             pd.silkRegenMax = newSilkRegenCount;
+
+            audioSource.PlayOneShot(submitSound1);
         }},
         {"Cloak States", (bool onlyUpdateDisplaying) =>
         {
@@ -231,6 +255,8 @@ public class BindingsMenu
                 textDesc.text = cloakDescriptions[cloakState];
             }
 
+            audioSource.PlayOneShot(submitSound1);
+
             UpdateMenuBindingsDisplay();
         }},
         {"Needle Art", (_) =>
@@ -239,6 +265,8 @@ public class BindingsMenu
             if(pd == null) return;
 
             pd.hasChargeSlash = !pd.hasChargeSlash;
+
+            audioSource.PlayOneShot(submitSound1);
             
             UpdateMenuBindingsDisplay();
         }},
@@ -249,6 +277,8 @@ public class BindingsMenu
 
             var newToolsUpgradeState = (pd.ToolPouchUpgrades + 1 > 4) ? 0 : pd.ToolPouchUpgrades + 1;
             pd.ToolPouchUpgrades = newToolsUpgradeState;
+
+            audioSource.PlayOneShot(submitSound1);
             
             UpdateMenuBindingsDisplay();
         }},
@@ -259,6 +289,8 @@ public class BindingsMenu
 
             var newToolsUpgradeState = (pd.ToolKitUpgrades + 1 > 4) ? 0 : pd.ToolKitUpgrades + 1;
             pd.ToolKitUpgrades = newToolsUpgradeState;
+
+            audioSource.PlayOneShot(submitSound1);
             
             UpdateMenuBindingsDisplay();
         }},
@@ -273,6 +305,8 @@ public class BindingsMenu
                 ToolItemManager.AutoEquip(defaultCrest, false, false);
             }
             else ToolItemManager.AutoEquip(Gameplay.CloaklessCrest, false, false);
+
+            audioSource.PlayOneShot(submitSound1);
             
             UpdateMenuBindingsDisplay();
         }},
@@ -287,6 +321,8 @@ public class BindingsMenu
                 ToolItemManager.AutoEquip(defaultCrest, false, false);
             }
             else ToolItemManager.AutoEquip(Gameplay.CursedCrest, false, false);
+
+            audioSource.PlayOneShot(submitSound1);
             
             UpdateMenuBindingsDisplay();
         }},
@@ -672,7 +708,6 @@ public class BindingsMenu
         var flashEffect = bindingObj.transform.Find("Group/generic_flash_ui").gameObject;
         var bindings = new GameObject[]{needleBinding.gameObject, silkBinding.gameObject,
                                             toolsBinding.gameObject, maskBinding.gameObject};
-        
 
         if(playerData.bindings["Needle Binding"] && playerData.bindings["Silk Binding"] &&
            playerData.bindings["Tools Binding"] && playerData.bindings["Mask Binding"])
@@ -738,6 +773,8 @@ public class BindingsMenu
             icons.Find("Activated").gameObject.SetActive(!value);
         }
 
+        audioSource.PlayOneShot(mainBindingsSoundSelect);
+
         if(playerData.bindings["Needle Binding"] && playerData.bindings["Silk Binding"] &&
            playerData.bindings["Tools Binding"] && playerData.bindings["Mask Binding"])
         {
@@ -757,6 +794,8 @@ public class BindingsMenu
                     else icon.gameObject.SetActive(false);
                 }
             }
+
+            audioSource.PlayOneShot(mainBindingsSoundFull);
         }
     }
 
@@ -961,6 +1000,14 @@ public class BindingsMenu
         var closed = menuBindingsFsm.GetState("Closed");
         closed.Transitions = new FsmTransition[0];
 
+        mainBindingsSoundSelect = (AudioClip)Preload.bundleResources["chain_cut"];
+        mainBindingsSoundFull = (AudioClip)Preload.bundleResources["gg_radiant_binding_bling"];
+        submitSound1 = (AudioClip)Preload.bundleResources["ui_tool_equip"];
+
+        audioSource = menuBindings.AddComponent<AudioSource>();
+        audioSource.maxDistance = 9999f;
+        audioSource.priority = 80;
+
         yield return null;
         yield return null;
         
@@ -1113,6 +1160,11 @@ public class BindingsMenu
         needleBindingIconActivatedAll.name = "AllActivated";
         needleBindingIconActivatedAll.GetComponent<SpriteRenderer>().sprite = (Sprite)Preload.bundleResources["GG_UI_pieces_nail_r"];
         needleBindingIconActivatedAll.transform.localScale = new Vector3(2.2f, 2.2f, 1);
+        var needleBindingIconActivatedAllBackboard = GameObject.Instantiate(iconTemplate, parent: needleBindingIconActivatedAll.transform);
+        needleBindingIconActivatedAllBackboard.name = "Backboard";
+        needleBindingIconActivatedAllBackboard.GetComponent<SpriteRenderer>().sprite = (Sprite)Preload.bundleResources["gg_board_radiant_flash0005_custom"];
+        needleBindingIconActivatedAllBackboard.transform.localScale = new Vector3(1.5f, 1.5f, 1);
+        needleBindingIconActivatedAllBackboard.SetActive(true);
 
         var silkBindingIcons = silkBinding.transform.Find("Group/Parent").gameObject;
         silkBindingIcons.transform.localScale = new Vector3(0.35f, 0.35f, 1);
@@ -1130,6 +1182,11 @@ public class BindingsMenu
         silkBindingIconActivatedAll.name = "AllActivated";
         silkBindingIconActivatedAll.GetComponent<SpriteRenderer>().sprite = (Sprite)Preload.bundleResources["GG_UI_pieces_soul_r"];
         silkBindingIconActivatedAll.transform.localScale = new Vector3(2.2f, 2.2f, 1);
+        var silkBindingIconActivatedAllBackboard = GameObject.Instantiate(iconTemplate, parent: silkBindingIconActivatedAll.transform);
+        silkBindingIconActivatedAllBackboard.name = "Backboard";
+        silkBindingIconActivatedAllBackboard.GetComponent<SpriteRenderer>().sprite = (Sprite)Preload.bundleResources["gg_board_radiant_flash0005_custom"];
+        silkBindingIconActivatedAllBackboard.transform.localScale = new Vector3(1.5f, 1.5f, 1);
+        silkBindingIconActivatedAllBackboard.SetActive(true);
 
         var toolsBindingIcons = toolsBinding.transform.Find("Group/Parent").gameObject;
         toolsBindingIcons.transform.localScale = new Vector3(0.35f, 0.35f, 1);
@@ -1147,6 +1204,11 @@ public class BindingsMenu
         toolsBindingIconActivatedAll.name = "AllActivated";
         toolsBindingIconActivatedAll.GetComponent<SpriteRenderer>().sprite = (Sprite)Preload.bundleResources["GG_UI_pieces_charm_r"];
         toolsBindingIconActivatedAll.transform.localScale = new Vector3(2.2f, 2.2f, 1);
+        var toolsBindingIconActivatedAllBackboard = GameObject.Instantiate(iconTemplate, parent: toolsBindingIconActivatedAll.transform);
+        toolsBindingIconActivatedAllBackboard.name = "Backboard";
+        toolsBindingIconActivatedAllBackboard.GetComponent<SpriteRenderer>().sprite = (Sprite)Preload.bundleResources["gg_board_radiant_flash0005_custom"];
+        toolsBindingIconActivatedAllBackboard.transform.localScale = new Vector3(1.5f, 1.5f, 1);
+        toolsBindingIconActivatedAllBackboard.SetActive(true);
 
         var maskBindingIcons = maskBinding.transform.Find("Group/Parent").gameObject;
         maskBindingIcons.transform.localScale = new Vector3(0.35f, 0.35f, 1);
@@ -1164,6 +1226,11 @@ public class BindingsMenu
         maskBindingIconActivatedAll.name = "AllActivated";
         maskBindingIconActivatedAll.GetComponent<SpriteRenderer>().sprite = (Sprite)Preload.bundleResources["GG_UI_pieces_shell_r"];
         maskBindingIconActivatedAll.transform.localScale = new Vector3(2.2f, 2.2f, 1);
+        var maskBindingIconActivatedAllBackboard = GameObject.Instantiate(iconTemplate, parent: maskBindingIconActivatedAll.transform);
+        maskBindingIconActivatedAllBackboard.name = "AllActivated";
+        maskBindingIconActivatedAllBackboard.GetComponent<SpriteRenderer>().sprite = (Sprite)Preload.bundleResources["gg_board_radiant_flash0005_custom"];
+        maskBindingIconActivatedAllBackboard.transform.localScale = new Vector3(1.5f, 1.5f, 1);
+        maskBindingIconActivatedAllBackboard.SetActive(true);
 
         heartPieces.OnSelected += (_) =>
         {
@@ -1321,12 +1388,6 @@ public class BindingsMenu
         cursedHornetSprite.SetActive(true);
         cursedHornetSprite.name = "Icon";
         cursedHornetSprite.GetComponent<SpriteRenderer>().sprite = (Sprite)Preload.bundleResources["CurseWitch"];
-
-        foreach(var item in new InventoryItemCollectable[]{needleBinding, silkBinding, toolsBinding, maskBinding})
-        {
-            ToggleBinding(item.gameObject);
-            ToggleBinding(item.gameObject);
-        }
 
         menuBindingsFsm.FsmComponent.StartCoroutine(UpdateSilkSpool());
 

@@ -23,7 +23,7 @@ public class EnemyHp
         {
             get
             {
-                return hpDict[BossStatueInfo.currentDifficultMode];
+                return hpDict[Gods_Of_Pharloom.BossSequence.currentDifficultMode];
             }
         }
 
@@ -52,9 +52,9 @@ public class EnemyHp
         {"Fourth Chorus", new EnemyHp(new PhaseHp[]
         {
             new PhaseHp(320, 440, 440),
-            new PhaseHp(460, 460, 460),
-            new PhaseHp(580, 760, 760),
-            new PhaseHp(320, 400, 400),
+            new PhaseHp(600, 700, 700),
+            new PhaseHp(600, 800, 800),
+            new PhaseHp(400, 500, 500),
         })},
         {"Great Conchflies", new EnemyHp(new PhaseHp[]
         {
@@ -144,9 +144,9 @@ public class EnemyHp
         })},
         {"First Sinner", new EnemyHp(new PhaseHp[]
         {
-            new PhaseHp(400, 600, 600),
-            new PhaseHp(1050, 1200, 1200),
-            new PhaseHp(1050, 1200, 1200),
+            new PhaseHp(400, 500, 500),
+            new PhaseHp(850, 1000, 1000),
+            new PhaseHp(850, 1000, 1000),
         })},
         {"Forebrothers_Sigins", new EnemyHp(new PhaseHp[]
         {

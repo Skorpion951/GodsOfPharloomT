@@ -110,7 +110,7 @@ public class Pantheon : MonoBehaviour
 
         var go_backEntry = new GameObject($"back_entry{pantheonIndex}");
         SceneManager.MoveGameObjectToScene(go_backEntry, this.gameObject.scene);
-        go_backEntry.transform.position = new Vector3(pos.x + 1.711f, pos.y, pos.z);
+        go_backEntry.transform.position = new Vector3(pos.x, pos.y, pos.z);
         var inputHandler = InputHandler.Instance.inputActions;
 
         var tp = CustomScene.CreateTransitionPoint(new TransitionPointInfo($"back_entry{pantheonIndex}", new Vector3(), "", "", 
@@ -174,6 +174,7 @@ public class Pantheon : MonoBehaviour
                 var tmpIndex = buttons.IndexOf(currentButton);
                 var index = (tmpIndex == 0) ? buttons.Count : tmpIndex;
                 currentButton = buttons[index - 1];
+                PantheonMenu.currentButtonIndex = index - 1;
 
                 var buttonPos = currentButton.transform.position;
                 var arrowPos = selectArrow.transform.position;
@@ -185,6 +186,7 @@ public class Pantheon : MonoBehaviour
                 var tmpIndex = buttons.IndexOf(currentButton);
                 var index = (tmpIndex == buttons.Count - 1) ? -1 : tmpIndex;
                 currentButton = buttons[index + 1];
+                PantheonMenu.currentButtonIndex = index + 1;
 
                 var buttonPos = currentButton.transform.position;
                 var arrowPos = selectArrow.transform.position;

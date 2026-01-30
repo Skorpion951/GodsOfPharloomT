@@ -206,7 +206,7 @@ namespace Gods_Of_Pharloom
 
             var go_backEntry = new GameObject($"back_entry{instance.statueIndex}");
             SceneManager.MoveGameObjectToScene(go_backEntry, this.gameObject.scene);
-            go_backEntry.transform.position = new Vector3(pos.x + 1.711f, pos.y, pos.z);
+            go_backEntry.transform.position = new Vector3(pos.x, pos.y, pos.z);
             var inputHandler = InputHandler.Instance.inputActions;
 
             var tp = CustomScene.CreateTransitionPoint(new TransitionPointInfo($"back_entry{instance.statueIndex}", new Vector3(), "", "", 
@@ -218,6 +218,7 @@ namespace Gods_Of_Pharloom
 
             interactComponent.InteractLabel = InteractableBase.PromptLabels.Challenge;
             interactComponent.CustomEventTarget = fsmComponent;
+            interactComponent.TargetDistance = 0f;
 
             var init = new FsmState(fsm);
             init.Name = "Init";
@@ -227,6 +228,9 @@ namespace Gods_Of_Pharloom
 
             var interact = new FsmState(fsm);
             interact.Name = "Interact";
+            
+            var nextFrame = new FsmState(fsm);
+            nextFrame.Name = "Next Frame";
 
             var startBossFight = new FsmState(fsm);
             startBossFight.Name = "Start Boss Fight";
@@ -235,6 +239,7 @@ namespace Gods_Of_Pharloom
             exitMenu.Name = "Exit Menu";
 
             
+
             var interactAction = new PatchedFsm.CustomLogicFsm(fsm);
             interactAction.action += (Fsm fsm) =>
             {
@@ -289,6 +294,8 @@ namespace Gods_Of_Pharloom
             };
             interact.Actions = new FsmStateAction[]{interactAction};
 
+            nextFrame.Actions = new FsmStateAction[]{new NextFrameEvent{sendEvent = FsmEvent.GetFsmEvent("FINISHED")}};
+
             var exitAction = new PatchedFsm.CustomLogicFsm(fsm);
             exitAction.action += (Fsm fsm) =>
             {
@@ -303,7 +310,7 @@ namespace Gods_Of_Pharloom
             startBossFightAction.action += (Fsm fsm) =>
             {
                 BossStatueInfo.difficultyModeCanvas.SetActive(false);
-                BossSequence.SetSequence(new BossScene[]{instance.boss}, $"back_entry{instance.statueIndex}", BossStatueInfo.hog_sceneName, isHoG: true);
+                BossSequence.SetSequence(new BossScene[]{instance.boss}, $"back_entry{instance.statueIndex}", BossStatueInfo.hog_sceneName, isHoG: true, difficultMode: BossStatueInfo.currentDifficultMode);
             };
 
 
@@ -320,7 +327,7 @@ namespace Gods_Of_Pharloom
             {
                 new FsmTransition
                 {
-                    ToFsmState = interact,
+                    ToFsmState = nextFrame,
                     FsmEvent = FsmEvent.GetFsmEvent("INTERACT")
                 },
             };
@@ -336,6 +343,15 @@ namespace Gods_Of_Pharloom
                 {
                     ToFsmState = exitMenu,
                     FsmEvent = FsmEvent.GetFsmEvent("EXIT MENU")
+                },
+            };
+
+            nextFrame.Transitions = new FsmTransition[]
+            {
+                new FsmTransition
+                {
+                    ToFsmState = interact,
+                    FsmEvent = FsmEvent.GetFsmEvent("FINISHED")
                 },
             };
 

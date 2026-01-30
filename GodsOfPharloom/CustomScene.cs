@@ -219,6 +219,7 @@ public class CustomScene
     public static void InitModRespawnMarkers()
     {
         AddRespawnMarkerToTeleportMap("GG_Pharloom_Atrium", "Death Respawn Marker");
+        AddRespawnMarkerToTeleportMap("GG_Pharloom_Atrium", "RestBench");
         AddRespawnMarkerToTeleportMap("GG_Pharloom_Hall_Of_Gods", "RestBench");
         AddRespawnMarkerToTeleportMap("Abyss_05", "Death Respawn Marker_Mod");
     }

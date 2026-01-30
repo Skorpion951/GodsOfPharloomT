@@ -27,12 +27,11 @@ namespace Gods_Of_Pharloom
         {
             "gg_pharloom_atrium",
             "gg_pharloom_hall_of_gods",
-            "gg_resources"
+            "gg_resources",
         };
         public static List<AssetBundle> assetBundles = new List<AssetBundle>();
         public static List<CustomScene> customScenes = new List<CustomScene>();
         public static BepInEx.Logging.ManualLogSource Log;
-        Keyboard keyboard;
         public static MethodInfo HeroController_SetState = AccessTools.Method(typeof(HeroController), "SetState");
         public AssetBundle LoadBundle(string bundleName)
         {
@@ -80,6 +79,8 @@ namespace Gods_Of_Pharloom
             instance = this;
             Log = this.Logger;
 
+            Harmony.CreateAndPatchAll(typeof(GodsOfPharloomMod));
+
             try{
             BossScene.InitBossesInfo();
             BossStatueInfo.InitBossesStatue();
@@ -98,14 +99,6 @@ namespace Gods_Of_Pharloom
             CustomScene.InitModRespawnMarkers();
 
             afterSceneLoaded += CustomMenu.Reset;
-            // afterSceneActivated += () =>
-            // {
-            //     if(previousSceneName == "Menu_Title") BindingsMenu.InitBindingsMenu();
-            // };
-
-            // BindingsMenu.InitBindingsMenuFsmHistory();
-
-            Harmony.CreateAndPatchAll(typeof(GodsOfPharloomMod));
             InitCustomScenes();
 
             SceneManager.activeSceneChanged += OnSceneChanged;
@@ -141,9 +134,17 @@ namespace Gods_Of_Pharloom
                 if(BindingsMenu.menuBindingsFsm != null && BindingsMenu.menuBindingsFsm.ActiveStateName == "Opened") BindingsMenu.menuBindingsFsm.FsmComponent.SendEvent("CLOSE");
                 else if(BindingsMenu.menuBindingsFsm.ActiveStateName == "Closed") BindingsMenu.menuBindingsFsm.SetState("Can Open Inventory?");
             }
-            if (Keyboard.current.backspaceKey.wasPressedThisFrame)
+            if (Keyboard.current.digit6Key.wasPressedThisFrame)
             {
-                PlayerData.instance.GetType().GetProperty("nailDamage", BindingFlags.Instance | BindingFlags.Public).SetValue(PlayerData.instance, 100);
+                var sceneLoadInfo = new GameManager.SceneLoadInfo
+                {
+                    SceneName = "GG_Pharloom_Atrium",
+                    EntryGateName = "door_wakeInMemory_AntQueen(Clone)",
+                    EntrySkip = true,
+                    Visualization = GameManager.SceneLoadVisualizations.Default
+                };
+
+                GameManager.instance.BeginSceneTransition(sceneLoadInfo);
             }
         }
 
@@ -203,6 +204,24 @@ namespace Gods_Of_Pharloom
                 audioManager.StopAndClearMusic();
 
                 var rootObjects = scene.GetRootGameObjects();
+
+                //add a bench
+                GameObject gg_bench_sprite = null;
+                foreach(var obj in rootObjects)
+                {
+                    if(obj.name == "GG_Bench") gg_bench_sprite = obj;
+                }
+                var bench = Instantiate(Preload.preloads["RestBench"], parameters: new InstantiateParameters
+                {
+                    parent = gg_bench_sprite.transform,
+                    scene = scene,
+                });
+                bench.transform.position = gg_bench_sprite.transform.position;
+                bench.name = "RestBench";
+                bench.GetComponent<SpriteRenderer>().enabled = false;
+                var size = bench.GetComponent<BoxCollider2D>().size;
+                bench.GetComponent<BoxCollider2D>().size = new Vector2(size.x, 1);
+                /////////////
 
                 // //add memory entry
                 var wakeInMemory = (GameObject)Instantiate(Preload.preloads["door_wakeInMemory_AntQueen"], scene: scene); /////////fix for fast pantheon death anim

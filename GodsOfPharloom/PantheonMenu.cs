@@ -23,12 +23,16 @@ public class PantheonMenu : MonoBehaviour
     public static GameObject selectArrow;
     public static TMProOld.TextMeshPro pantheonName;
     public static GameObject currentButton;
+    public static int currentButtonIndex = 0;
     public static GameObject needleButton;
     public static GameObject silkButton;
     public static GameObject toolsButton;
     public static GameObject maskButton;
     public static GameObject[] bindings;
     public static GameObject beginButton;
+    public static AudioSource audioSource;
+    public static AudioClip mainBindingsSoundSelect;
+    public static AudioClip mainBindingsSoundFull;
     public bool isFlashUiInited = false;
 
     void Awake()
@@ -50,6 +54,13 @@ public class PantheonMenu : MonoBehaviour
             if(!textTemplate.IsNullOrDestroyed()) break;
             yield return null;
         }
+
+        mainBindingsSoundSelect = (AudioClip)Preload.bundleResources["chain_cut"];
+        mainBindingsSoundFull = (AudioClip)Preload.bundleResources["gg_radiant_binding_bling"];
+
+        audioSource = this.gameObject.AddComponent<AudioSource>();
+        audioSource.maxDistance = 9999f;
+        audioSource.priority = 80;
 
         pantheonName = GameObject.Instantiate(textTemplate, parent: pantheonMenu.transform).GetComponent<TMProOld.TextMeshPro>();
         pantheonName.transform.position = new Vector3(-2.2129f, 4.0634f, -0.723f);
@@ -96,10 +107,11 @@ public class PantheonMenu : MonoBehaviour
         beginText.text = "BEGIN";
         beginText.transform.position = new Vector3(-2f, -3.1f, -0.723f);
 
-        currentButton = needleButton;
         bindings = new GameObject[]{needleButton, silkButton, toolsButton, maskButton};
 
         buttons = new List<GameObject>{needleButton, silkButton, toolsButton, maskButton, beginButton};
+
+        currentButton = buttons[currentButtonIndex];
 
         Reset();
     }
@@ -228,6 +240,8 @@ public class PantheonMenu : MonoBehaviour
             states.transform.Find("Activated").gameObject.SetActive(!value);
         }
 
+        audioSource.PlayOneShot(mainBindingsSoundSelect);
+
         if(playerData.bindings["Needle Binding"] && playerData.bindings["Silk Binding"] &&
            playerData.bindings["Tools Binding"] && playerData.bindings["Mask Binding"])
         {
@@ -245,6 +259,8 @@ public class PantheonMenu : MonoBehaviour
                     else state.gameObject.SetActive(false);
                 }
             }
+
+            audioSource.PlayOneShot(mainBindingsSoundFull);
         }
         
         //to update hud

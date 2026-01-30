@@ -103,7 +103,7 @@ namespace Gods_Of_Pharloom
         public static string backEntry;
         public static string backScene;
         public static PlayMakerFSM sequenceController;
-        public static string difficultMode;
+        public static string currentDifficultMode = "Attuned";
         public static bool isPantheon;
         public static bool isHoG;
 
@@ -113,7 +113,7 @@ namespace Gods_Of_Pharloom
             bossSequence = null;
             currentBoss = null;
             currentBossIndex = 0;
-            difficultMode = "";
+            currentDifficultMode = "Attuned";
             isPantheon = false;
             isHoG = false;
 
@@ -299,6 +299,8 @@ namespace Gods_Of_Pharloom
             PlayerData.instance.tempRespawnType = 0;
             
             HeroController.instance.TakeSilk(1000);
+            HeroController.instance.ClearEffectsInstant();
+            HeroController.instance.ResetTauntEffects();
 
             if (currentBoss.is3ActBoss)
             {
@@ -310,7 +312,7 @@ namespace Gods_Of_Pharloom
             }
 
             GameManager.SceneLoadInfo sceneLoadInfo;
-            if(isHoG && currentBoss.ascendedVersion != null && (BossStatueInfo.currentDifficultMode == "Ascended" || BossStatueInfo.currentDifficultMode == "Radiant"))
+            if(isHoG && currentBoss.ascendedVersion != null && (BossSequence.currentDifficultMode == "Ascended" || BossSequence.currentDifficultMode == "Radiant"))
             {
                 sceneLoadInfo = new GameManager.SceneLoadInfo
                 {
@@ -373,7 +375,7 @@ namespace Gods_Of_Pharloom
         {
             if (isHoG)
             {
-                PlayerDataMod.instance.badges[currentBoss.bossName].badges[BossStatueInfo.currentDifficultMode] = true;
+                PlayerDataMod.instance.badges[currentBoss.bossName].badges[BossSequence.currentDifficultMode] = true;
                 GodsOfPharloomMod.instance.SaveModData();
             }
             
@@ -390,7 +392,7 @@ namespace Gods_Of_Pharloom
             Reset();
         }
         public static void SetSequence(BossScene[] bossSequence, string backEntry, string backScene, bool isPantheon = false,
-                bool isHoG = false, string difficultMode = "", bool startImmediately = true)
+                bool isHoG = false, string difficultMode = "Attuned", bool startImmediately = true)
         {
             Reset();
 
@@ -401,7 +403,7 @@ namespace Gods_Of_Pharloom
 
             BossSequence.isPantheon = isPantheon;
             BossSequence.isHoG = isHoG;
-            BossSequence.difficultMode = difficultMode;
+            BossSequence.currentDifficultMode = difficultMode;
 
             if (startImmediately)
             {

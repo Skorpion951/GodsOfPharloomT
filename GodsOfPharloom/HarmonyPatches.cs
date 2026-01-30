@@ -131,7 +131,7 @@ namespace Gods_Of_Pharloom
         //     bool hasValue;
         //     BossScene boss;
 
-        //     if(BossStatueInfo.currentDifficultMode == "Ascended" || BossStatueInfo.currentDifficultMode == "Radiant" && BossSequence.currentBoss.ascendedVersion != null) 
+        //     if(BossSequence.currentDifficultMode == "Ascended" || BossSequence.currentDifficultMode == "Radiant" && BossSequence.currentBoss.ascendedVersion != null) 
         //         boss = BossSequence.currentBoss.ascendedVersion;
         //     else boss = BossSequence.currentBoss;
 
@@ -142,7 +142,7 @@ namespace Gods_Of_Pharloom
         //         {
         //             var origHp = (int)__instance.GetType().GetField("initHp", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
 
-        //             var newHp = (int)((float)bossObj[BossStatueInfo.currentDifficultMode] * origHp);
+        //             var newHp = (int)((float)bossObj[BossSequence.currentDifficultMode] * origHp);
 
         //             __instance.GetType().GetField("initHp", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, newHp);
         //             __instance.hp = newHp;
@@ -166,12 +166,12 @@ namespace Gods_Of_Pharloom
         {
             if(!BossSequence.isInSequence) return true;
 
-            if(BossStatueInfo.currentDifficultMode == "Ascended")
+            if(BossSequence.currentDifficultMode == "Ascended")
             {
                 amount *= 2;
                 return true;
             }
-            if(BossStatueInfo.currentDifficultMode == "Radiant")
+            if(BossSequence.currentDifficultMode == "Radiant")
             {
                 amount = int.MaxValue;
                 return true;
