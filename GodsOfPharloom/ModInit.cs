@@ -12,6 +12,8 @@ using System.Collections;
 using HutongGames.PlayMaker.Actions;
 using GenericVariableExtension;
 using HutongGames.PlayMaker;
+using UniverseLib.Utility;
+using Unity.Burst.Intrinsics;
 
 namespace Gods_Of_Pharloom
 {
@@ -27,6 +29,7 @@ namespace Gods_Of_Pharloom
         {
             "gg_pharloom_atrium",
             "gg_pharloom_hall_of_gods",
+            "gg_rest_scene",
             "gg_resources",
         };
         public static List<AssetBundle> assetBundles = new List<AssetBundle>();
@@ -134,7 +137,7 @@ namespace Gods_Of_Pharloom
                 if(BindingsMenu.menuBindingsFsm != null && BindingsMenu.menuBindingsFsm.ActiveStateName == "Opened") BindingsMenu.menuBindingsFsm.FsmComponent.SendEvent("CLOSE");
                 else if(BindingsMenu.menuBindingsFsm.ActiveStateName == "Closed") BindingsMenu.menuBindingsFsm.SetState("Can Open Inventory?");
             }
-            if (Keyboard.current.digit6Key.wasPressedThisFrame)
+            if (Keyboard.current.f6Key.wasPressedThisFrame)
             {
                 var sceneLoadInfo = new GameManager.SceneLoadInfo
                 {
@@ -217,7 +220,9 @@ namespace Gods_Of_Pharloom
                     scene = scene,
                 });
                 bench.transform.position = gg_bench_sprite.transform.position;
-                bench.name = "RestBench";
+                var benchFsm = bench.LocateMyFSM("Bench Control").Fsm;
+                var origVec = benchFsm.GetFsmVector3("Adjust Vector").Value;
+                benchFsm.GetFsmVector3("Adjust Vector").Value = new Vector3(origVec.x, 0.7f, origVec.z);
                 bench.GetComponent<SpriteRenderer>().enabled = false;
                 var size = bench.GetComponent<BoxCollider2D>().size;
                 bench.GetComponent<BoxCollider2D>().size = new Vector2(size.x, 1);
@@ -302,9 +307,29 @@ namespace Gods_Of_Pharloom
                 HeroController.instance.MaxHealth();
                 HeroController.instance.MaxRegenSilkInstant();
 
+                //add a scene manager
+                var sceneManager = (GameObject)Instantiate(Preload.preloads["_SceneManager_Abyss_05"], scene: scene);
+                var sceneManagerComp = sceneManager.GetComponent<CustomSceneManager>();
+                sceneManager.SetActive(true);
+                IEnumerator enumerator()
+                {
+                    yield return null;
+
+                    sceneManagerComp.darknessLevel = 0;
+                    sceneManagerComp.saturation = 1.2f;
+                    sceneManagerComp.UpdateScene();
+                }
+                this.StartCoroutine(enumerator());
+                /////////////////////
+
                 BossSequence.Reset();
 
                 GG_Pharloom_Atrium.isSceneActive = true;
+            };
+            GG_Pharloom_Atrium.AfterSceneActivated += (Scene scene) =>
+            {
+                HeroController.instance.MaxHealth();
+                HeroController.instance.MaxRegenSilkInstant();
             };
             customScenes.Add(GG_Pharloom_Atrium);
 
@@ -337,6 +362,7 @@ namespace Gods_Of_Pharloom
                 cameraLock1.cameraYMax = 400f;
                 cameraLock1.cameraXMin = 44.64f;
                 cameraLock1.cameraXMax = 44.64f;
+                cameraLock1.preventLookDown = true;
                 go1.GetComponent<BoxCollider2D>().size = new Vector2(8f, 100f);
 
                 //add a bench
@@ -351,15 +377,14 @@ namespace Gods_Of_Pharloom
                     scene = scene,
                 });
                 bench.transform.position = gg_bench_sprite.transform.position;
-                bench.name = "RestBench";
+                var benchFsm = bench.LocateMyFSM("Bench Control").Fsm;
+                var origVec = benchFsm.GetFsmVector3("Adjust Vector").Value;
+                benchFsm.GetFsmVector3("Adjust Vector").Value = new Vector3(origVec.x, 0.5f, origVec.z);
                 bench.GetComponent<SpriteRenderer>().enabled = false;
                 /////////////
                 
                 //add a scene manager
-                var sceneManager = Instantiate(Preload.preloads["_SceneManager_Ant_17"], parameters: new InstantiateParameters
-                {
-                    scene = scene,
-                });
+                var sceneManager = (GameObject)Instantiate(Preload.preloads["_SceneManager_Abyss_05"], scene: scene);
                 var sceneManagerComp = sceneManager.GetComponent<CustomSceneManager>();
                 sceneManager.SetActive(true);
                 IEnumerator enumerator()
@@ -372,15 +397,145 @@ namespace Gods_Of_Pharloom
                 }
                 this.StartCoroutine(enumerator());
                 /////////////////////
-                
-                HeroController.instance.MaxHealth();
-                HeroController.instance.MaxRegenSilkInstant();
 
                 BossSequence.Reset();
 
                 GG_Pharloom_HoG.isSceneActive = true;
             };
+            GG_Pharloom_HoG.AfterSceneActivated += (Scene scene) =>
+            {
+                HeroController.instance.MaxHealth();
+                HeroController.instance.MaxRegenSilkInstant();
+            };
             customScenes.Add(GG_Pharloom_HoG);
+
+            var GG_Rest_Scene = new CustomScene("GG_Rest_Scene", isFastSuperJump: true, isSkongScene: false);
+            GG_Rest_Scene.AddTransitionPoint(new TransitionPointInfo("rest_scene_entry", new Vector3(59.1f, 59f, 0), "", "",
+                                                                    isADoor: true, noInputOnStart: false, isOneTimeTransition: true));
+            GG_Rest_Scene.AddTransitionPoint(new TransitionPointInfo("right1", new Vector3(123.08f, 54f, 0), "GG_Pharloom_Atrium", "door2",
+                                                                    isADoor: false, noInputOnStart: false));
+            GG_Rest_Scene.AfterSceneLoaded += (Scene scene) => {
+                var gm = GameManager.instance;
+                var audioManager = gm.AudioManager;
+                audioManager.StopAndClearAtmos();
+                audioManager.StopAndClearMusic();
+
+                var rootObjects = scene.GetRootGameObjects();
+                var nextSequenceScene = BossSequence.nextSequenceScene;
+
+                //add a scene manager
+                var sceneManager = (GameObject)Instantiate(Preload.preloads["_SceneManager_Abyss_05"], scene: scene);
+                var sceneManagerComp = sceneManager.GetComponent<CustomSceneManager>();
+                sceneManager.SetActive(true);
+                /////////////////////
+                
+                //add a bench
+                GameObject gg_bench_sprite = Preload.FindObjectByPath(rootObjects, "GG_Bench");
+                var bench = Instantiate(Preload.preloads["RestBench"], parent: gg_bench_sprite.transform);
+                bench.transform.position = gg_bench_sprite.transform.position;
+                var benchFsm = bench.LocateMyFSM("Bench Control").Fsm;
+                var origVec = benchFsm.GetFsmVector3("Adjust Vector").Value;
+                benchFsm.GetFsmVector3("Adjust Vector").Value = new Vector3(origVec.x, 0.5f, origVec.z);
+                bench.GetComponent<SpriteRenderer>().enabled = false;
+                /////////////
+                
+                //add camera lock
+                var cameraLock1 = CustomScene.CreateCameraLock(scene);
+                var go1 = cameraLock1.gameObject;
+                go1.transform.position = new Vector3(74.0264f, 77.2036f, 0f);
+                cameraLock1.cameraYMin = 57f;
+                cameraLock1.cameraYMax = 60f;
+                cameraLock1.cameraXMin = 60f;
+                cameraLock1.cameraXMax = 104f;
+                cameraLock1.preventLookDown = true;
+                cameraLock1.preventLookUp = true;
+                cameraLock1.lookYMax = 0;
+                go1.GetComponent<BoxCollider2D>().size = new Vector2(100f, 100f);
+                /////////////
+                
+                //add spa
+                var water = ((GameObject)Instantiate(Preload.preloads["Surface Water Region"], scene: scene)).GetComponent<SurfaceWaterRegion>();
+                var spaRegion = (GameObject)Instantiate(Preload.preloads["Spa Region"], parent: water.transform);
+                var spaWaterSmall = (GameObject)Instantiate(Preload.preloads["spa_water_small"], parent: water.transform);
+                var stillWater = (GameObject)Instantiate(Preload.preloads["StillWater"], parent: water.transform);
+
+                water.transform.position = new Vector3(80f, 53f, 0f);
+                water.GetComponent<BoxCollider2D>().offset = new Vector2(-14.6142f, -4f);
+                water.GetComponent<BoxCollider2D>().size = new Vector2(280f, 4.7626f);
+                var splashSurface = water.transform.Find("Splash Surface").GetComponent<BoxCollider2D>();
+                splashSurface.size = new Vector2(280.5812f, 5.6057f);
+                splashSurface.transform.localPosition = new Vector3(0f, -1.15f, 0f);
+                
+                spaWaterSmall.transform.localPosition = new Vector3(0f, 3.2164f, 0.1f);
+                spaWaterSmall.transform.localScale = new Vector3(24.2527f, 1f, 1f);
+                spaWaterSmall.transform.Find("water_fog").gameObject.SetActive(false);
+
+                stillWater.transform.localPosition = new Vector3(0f, -3.7f, 0);
+                stillWater.transform.localScale = new Vector3(348.0877f, 4.4392f, 1f);
+
+                spaRegion.transform.localPosition = new Vector3(-10.527f, -2f, 0f);
+                spaRegion.transform.localScale = new Vector3(25.2328f, 1f, 1f);
+                /////////////
+                
+                IEnumerator enumerator()
+                {
+                    yield return null;
+
+                    sceneManagerComp.darknessLevel = 0;
+                    sceneManagerComp.saturation = 1.2f;
+                    sceneManagerComp.UpdateScene();
+
+                    water.GetType().GetField("heroSurfaceY", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SetValue(water, 52f);
+                }
+                this.StartCoroutine(enumerator());
+
+                if (nextSequenceScene.IsNullOrDestroyed())
+                {
+                    PlayMakerFSM.BroadcastEvent("REST SCENE MOD");
+                    return;
+                }
+                
+                var transition = Preload.FindObjectByPath(rootObjects, "right1").GetComponent<TransitionPoint>();
+                transition.targetScene = nextSequenceScene.sceneName;
+                transition.entryPoint = nextSequenceScene.entryGate;
+
+                var customScene1 = customScenes.Find(i => i.sceneName == nextSequenceScene.sceneName);
+
+                var transitionPointInfo1 = customScene1.TransitionGates.Find(i => i.gateName == nextSequenceScene.entryGate);
+                var transitionPointInfo2 = GG_Rest_Scene.TransitionGates.Find(i => i.gateName == "right1");
+
+                transitionPointInfo2.noInputOnStart = transitionPointInfo1.noInputOnStart;
+
+                Action<Scene> tmpAction = null;
+
+                tmpAction = (Scene scene) =>
+                {
+                    if(nextSequenceScene.sceneType == BossScene.SceneType.Rest) TransitionSequence.SetVisible(false);
+                    else TransitionSequence.SetVisible(true);
+
+                    BossSequence.currentSequenceSceneIndex++;
+
+                    BossSequence.currentSequenceScene = BossSequence.bossSequence[BossSequence.currentSequenceSceneIndex];
+                    if(BossSequence.currentSequenceSceneIndex + 1 < BossSequence.bossSequence.Length) nextSequenceScene = BossSequence.bossSequence[BossSequence.currentSequenceSceneIndex + 1];
+                    else nextSequenceScene = null;
+
+                    var endAudio = TransitionSequence.transitionEndAudio;
+                    if(!endAudio.IsNullOrDestroyed()) endAudio.Play();
+
+                    Log.LogInfo(nextSequenceScene.sceneName);
+
+                    customScene1.AfterSceneActivated -= tmpAction;
+                };
+
+                customScene1.AfterSceneActivated += tmpAction;
+
+                Log.LogInfo(customScene1.sceneName);
+
+                PlayMakerFSM.BroadcastEvent("REST SCENE MOD");
+
+                GG_Rest_Scene.isSceneActive = true;
+            };
+            customScenes.Add(GG_Rest_Scene);
 
             var Abyss_05 = new CustomScene("Abyss_05", isSkongScene: true);
             Abyss_05.AfterSceneLoaded += (Scene scene) => {

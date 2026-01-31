@@ -14,7 +14,7 @@ using UnityEngine.Tilemaps;
 public class CustomScene
 {
     public string sceneName {get; private set;}
-    private List<TransitionPointInfo> TransitionGates = new List<TransitionPointInfo>();
+    public List<TransitionPointInfo> TransitionGates = new List<TransitionPointInfo>();
     public Action<Scene> AfterSceneLoaded;
     public Action<Scene> AfterSceneActivated;
     public Vector2 tileMapVector = new Vector2(512, 512);
@@ -219,8 +219,8 @@ public class CustomScene
     public static void InitModRespawnMarkers()
     {
         AddRespawnMarkerToTeleportMap("GG_Pharloom_Atrium", "Death Respawn Marker");
-        AddRespawnMarkerToTeleportMap("GG_Pharloom_Atrium", "RestBench");
-        AddRespawnMarkerToTeleportMap("GG_Pharloom_Hall_Of_Gods", "RestBench");
+        AddRespawnMarkerToTeleportMap("GG_Pharloom_Atrium", "RestBench(Clone)");
+        AddRespawnMarkerToTeleportMap("GG_Pharloom_Hall_Of_Gods", "RestBench(Clone)");
         AddRespawnMarkerToTeleportMap("Abyss_05", "Death Respawn Marker_Mod");
     }
 

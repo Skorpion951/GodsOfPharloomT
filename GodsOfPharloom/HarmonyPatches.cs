@@ -126,14 +126,14 @@ namespace Gods_Of_Pharloom
         // private static void HealthManagerPatch_Postfix(HealthManager __instance)
         // {
         //     if(!BossSequence.isInSequence) return;
-        //     if(BossSequence.currentBoss == BossScene.bosses["Father of the Flame"]) return;
+        //     if(BossSequence.currentSequenceScene == BossScene.bosses["Father of the Flame"]) return;
 
         //     bool hasValue;
         //     BossScene boss;
 
-        //     if(BossSequence.currentDifficultMode == "Ascended" || BossSequence.currentDifficultMode == "Radiant" && BossSequence.currentBoss.ascendedVersion != null) 
-        //         boss = BossSequence.currentBoss.ascendedVersion;
-        //     else boss = BossSequence.currentBoss;
+        //     if(BossSequence.currentDifficultMode == "Ascended" || BossSequence.currentDifficultMode == "Radiant" && BossSequence.currentSequenceScene.ascendedVersion != null) 
+        //         boss = BossSequence.currentSequenceScene.ascendedVersion;
+        //     else boss = BossSequence.currentSequenceScene;
 
         //     hasValue = boss.bossesGOsInfo.TryGetValue(__instance.gameObject.name, out var bossObj);
         //     if(hasValue)
@@ -184,7 +184,7 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(SceneAdditiveLoadConditional), "OnEnable")]
         private static bool SceneAdditiveLoadPatch_Prefix(SceneAdditiveLoadConditional __instance)
         {
-            if(BossSequence.currentBoss == BossScene.bosses["Fourth Chorus"] && __instance.gameObject.name.Contains("Boss Golem Loader"))
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Fourth Chorus"] && __instance.gameObject.name.Contains("Boss Golem Loader"))
             {
                 FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo tests = __instance.GetType().GetField("tests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -203,12 +203,12 @@ namespace Gods_Of_Pharloom
 
                 return true;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Fourth Chorus"] && __instance.gameObject.name.Contains("Boss Beastfly Loader"))
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Fourth Chorus"] && __instance.gameObject.name.Contains("Boss Beastfly Loader"))
             {
                 Destroy(__instance.gameObject);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Savage Beastfly in Far Fields"] && __instance.gameObject.name.Contains("Boss Beastfly Loader"))
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Savage Beastfly in Far Fields"] && __instance.gameObject.name.Contains("Boss Beastfly Loader"))
             {
                 FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo tests = __instance.GetType().GetField("tests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -227,7 +227,7 @@ namespace Gods_Of_Pharloom
 
                 return true;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Savage Beastfly in Far Fields"] && __instance.gameObject.name.Contains("Boss Golem Loader"))
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Savage Beastfly in Far Fields"] && __instance.gameObject.name.Contains("Boss Golem Loader"))
             {
                 Destroy(__instance.gameObject);
                 return false;
@@ -237,7 +237,7 @@ namespace Gods_Of_Pharloom
                 Destroy(__instance.gameObject);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Shakra"] && __instance.gameObject.name.Contains("Mapper Sparring"))
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Shakra"] && __instance.gameObject.name.Contains("Mapper Sparring"))
             {
                 FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo tests = __instance.GetType().GetField("tests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -256,18 +256,18 @@ namespace Gods_Of_Pharloom
 
                 return true;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Shakra"] && __instance.gameObject.name.Contains("Boss Scene Loader") || __instance.gameObject.name.Contains("Caravan Scene Loader"))
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Shakra"] && __instance.gameObject.name.Contains("Boss Scene Loader") || __instance.gameObject.name.Contains("Caravan Scene Loader"))
             {
                 GameObject.Destroy(__instance.gameObject);
                 return false;
             }
 
-            if(BossSequence.currentBoss == BossScene.bosses["Moorwing"] && __instance.gameObject.name.Contains("Mapper Sparring") || __instance.gameObject.name.Contains("Caravan Scene Loader"))
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Moorwing"] && __instance.gameObject.name.Contains("Mapper Sparring") || __instance.gameObject.name.Contains("Caravan Scene Loader"))
             {
                 GameObject.Destroy(__instance.gameObject);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Moorwing"] && __instance.gameObject.name.Contains("Boss Scene Loader"))
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Moorwing"] && __instance.gameObject.name.Contains("Boss Scene Loader"))
             {
                 FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo tests = __instance.GetType().GetField("tests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -288,7 +288,7 @@ namespace Gods_Of_Pharloom
                 return true;
             }
 
-            if(BossSequence.currentBoss == BossScene.bosses["The Unravelled"] && __instance.gameObject.name.Contains("Boss Loader"))
+            if(BossSequence.currentSequenceScene == BossScene.bosses["The Unravelled"] && __instance.gameObject.name.Contains("Boss Loader"))
             {
                 FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo tests = __instance.GetType().GetField("tests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -300,7 +300,7 @@ namespace Gods_Of_Pharloom
 
                 return true;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Bell Beast"] && __instance.gameObject.name.Contains("Boss Additive Loader"))
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Bell Beast"] && __instance.gameObject.name.Contains("Boss Additive Loader"))
             {
                 FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo tests = __instance.GetType().GetField("tests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -312,7 +312,7 @@ namespace Gods_Of_Pharloom
 
                 return true;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Cogwork Dancers"] && 
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Cogwork Dancers"] && 
                 __instance.gameObject.name.Contains("Boss Loader"))
             {
                 FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -332,7 +332,7 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(TestGameObjectActivator), "OnEnable")]
         private static bool TestGameObjectActivatorPatch_Prefix(TestGameObjectActivator __instance)
         {
-            if(BossSequence.currentBoss == BossScene.bosses["Lost Garmond"] && __instance.gameObject.name == "Garmond Black Threaded Scene")
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Lost Garmond"] && __instance.gameObject.name == "Garmond Black Threaded Scene")
             {
                 FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo tests = __instance.GetType().GetField("playerDataTest", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -344,7 +344,7 @@ namespace Gods_Of_Pharloom
 
                 return true;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Lost Garmond"] && __instance.gameObject.name == "Pre Garmond")
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Lost Garmond"] && __instance.gameObject.name == "Pre Garmond")
             {
                 __instance.gameObject.SetActive(false);
                 return true;
@@ -354,7 +354,7 @@ namespace Gods_Of_Pharloom
                 Destroy(__instance.gameObject);
                 return true;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Broodmother"] && 
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Broodmother"] && 
             __instance.gameObject.name == "Broodmother Scene Control")
             {
                 var children = __instance.gameObject.transform;
@@ -364,7 +364,7 @@ namespace Gods_Of_Pharloom
 
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Savage Beastfly in Far Fields"] && 
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Savage Beastfly in Far Fields"] && 
             __instance.gameObject.name == "Beastfly States")
             {
                 var children = __instance.gameObject.transform;
@@ -374,14 +374,14 @@ namespace Gods_Of_Pharloom
 
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Gurr the Outcast"] && 
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Gurr the Outcast"] && 
             __instance.gameObject.name == "Boss Scene")
             {
                 Destroy(__instance);
 
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Plasmified Zango"] && 
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Plasmified Zango"] && 
             __instance.gameObject.name == "Area_States")
             {
                 var children = __instance.gameObject.transform;
@@ -397,7 +397,7 @@ namespace Gods_Of_Pharloom
         // [HarmonyPatch(typeof(PersistentIntItem), "Awake")]
         // private static bool PersistentIntItemPatch_Postfix(PersistentIntItem __instance)
         // {
-        //     if(BossSequence.currentBoss == BossScene.bosses["Widow"] &&
+        //     if(BossSequence.currentSequenceScene == BossScene.bosses["Widow"] &&
         //     __instance.gameObject.name == "Bellshrine Sequence Bellhart")
         //     {
         //         __instance.ItemData.Value = -1;
@@ -408,27 +408,27 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(PersistentBoolItem), "Awake")]
         private static bool PersistentBoolItemPatch_Prefix(PersistentBoolItem __instance)
         {
-            if(BossSequence.currentBoss == BossScene.bosses["Moss Mother"] && __instance.gameObject.name == "Battle Scene" || __instance.gameObject.name == "Boss Scene")
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Moss Mother"] && __instance.gameObject.name == "Battle Scene" || __instance.gameObject.name == "Boss Scene")
             {
                 GameObject.Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Great Conchflies"] && __instance.gameObject.name == "Driller A" || __instance.gameObject.name == "Driller B")
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Great Conchflies"] && __instance.gameObject.name == "Driller A" || __instance.gameObject.name == "Driller B")
             {
                 GameObject.Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["The Last Judge"] && __instance.gameObject.name == "Last Judge")
+            if(BossSequence.currentSequenceScene == BossScene.bosses["The Last Judge"] && __instance.gameObject.name == "Last Judge")
             {
                 GameObject.Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Plasmified Zango"] && __instance.gameObject.name == "Blue Assistant")
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Plasmified Zango"] && __instance.gameObject.name == "Blue Assistant")
             {
                 GameObject.Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Clover Dancers"] && __instance.gameObject.name == "Dancer A")
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Clover Dancers"] && __instance.gameObject.name == "Dancer A")
             {
                 GameObject.Destroy(__instance);
                 return false;
@@ -439,15 +439,15 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(DeactivateIfPlayerdataTrue), "OnEnable")]
         private static bool DeactivateIfPlayerdataTrue_Prefix(DeactivateIfPlayerdataTrue __instance)
         {
-            if(BossSequence.currentBoss == BossScene.bosses["Moss Mother"] && __instance.gameObject.name == "Battle Scene"){
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Moss Mother"] && __instance.gameObject.name == "Battle Scene"){
                 GameObject.Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Bell Beast"] && __instance.gameObject.name == "Boss Scene"){
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Bell Beast"] && __instance.gameObject.name == "Boss Scene"){
                 GameObject.Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Fourth Chorus"] && __instance.gameObject.name == "Lava Rocks"){
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Fourth Chorus"] && __instance.gameObject.name == "Lava Rocks"){
                 GameObject.Destroy(__instance);
                 return false;
             }
@@ -456,67 +456,67 @@ namespace Gods_Of_Pharloom
                 Destroy(__instance.gameObject);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Lace in Deep Docks"] &&
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Lace in Deep Docks"] &&
                 __instance.gameObject.name == "Boss Scene")
             {
                 Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Skull Tyrant"] &&
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Skull Tyrant"] &&
                 __instance.gameObject.name == "Skull King")
             {
                 Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["First Sinner"] &&
+            if(BossSequence.currentSequenceScene == BossScene.bosses["First Sinner"] &&
                 __instance.gameObject.name == "Boss Scene")
             {
                 Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Lace in the Cradle"] &&
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Lace in the Cradle"] &&
                 __instance.gameObject.name == "Lace Return Corpse")
             {
                 Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Second Sentiel"] &&
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Second Sentiel"] &&
                 __instance.gameObject.name == "Boss Scene - To Additive Load")
             {
                 Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["The Unravelled"] &&
+            if(BossSequence.currentSequenceScene == BossScene.bosses["The Unravelled"] &&
                 __instance.gameObject.name == "Boss Scene")
             {
                 Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Voltvyrm"] &&
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Voltvyrm"] &&
                 __instance.gameObject.name == "boss_eggshell")
             {
                 Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Voltvyrm"] &&
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Voltvyrm"] &&
                 __instance.gameObject.name == "Zap Core Enemy")
             {
                 Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Palestag"] &&
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Palestag"] &&
                 __instance.gameObject.name == "Cloverstag White Boss")
             {
                 Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Shrine Guardian Seth"] &&
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Shrine Guardian Seth"] &&
                 __instance.gameObject.name == "Seth" || __instance.gameObject.name == "Flower Gate")
             {
                 Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Lace in the Cradle"] &&
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Lace in the Cradle"] &&
                 __instance.gameObject.name == "Lace Boss2 New")
             {
                 Destroy(__instance);
@@ -528,31 +528,31 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(DeactivateIfPlayerdataFalse), "OnEnable")]
         private static bool DeactivateIfPlayerdataFalse_Prefix(DeactivateIfPlayerdataFalse __instance)
         {
-            if(BossSequence.currentBoss == BossScene.bosses["Great Conchflies"] && __instance.gameObject.name == "Coral Driller Return Corpse"){
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Great Conchflies"] && __instance.gameObject.name == "Coral Driller Return Corpse"){
                 __instance.gameObject.SetActive(false);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Skull Tyrant"] && __instance.gameObject.name == "Corpse" || __instance.gameObject.name == "Hunter Fan Outside Rummage (1)"){
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Skull Tyrant"] && __instance.gameObject.name == "Corpse" || __instance.gameObject.name == "Hunter Fan Outside Rummage (1)"){
                 __instance.gameObject.SetActive(false);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Raging Conchfly"] &&__instance.gameObject.name == "Boss Corpse Scene"){
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Raging Conchfly"] &&__instance.gameObject.name == "Boss Corpse Scene"){
                 __instance.gameObject.SetActive(false);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Watcher at the Edge"] &&__instance.gameObject.name == "Collectable Item Pickup"){
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Watcher at the Edge"] &&__instance.gameObject.name == "Collectable Item Pickup"){
                 Destroy(__instance.gameObject);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Disgraced Chef Lugoli"] &&__instance.gameObject.name == "Chef Corpse Prepare Scene"){
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Disgraced Chef Lugoli"] &&__instance.gameObject.name == "Chef Corpse Prepare Scene"){
                 Destroy(__instance.gameObject);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Voltvyrm"] &&__instance.gameObject.name == "Return Aftermath"){
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Voltvyrm"] &&__instance.gameObject.name == "Return Aftermath"){
                 Destroy(__instance.gameObject);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Phantom"] &&__instance.gameObject.name == "Return Mask"){
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Phantom"] &&__instance.gameObject.name == "Return Mask"){
                 Destroy(__instance.gameObject);
                 return false;
             }
@@ -563,12 +563,12 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(ActivateIfPlayerdataFalse), "Start")]
         private static bool ActivateIfPlayerdataFalse_Prefix(ActivateIfPlayerdataFalse __instance)
         {
-            if(BossSequence.currentBoss == BossScene.bosses["Savage Beastfly in Chapel of The Beast"] && __instance.gameObject.name == "Boss Control"){
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Savage Beastfly in Chapel of The Beast"] && __instance.gameObject.name == "Boss Control"){
                 __instance.objectToActivate.SetActive(true);
                 Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Disgraced Chef Lugoli"] && __instance.gameObject.name == "Battle Scene"){
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Disgraced Chef Lugoli"] && __instance.gameObject.name == "Battle Scene"){
                 __instance.objectToActivate.SetActive(true);
                 Destroy(__instance);
                 return false;
@@ -579,12 +579,12 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(ActivateIfPlayerdataTrue), "OnEnable")]
         private static bool ActivateIfPlayerdataTrue_Prefix(ActivateIfPlayerdataTrue __instance)
         {
-            if(BossSequence.currentBoss == BossScene.bosses["Savage Beastfly in Chapel of The Beast"] && __instance.gameObject.name == "Boss Control"){
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Savage Beastfly in Chapel of The Beast"] && __instance.gameObject.name == "Boss Control"){
                 __instance.objectToActivate.SetActive(false);
                 Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Father of the Flame"] && 
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Father of the Flame"] && 
                 __instance.gameObject.name == "Boss Scene"){
                 __instance.objectToActivate.SetActive(false);
                 Destroy(__instance);
@@ -596,27 +596,27 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(PlayerDataTestResponse), "OnEnable")]
         private static bool PlayerDataTestResponse_Prefix(PlayerDataTestResponse __instance)
         {
-            if(BossSequence.currentBoss == BossScene.bosses["Sister Splinter"] && 
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Sister Splinter"] && 
                     __instance.gameObject.name == "Boss Scene Parent"){
                 Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Garmond & Zaza"] && 
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Garmond & Zaza"] && 
                     __instance.gameObject.name == "Scene Control"){
                 Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Lace in the Cradle"] && 
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Lace in the Cradle"] && 
                     __instance.gameObject.name == "Boss Scene"){
                 Destroy(__instance);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Lost Garmond"] && 
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Lost Garmond"] && 
                     __instance.gameObject.name == "Garmond Defeated Scene"){
                 Destroy(__instance.gameObject);
                 return false;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Crawfather"] && 
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Crawfather"] && 
                     __instance.gameObject.name == "grey_lever_gate"){
                 __instance.gameObject.GetComponent<Gate>().ForceClose();
                 Destroy(__instance);
@@ -628,7 +628,7 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(StateChangeSequence), "CheckCompleteBool")]
         private static bool StateChangeSequenceCheckCompleteBool_Prefix(PlayerDataTestResponse __instance, ref bool __result)
         {
-            if(BossSequence.currentBoss == BossScene.bosses["Widow"] && __instance.gameObject.name == "Bellshrine Sequence Bellhart"){
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Widow"] && __instance.gameObject.name == "Bellshrine Sequence Bellhart"){
                 __result = true;
                 return false;
             }
@@ -638,23 +638,23 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(BattleScene), "Awake")]
         private static void BattleSceneAwake_Postfix(BattleScene __instance)
         {
-            if(BossSequence.currentBoss == BossScene.bosses["Broodmother"] && 
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Broodmother"] && 
                     __instance.gameObject.name == "Battle Scene Broodmother"){
                 __instance.setPDBoolOnEnd = null;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Disgraced Chef Lugoli"] && 
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Disgraced Chef Lugoli"] && 
                     __instance.gameObject.name == "Battle Scene"){
                 __instance.setPDBoolOnEnd = null;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Groal the Great"] && 
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Groal the Great"] && 
                     __instance.gameObject.name == "Battle Scene"){
                 __instance.setPDBoolOnEnd = null;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Raging Conchfly"] && 
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Raging Conchfly"] && 
                     __instance.gameObject.name == "Battle Scene"){
                 __instance.setPDBoolOnEnd = null;
             }
-            if(BossSequence.currentBoss == BossScene.bosses["Crawfather"] && 
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Crawfather"] && 
                     __instance.gameObject.name == "Battle Scene"){
                 __instance.setPDBoolOnEnd = null;
                 __instance.activeAfterBattle = null;
@@ -664,7 +664,7 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(HarpoonRingSlider), "Awake")]
         private static void HarpoonRingSliderAwake_Prefix(HarpoonRingSlider __instance)
         {
-            if(BossSequence.currentBoss == BossScene.bosses["Cogwork Dancers"]){
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Cogwork Dancers"]){
                 Destroy(__instance.gameObject);
             }
         }

@@ -14,6 +14,7 @@ namespace Gods_Of_Pharloom
 {
     public class BossScene
     {
+        public enum SceneType {Boss, Rest};
         public static Dictionary<string, BossScene> bosses;
         public static float waitForBossDeathAnim = 1.6f;
         public string sceneName;
@@ -23,14 +24,16 @@ namespace Gods_Of_Pharloom
         public BossScene ascendedVersion;
         public bool noInputOnStart;
         public bool is3ActBoss;
+        public SceneType sceneType;
 
-        public BossScene(string sceneName, string entryGate, string bossName, BossScene ascendedVersion = null, bool is3ActBoss = false)
+        public BossScene(string sceneName, string entryGate, string bossName, BossScene ascendedVersion = null, bool is3ActBoss = false, SceneType sceneType = SceneType.Boss)
         {
             this.sceneName = sceneName;
             this.entryGate = entryGate;
             this.bossName = bossName;
             this.ascendedVersion = ascendedVersion;
             this.is3ActBoss = is3ActBoss;
+            this.sceneType = sceneType;
         }
         public static void InitBossesInfo()
         {
@@ -82,7 +85,7 @@ namespace Gods_Of_Pharloom
                 new BossScene("Library_13", "start_battle_entry", "Tormented Trobbio", is3ActBoss: true),
                 new BossScene("Coral_39", "start_battle_entry", "Watcher at the Edge", is3ActBoss: true),
 
-                new BossScene("BossScene_Rest", "rest_scene_entry", "RestScene"),
+                new BossScene("GG_Rest_Scene", "rest_scene_entry", "RestScene", sceneType: SceneType.Rest),
             };
 
             var dict = new Dictionary<string, BossScene>();
@@ -95,27 +98,27 @@ namespace Gods_Of_Pharloom
     }
     public static class BossSequence
     {
+        public enum SequenceType {None, Pantheon, HoG}
         public static GameObject sequenceGO;
         public static bool isInSequence = false;
         public static BossScene[] bossSequence;
-        public static BossScene currentBoss;
-        public static int currentBossIndex = 0;
+        public static BossScene currentSequenceScene;
+        public static BossScene nextSequenceScene;
+        public static int currentSequenceSceneIndex = 0;
         public static string backEntry;
         public static string backScene;
         public static PlayMakerFSM sequenceController;
         public static string currentDifficultMode = "Attuned";
-        public static bool isPantheon;
-        public static bool isHoG;
+        public static SequenceType sequenceType;
 
         public static void Reset()
         {
             isInSequence = false;
             bossSequence = null;
-            currentBoss = null;
-            currentBossIndex = 0;
+            currentSequenceScene = null;
+            currentSequenceSceneIndex = 0;
             currentDifficultMode = "Attuned";
-            isPantheon = false;
-            isHoG = false;
+            sequenceType = SequenceType.None;
 
             if(!sequenceController.IsNullOrDestroyed()) sequenceController.SetState("Dormant");
         }
@@ -150,6 +153,9 @@ namespace Gods_Of_Pharloom
             var next = new FsmState(fsm);
             next.Name = "Next";
 
+            var next2 = new FsmState(fsm);
+            next2.Name = "Next 2";
+
             var endSequence = new FsmState(fsm);
             endSequence.Name = "End Sequence";
 
@@ -166,16 +172,34 @@ namespace Gods_Of_Pharloom
             var nextAction = new PatchedFsm.CustomLogicFsm(fsm);
             nextAction.action += (Fsm fsm) =>
             {
-                currentBossIndex++;
-                if(!(currentBossIndex < bossSequence.Length))
+                currentSequenceSceneIndex++;
+                if(!(currentSequenceSceneIndex < bossSequence.Length))
                 {
                     sequenceController.SendEvent("END SEQUENCE");
                     return;
                 }
-                currentBoss = bossSequence[currentBossIndex];
+                currentSequenceScene = bossSequence[currentSequenceSceneIndex];
+                if(currentSequenceSceneIndex + 1 < bossSequence.Length) nextSequenceScene = bossSequence[currentSequenceSceneIndex + 1];
+                else nextSequenceScene = null;
 
                 NextBoss();
                 sequenceController.SendEvent("NEXT");
+            };
+
+            var next2Action = new PatchedFsm.CustomLogicFsm(fsm);
+            next2Action.action += (Fsm fsm) =>
+            {
+                // currentSequenceSceneIndex++;
+                // if(!(currentSequenceSceneIndex < bossSequence.Length))
+                // {
+                //     sequenceController.SendEvent("END SEQUENCE");
+                //     return;
+                // }
+                // currentSequenceScene = bossSequence[currentSequenceSceneIndex];
+                // if(currentSequenceSceneIndex + 1 < bossSequence.Length) nextSequenceScene = bossSequence[currentSequenceSceneIndex + 1];
+                // else nextSequenceScene = null;
+
+                sequenceController.SendEvent("FINISHED");
             };
 
             var endSequenceAction = new PatchedFsm.CustomLogicFsm(fsm);
@@ -212,6 +236,11 @@ namespace Gods_Of_Pharloom
                 },
                 new FsmTransition
                 {
+                    FsmEvent = FsmEvent.GetFsmEvent("REST SCENE MOD"),
+                    ToFsmState = next2
+                },
+                new FsmTransition
+                {
                     FsmEvent = FsmEvent.GetFsmEvent("HORNET DEFEATED"),
                     ToFsmState = dormant
                 }
@@ -231,11 +260,21 @@ namespace Gods_Of_Pharloom
                 }
             };
 
+            next2.Transitions = new FsmTransition[]
+            {
+                new FsmTransition
+                {
+                    FsmEvent = FsmEvent.GetFsmEvent("FINISHED"),
+                    ToFsmState = idle
+                },
+            };
+
             startSequence.Actions = new FsmStateAction[]{startSequenceAction};
             next.Actions = new FsmStateAction[]{nextAction};
+            next2.Actions = new FsmStateAction[]{next2Action};
             endSequence.Actions = new FsmStateAction[]{endSequenceAction};
 
-            fsm.States = new FsmState[]{dormant, startSequence, idle, next, endSequence};
+            fsm.States = new FsmState[]{dormant, startSequence, idle, next, next2, endSequence};
 
             //create hornet transition listener
             CreateTransitionListener();
@@ -260,11 +299,14 @@ namespace Gods_Of_Pharloom
             var doAfterTransitionAction = new PatchedFsm.CustomLogicFsm(fsm);
             doAfterTransitionAction.action = (Fsm fsm) =>
             {
-                var animation = TransitionSequence.transitionParticles;
-                if (!animation.IsNullOrDestroyed())
+                GodsOfPharloomMod.Log.LogInfo(currentSequenceScene.sceneType);
+                if (currentSequenceScene.sceneType != BossScene.SceneType.Rest)
                 {
+                    GodsOfPharloomMod.Log.LogInfo(currentSequenceScene.sceneType);
+                    GodsOfPharloomMod.Log.LogInfo(currentSequenceScene.sceneName);
                     TransitionSequence.Play();
                     TransitionSequence.Stop();
+                    GodsOfPharloomMod.Log.LogInfo("YEEP");
                 }
 
                 if(TransitionSequence.audioStarted)
@@ -302,7 +344,7 @@ namespace Gods_Of_Pharloom
             HeroController.instance.ClearEffectsInstant();
             HeroController.instance.ResetTauntEffects();
 
-            if (currentBoss.is3ActBoss)
+            if (currentSequenceScene.is3ActBoss)
             {
                 PlayerData.instance.blackThreadWorld = true;
             }
@@ -312,12 +354,12 @@ namespace Gods_Of_Pharloom
             }
 
             GameManager.SceneLoadInfo sceneLoadInfo;
-            if(isHoG && currentBoss.ascendedVersion != null && (BossSequence.currentDifficultMode == "Ascended" || BossSequence.currentDifficultMode == "Radiant"))
+            if(sequenceType == SequenceType.HoG && currentSequenceScene.ascendedVersion != null && (BossSequence.currentDifficultMode == "Ascended" || BossSequence.currentDifficultMode == "Radiant"))
             {
                 sceneLoadInfo = new GameManager.SceneLoadInfo
                 {
-                    SceneName = currentBoss.ascendedVersion.sceneName,
-                    EntryGateName = currentBoss.ascendedVersion.entryGate,
+                    SceneName = currentSequenceScene.ascendedVersion.sceneName,
+                    EntryGateName = currentSequenceScene.ascendedVersion.entryGate,
                     EntrySkip = true,
                     Visualization = GameManager.SceneLoadVisualizations.Default,
                 };
@@ -326,8 +368,8 @@ namespace Gods_Of_Pharloom
             {
                 sceneLoadInfo = new GameManager.SceneLoadInfo
                 {
-                    SceneName = currentBoss.sceneName,
-                    EntryGateName = currentBoss.entryGate,
+                    SceneName = currentSequenceScene.sceneName,
+                    EntryGateName = currentSequenceScene.entryGate,
                     EntrySkip = true,
                     Visualization = GameManager.SceneLoadVisualizations.Default,
                 };
@@ -341,7 +383,7 @@ namespace Gods_Of_Pharloom
         }
         public static IEnumerator INextBoss()
         {
-            if (currentBoss.is3ActBoss)
+            if (currentSequenceScene.is3ActBoss)
             {
                 PlayerData.instance.blackThreadWorld = true;
             }
@@ -361,21 +403,26 @@ namespace Gods_Of_Pharloom
 
             var sceneLoadInfo = new GameManager.SceneLoadInfo
             {
-                SceneName = currentBoss.sceneName,
-                EntryGateName = currentBoss.entryGate,
+                SceneName = currentSequenceScene.sceneName,
+                EntryGateName = currentSequenceScene.entryGate,
                 EntrySkip = true,
                 Visualization = GameManager.SceneLoadVisualizations.Default
             };
 
             GameManager.instance.BeginSceneTransition(sceneLoadInfo);
 
+            yield return null;
+
+            if(currentSequenceScene.sceneType == BossScene.SceneType.Rest) TransitionSequence.SetVisible(false);
+            else TransitionSequence.SetVisible(true);
+
             yield break;
         }
         public static void EndSequence()
         {
-            if (isHoG)
+            if (sequenceType == SequenceType.HoG)
             {
-                PlayerDataMod.instance.badges[currentBoss.bossName].badges[BossSequence.currentDifficultMode] = true;
+                PlayerDataMod.instance.badges[currentSequenceScene.bossName].badges[BossSequence.currentDifficultMode] = true;
                 GodsOfPharloomMod.instance.SaveModData();
             }
             
@@ -391,18 +438,18 @@ namespace Gods_Of_Pharloom
 
             Reset();
         }
-        public static void SetSequence(BossScene[] bossSequence, string backEntry, string backScene, bool isPantheon = false,
-                bool isHoG = false, string difficultMode = "Attuned", bool startImmediately = true)
+        public static void SetSequence(BossScene[] bossSequence, string backEntry, string backScene, SequenceType sequenceType, string difficultMode = "Attuned", bool startImmediately = true)
         {
             Reset();
 
             BossSequence.bossSequence = bossSequence;
-            BossSequence.currentBoss = bossSequence[0];
+            BossSequence.currentSequenceScene = bossSequence[0];
+            if(currentSequenceSceneIndex + 1 < bossSequence.Length) nextSequenceScene = bossSequence[1];
+            else nextSequenceScene = null;
             BossSequence.backEntry = backEntry;
             BossSequence.backScene = backScene;
 
-            BossSequence.isPantheon = isPantheon;
-            BossSequence.isHoG = isHoG;
+            BossSequence.sequenceType = sequenceType;
             BossSequence.currentDifficultMode = difficultMode;
 
             if (startImmediately)

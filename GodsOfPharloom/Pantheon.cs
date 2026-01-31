@@ -171,8 +171,7 @@ public class Pantheon : MonoBehaviour
         {
             if (inputHandler.Up.WasPressed)
             {
-                var tmpIndex = buttons.IndexOf(currentButton);
-                var index = (tmpIndex == 0) ? buttons.Count : tmpIndex;
+                var index = (PantheonMenu.currentButtonIndex < 1) ? buttons.Count : PantheonMenu.currentButtonIndex;
                 currentButton = buttons[index - 1];
                 PantheonMenu.currentButtonIndex = index - 1;
 
@@ -183,8 +182,7 @@ public class Pantheon : MonoBehaviour
             }
             if (inputHandler.Down.WasPressed)
             {
-                var tmpIndex = buttons.IndexOf(currentButton);
-                var index = (tmpIndex == buttons.Count - 1) ? -1 : tmpIndex;
+                var index = (PantheonMenu.currentButtonIndex >= buttons.Count - 1) ? -1 : PantheonMenu.currentButtonIndex;
                 currentButton = buttons[index + 1];
                 PantheonMenu.currentButtonIndex = index + 1;
 
@@ -244,7 +242,7 @@ public class Pantheon : MonoBehaviour
         var startPantheonSequence = new PatchedFsm.CustomLogicFsm(fsm);
         startPantheonSequence.action += (Fsm fsm) =>
         {
-            BossSequence.SetSequence(sequence, $"back_entry{pantheonIndex}", this.gameObject.scene.name, isHoG: false, isPantheon: true);
+            BossSequence.SetSequence(sequence, $"back_entry{pantheonIndex}", this.gameObject.scene.name, BossSequence.SequenceType.Pantheon);
         };
 
 

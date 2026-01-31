@@ -504,6 +504,7 @@
     </Reference>
     <EmbeddedResource Include="Bundles/Scenes/gg_pharloom_atrium" />
     <EmbeddedResource Include="Bundles/Scenes/gg_pharloom_hall_of_gods" />
+    <EmbeddedResource Include="Bundles/Scenes/gg_rest_scene" />
     <EmbeddedResource Include="Bundles/Resources/gg_resources" />
   </ItemGroup>
 

@@ -114,13 +114,19 @@ public class PatchedFsm
         new PatchedFsm("GG_Pharloom_Atrium", new FsmPatch[]
         {
             new FsmPatch("Detect Range", "Detect Hero", PatchFsm_DetectRangeBenchControl),
+            new FsmPatch("RestBench(Clone)", "Bench Control", PatchFsm_BenchControl),
         }),
         new PatchedFsm(BossStatueInfo.hog_sceneName, new FsmPatch[]
         {
             new FsmPatch("Detect Range", "Detect Hero", PatchFsm_DetectRangeBenchControl),
-            // new FsmPatch("RestBench", "Trap Bench", PatchFsm_TrapBenchDestroy),
+            new FsmPatch("RestBench(Clone)", "Bench Control", PatchFsm_BenchControl),
             new FsmPatch("thread_memory", "Deep Memory Pre Enter Effect", PatchFsm_ThreadMemoryPreEnterEffect),
             new FsmPatch("thread_memory", "FSM", PatchFsm_ThreadMemoryFSM),
+        }),
+        new PatchedFsm("GG_Rest_Scene", new FsmPatch[]
+        {
+            new FsmPatch("Detect Range", "Detect Hero", PatchFsm_DetectRangeBenchControl),
+            new FsmPatch("RestBench(Clone)", "Bench Control", PatchFsm_BenchControl),
         }),
         new PatchedFsm("Abyss_05", new FsmPatch[]
         {
@@ -589,6 +595,27 @@ public class PatchedFsm
         close.Actions = RemoveFromArray(close.Actions, 5);
         close.Actions = RemoveFromArray(close.Actions, 3);
         close.Actions = RemoveFromArray(close.Actions, 2);
+
+        return true;
+    }
+    public static bool PatchFsm_BenchControl(Fsm fsm)
+    {
+        var init = fsm.GetState("Init");
+        var restBurst = fsm.GetState("Rest Burst");
+        var saveGame = fsm.GetState("Save Game");
+
+        var origVec = fsm.GetFsmVector3("Adjust Vector").Value;
+
+        if(fsm.GameObject.scene.name == "GG_Rest_Scene")
+        {
+            //remove player data sets
+            restBurst.Actions[9].Enabled = false;
+            restBurst.Actions[10].Enabled = false;
+            restBurst.Actions[11].Enabled = false;
+
+            //remove save game
+            saveGame.Actions[4].Enabled = false;
+        }
 
         return true;
     }
@@ -1171,6 +1198,8 @@ public class PatchedFsm
 
         deathLand.Actions = InsertInArray(deathLand.Actions, customActionSendEvent, 0);
 
+        deathLand.Transitions = new FsmTransition[0];
+
         SetTransitionToState(init, remeetRoar, 0);
         SetTransitionToState(remeetRoar, roarNoClamp, 0);
         SetTransitionToState(deathAnim, explode, 0);
@@ -1219,7 +1248,7 @@ public class PatchedFsm
         var remeetReady = fsm.GetState("Remeet Ready");
         var beastfly = fsm.GetState("Beastfly?");
 
-        if(BossSequence.currentBoss == BossScene.bosses["Savage Beastfly in Far Fields"])
+        if(BossSequence.currentSequenceScene == BossScene.bosses["Savage Beastfly in Far Fields"])
         {
             var go = fsm.GameObject;
 
@@ -1248,7 +1277,7 @@ public class PatchedFsm
             fsm.GetFsmGameObject("Big Drop Bomb").Value.SetActive(false);
             fsm.GetFsmGameObject("Big Drop Bomb Return").Value.SetActive(false);
 
-            if(BossSequence.currentBoss == BossScene.bosses["Savage Beastfly in Far Fields"]) fsm.FsmComponent.SendEvent("DEFEATED");
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Savage Beastfly in Far Fields"]) fsm.FsmComponent.SendEvent("DEFEATED");
         };
 
         remeetReady.Transitions[0].FsmEvent = FsmEvent.GetFsmEvent(TransitionPointInfo.eventName);
@@ -1265,7 +1294,7 @@ public class PatchedFsm
 
         beastfly.Transitions = new FsmTransition[0]; //big bomb won't activate
 
-        if(Gods_Of_Pharloom.BossSequence.currentBoss == BossScene.bosses["Savage Beastfly in Far Fields"])
+        if(Gods_Of_Pharloom.BossSequence.currentSequenceScene == BossScene.bosses["Savage Beastfly in Far Fields"])
         {
             SetTransitionToState(init, beastfly, 0);
             SetTransitionToState(init, beastfly, 1);
@@ -2741,6 +2770,8 @@ public class PatchedFsm
         {
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
         };
+
+        intro.Actions[9].Enabled = false; //disable cam roar lock
 
         coreExplode.Actions[11].Enabled = false; //disable death music
 

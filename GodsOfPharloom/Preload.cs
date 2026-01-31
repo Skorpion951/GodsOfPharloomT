@@ -45,6 +45,15 @@ public class Preload
         new ScenePreloadInfo{sceneName = "Ant_17", objectsInfo = new ObjectPreloadInfo[]{
             new ObjectPreloadInfo{objectName = "_SceneManager_Ant_17", path = "_SceneManager", isActive = false},
         }},
+        new ScenePreloadInfo{sceneName = "Song_10", objectsInfo = new ObjectPreloadInfo[]{
+            new ObjectPreloadInfo{objectName = "Surface Water Region", path = "Surface Water Region", isActive = true},
+            new ObjectPreloadInfo{objectName = "Spa Region", path = "Spa Region", isActive = true},
+            new ObjectPreloadInfo{objectName = "spa_water_small", path = "spa_water_small (1)", isActive = true},
+            new ObjectPreloadInfo{objectName = "StillWater", path = "StillWater", isActive = true},
+        }},
+        new ScenePreloadInfo{sceneName = "Abyss_05", objectsInfo = new ObjectPreloadInfo[]{
+            new ObjectPreloadInfo{objectName = "_SceneManager_Abyss_05", path = "_SceneManager", isActive = false},
+        }},
         new ScenePreloadInfo{sceneName = "Peak_12", objectsInfo = new ObjectPreloadInfo[]{
             new ObjectPreloadInfo{objectName = "RestBench", path = "RestBench (1)", isActive = true},
         }},

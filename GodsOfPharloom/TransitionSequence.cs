@@ -105,4 +105,14 @@ public class TransitionSequence
         if(stopWithClear) transitionParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         else transitionParticles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
     }
+    public static void SetVisible(bool val)
+    {
+        if (transitionParticles.IsNullOrDestroyed())
+        {
+            Init();
+            return;
+        }
+
+        transitionParticles.gameObject.GetComponent<ParticleSystemRenderer>().forceRenderingOff = !val;
+    }
 }

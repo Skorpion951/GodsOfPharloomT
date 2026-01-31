@@ -310,7 +310,7 @@ namespace Gods_Of_Pharloom
             startBossFightAction.action += (Fsm fsm) =>
             {
                 BossStatueInfo.difficultyModeCanvas.SetActive(false);
-                BossSequence.SetSequence(new BossScene[]{instance.boss}, $"back_entry{instance.statueIndex}", BossStatueInfo.hog_sceneName, isHoG: true, difficultMode: BossStatueInfo.currentDifficultMode);
+                BossSequence.SetSequence(new BossScene[]{instance.boss}, $"back_entry{instance.statueIndex}", BossStatueInfo.hog_sceneName, BossSequence.SequenceType.HoG, difficultMode: BossStatueInfo.currentDifficultMode);
             };
 
 

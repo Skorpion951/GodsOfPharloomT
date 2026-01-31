@@ -41,24 +41,24 @@ public class EnemyHp
             new PhaseHp(50, 60, 60),
             new PhaseHp(50, 60, 60),
             new PhaseHp(150, 300, 300),
-            new PhaseHp(300, 500, 500),
+            new PhaseHp(300, 300, 300),
         })},
         {"Bell Beast", new EnemyHp(new PhaseHp[]
         {
-            new PhaseHp(50, 100, 100),
-            new PhaseHp(100, 200, 200),
-            new PhaseHp(600, 900, 900),
+            new PhaseHp(200, 250, 250),
+            new PhaseHp(500, 700, 700),
+            new PhaseHp(250, 500, 500),
         })},
         {"Fourth Chorus", new EnemyHp(new PhaseHp[]
         {
             new PhaseHp(320, 440, 440),
-            new PhaseHp(600, 700, 700),
-            new PhaseHp(600, 800, 800),
+            new PhaseHp(650, 800, 800),
+            new PhaseHp(650, 800, 800),
             new PhaseHp(400, 500, 500),
         })},
         {"Great Conchflies", new EnemyHp(new PhaseHp[]
         {
-            new PhaseHp(150, 100, 100),
+            new PhaseHp(450, 500, 500),
             new PhaseHp(800, 1400, 1400),
         })},
         {"Lace in Deep Docks", new EnemyHp(new PhaseHp[]
@@ -89,15 +89,15 @@ public class EnemyHp
             new PhaseHp(700, 850, 850),
             new PhaseHp(400, 500, 500),
         })},
-        {"Beastfly", new EnemyHp(new PhaseHp[] //savage beastly1 summon
+        {"Beastfly", new EnemyHp(new PhaseHp[] //savage beastfly1 summon
         {
             new PhaseHp(18, 60, 60),
         })},
-        {"Kilik", new EnemyHp(new PhaseHp[] //savage beastly1 summon
+        {"Kilik", new EnemyHp(new PhaseHp[] //savage beastfly1 summon
         {
             new PhaseHp(26, 70, 70),
         })},
-        {"Vicious Caranid", new EnemyHp(new PhaseHp[] //savage beastly1 summon
+        {"Vicious Caranid", new EnemyHp(new PhaseHp[] //savage beastfly1 summon
         {
             new PhaseHp(50, 100, 100),
         })},
@@ -105,7 +105,7 @@ public class EnemyHp
         {
             new PhaseHp(250, 300, 300),
             new PhaseHp(600, 700, 700),
-            new PhaseHp(200, 400, 400),
+            new PhaseHp(300, 400, 400),
         })},
         {"Splinterbark", new EnemyHp(new PhaseHp[] //sister slinter summon
         {
@@ -113,7 +113,7 @@ public class EnemyHp
         })},
         {"Skull Tyrant", new EnemyHp(new PhaseHp[]
         {
-            new PhaseHp(1000, 1400, 1400),
+            new PhaseHp(1350, 1800, 1800),
         })},
         {"Widow", new EnemyHp(new PhaseHp[]
         {
@@ -150,14 +150,14 @@ public class EnemyHp
         })},
         {"Forebrothers_Sigins", new EnemyHp(new PhaseHp[]
         {
+            new PhaseHp(100, 200, 200),
             new PhaseHp(200, 300, 300),
-            new PhaseHp(400, 500, 500),
-            new PhaseHp(400, 600, 600),
+            new PhaseHp(200, 400, 400),
             new PhaseHp(600, 700, 700),
         })},
         {"Forebrothers_Gron", new EnemyHp(new PhaseHp[]
         {
-            new PhaseHp(1400, 1600, 1600),
+            new PhaseHp(1000, 1400, 1400),
         })},
         {"Flintstone Flyer", new EnemyHp(new PhaseHp[] //forebrothers' summon
         {
@@ -179,8 +179,8 @@ public class EnemyHp
         })},
         {"Groal the Great", new EnemyHp(new PhaseHp[]
         {
-            new PhaseHp(500, 500, 500),
-            new PhaseHp(1500, 1900, 1900),
+            new PhaseHp(1000, 1100, 1100),
+            new PhaseHp(1000, 1300, 1300),
         })},
         {"Lace in the Cradle", new EnemyHp(new PhaseHp[]
         {
@@ -199,7 +199,7 @@ public class EnemyHp
             new PhaseHp(400, 600, 600),
             new PhaseHp(900, 1000, 1000),
         })},
-        {"Tarmite", new EnemyHp(new PhaseHp[] //savage beastly2 summon
+        {"Tarmite", new EnemyHp(new PhaseHp[] //savage beastfly2 summon
         {
             new PhaseHp(34, 70, 70),
         })},
@@ -317,17 +317,17 @@ public class EnemyHp
         {"Grand Mother Silk", new EnemyHp(new PhaseHp[]
         {
             new PhaseHp(200, 200, 200),
-            new PhaseHp(300, 300, 300),
             new PhaseHp(400, 400, 400),
-            new PhaseHp(430, 350, 350),
-            new PhaseHp(450, 400, 400),
             new PhaseHp(500, 500, 500),
+            new PhaseHp(530, 530, 530),
+            new PhaseHp(550, 550, 550),
+            new PhaseHp(600, 600, 600),
         })},
         {"Lost Lace", new EnemyHp(new PhaseHp[]
         {
             new PhaseHp(500, 500, 500),
             new PhaseHp(700, 700, 700),
-            new PhaseHp(650, 650, 650),
+            new PhaseHp(900, 650, 650),
             new PhaseHp(700, 700, 700),
         })},
     };
