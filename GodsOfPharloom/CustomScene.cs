@@ -15,8 +15,10 @@ public class CustomScene
 {
     public string sceneName {get; private set;}
     public List<TransitionPointInfo> TransitionGates = new List<TransitionPointInfo>();
+    public Action BeforeSceneLoaded;
     public Action<Scene> AfterSceneLoaded;
     public Action<Scene> AfterSceneActivated;
+    public Action AfterHeroEnteredScene;
     public Vector2 tileMapVector = new Vector2(512, 512);
     public bool isSceneActive = false;
     public bool isPreloading = false;
@@ -77,8 +79,123 @@ public class CustomScene
         CreateTransitionPoint(item, go, this.sceneName);
         SceneManager.MoveGameObjectToScene(go, scene);
     }
-    public static TransitionPoint CreateTransitionPoint(TransitionPointInfo item, GameObject go, string sceneName)
+    public TransitionPoint CreateTransitionPoint(TransitionPointInfo item, GameObject go, string sceneName)
     {
+        var tp = go.AddComponent<TransitionPoint>();
+
+        var fsmComponent = go.AddComponent<PlayMakerFSM>();
+        tp.customEntryFSM = fsmComponent;
+        fsmComponent.enabled = false;
+
+        var fsm = fsmComponent.Fsm;
+
+        var init = new FsmState(fsm);
+        init.Name = "Init";
+
+        var afterEntry = new FsmState(fsm);
+        afterEntry.Name = "After Entry";
+
+        fsm.StartState = "Init";
+
+        var actionAfter = new PatchedFsm.CustomLogicFsm(fsm);
+        actionAfter.action = (Fsm fsm) =>
+        {
+            if(item.forceMemoryZone) GameManager.instance.ForceCurrentSceneIsMemory(true);
+            if(item.noInputOnStart) HeroController.instance.hero_state = GlobalEnums.ActorStates.no_input; //GodsOfPharloomMod.SetHeroState(GlobalEnums.ActorStates.no_input);//HeroController.instance.StartRoarLockNoRecoil();
+            if(item.doSendEventAfterTransition) PlayMakerFSM.BroadcastEvent(TransitionPointInfo.eventName);
+            item.afterTransition?.Invoke();
+            AfterHeroEnteredScene?.Invoke();
+        };
+
+        init.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent("FINISH ENTRY"),
+                ToFsmState = afterEntry
+            }
+        };
+
+        afterEntry.Actions = new FsmStateAction[]{actionAfter};
+
+        fsm.States = new FsmState[]{init, afterEntry};
+
+        fsm.FsmComponent.enabled = true;
+
+
+
+
+        //do action after hero death event
+        var fsmAfterDeathComponent = go.AddComponent<PlayMakerFSM>();
+        fsmAfterDeathComponent.enabled = false;
+
+        var fsmAfterDeath = fsmAfterDeathComponent.Fsm;
+        fsmAfterDeath.StartState = "Idle";
+
+        var idle = new FsmState(fsmAfterDeath);
+        idle.Name = "Idle";
+
+        var afterDeath = new FsmState(fsmAfterDeath);
+        afterDeath.Name = "After Death";
+
+        var customActionAfterDeath = new PatchedFsm.CustomLogicFsm(fsmAfterDeath);
+        customActionAfterDeath.action += (Fsm fsm) =>
+        {
+            var color = new Color(0, 0, 0, 0);
+            var endColor = new Color(0, 0, 0, 0);
+            ScreenFaderUtils.Fade(color, endColor, 0.01f);
+            GameCameras.instance.HUDIn();
+        };
+
+        afterDeath.Actions = new FsmStateAction[]{customActionAfterDeath};
+
+        idle.Transitions = new FsmTransition[]
+        {
+            new FsmTransition
+            {
+                FsmEvent = FsmEvent.GetFsmEvent("HERO RESPAWNING HERE"),
+                ToFsmState = afterDeath
+            }
+        };
+        fsmAfterDeath.States = new FsmState[]{idle, afterDeath};
+        fsmAfterDeathComponent.enabled = true;
+        //////////////////////////
+
+        if (item.alwaysEnterRight)
+        {
+            tp.alwaysEnterRight = true;
+            tp.alwaysEnterLeft = false;
+        }
+        else
+        {
+            tp.alwaysEnterLeft = true;
+            tp.alwaysEnterRight = false;
+        }
+        if(item.doCreateRespawnMarker){
+            var respawnMarker = go.AddComponent<RespawnMarker>();
+            var mapZone = respawnMarker.overrideMapZone = new OverrideMapZone();
+            // respawnMarker.customFadeDuration = new TeamCherry.SharedUtils.OverrideFloat();
+            respawnMarker.customWakeUp = true;
+            tp.gameObject.tag = "RespawnPoint";
+
+            AddRespawnMarkerToTeleportMap(sceneName, item.gateName);
+        }
+        
+        tp.respawnMarker = go.AddComponent<HazardRespawnMarker>();    
+        tp.targetScene = item.targetScene;
+        tp.dontWalkOutOfDoor = item.dontWalkOutOfDoor;
+        tp.hardLandOnExit = item.hardLandOnExit;
+        tp.entryPoint = item.entryPoint;
+        tp.InteractLabel = item.InteractLabel;
+        tp.isADoor = item.isADoor;
+        tp.OnDoorEnter = new UnityEngine.Events.UnityEvent();
+        tp.Activate();
+
+        return tp;
+    }
+    public static TransitionPoint CreateTransitionPoint(TransitionPointInfo item, string sceneName)
+    {
+        var go = new GameObject();
         var tp = go.AddComponent<TransitionPoint>();
 
         var fsmComponent = go.AddComponent<PlayMakerFSM>();

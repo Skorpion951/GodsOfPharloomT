@@ -12,12 +12,8 @@ using System.Collections;
 using HutongGames.PlayMaker.Actions;
 using HutongGames.PlayMaker;
 using GenericVariableExtension;
-using UniverseLib;
-using UnityExplorer.CacheObject;
-using UnityExplorer.CacheObject.Views;
 using TeamCherry.NestedFadeGroup;
 using Mono.Posix;
-using UniverseLib.Utility;
 using GlobalSettings;
 
 namespace Gods_Of_Pharloom;
@@ -340,10 +336,10 @@ public class BindingsMenu
         {
             while (true)
             {
-                if(!gc.IsNullOrDestroyed()) break;
+                if(gc != null) break;
 
                 gc = GameCameras.instance;
-                if(gc.IsNullOrDestroyed()){
+                if(gc == null){
                     yield return null;
                     continue;
                 }
@@ -351,10 +347,10 @@ public class BindingsMenu
             }
             while (true)
             {
-                if(!pd.IsNullOrDestroyed()) break;
+                if(pd != null) break;
 
                 pd = PlayerData.instance;
-                if(pd.IsNullOrDestroyed()){
+                if(pd == null){
                     yield return null;
                     continue;
                 }
@@ -362,7 +358,7 @@ public class BindingsMenu
             }
             while(true)
             {
-                if(!spoolParent.IsNullOrDestroyed()) break;
+                if(spoolParent != null) break;
 
                 try
                 {
@@ -370,16 +366,16 @@ public class BindingsMenu
                 }
                 catch(Exception ex){GodsOfPharloomMod.Log.LogInfo("UpdateSilkSpool_Method:\n" + ex.Message);}
 
-                if(spoolParent.IsNullOrDestroyed()){
+                if(spoolParent == null){
                     yield return null;
                     continue;
                 }
                 else break;
             }
 
-            if(customBrokenSpool.IsNullOrDestroyed() || customBrokenSpool.transform.parent != spoolParent)
+            if(customBrokenSpool == null || customBrokenSpool.transform.parent != spoolParent)
             {
-                if(!customBrokenSpool.IsNullOrDestroyed()) GameObject.Destroy(customBrokenSpool);
+                if(customBrokenSpool != null) GameObject.Destroy(customBrokenSpool);
 
                 var prefab = (GameObject)Preload.bundleResources["CustomBrokenSilkSpool"];
                 customBrokenSpool = GameObject.Instantiate(prefab, parent: spoolParent);
@@ -404,7 +400,7 @@ public class BindingsMenu
                     }
                 }
 
-                if(silkUpdater.IsNullOrDestroyed()) silkUpdater = GodsOfPharloomMod.instance.StartCoroutine(UpdateBrokenSpoolMaterial());
+                if(silkUpdater == null) silkUpdater = GodsOfPharloomMod.instance.StartCoroutine(UpdateBrokenSpoolMaterial());
             }
 
             if(pd.silkMax <= silkAmountStart)
@@ -417,9 +413,9 @@ public class BindingsMenu
                     var broken = spoolParent.Find("Broken").gameObject;
                     var bindNotch = spoolParent.Find("Bind Notch").gameObject;
 
-                    if(!active.IsNullOrDestroyed()) active.SetActive(false);
-                    if(!broken.IsNullOrDestroyed()) broken.SetActive(false);
-                    if(!bindNotch.IsNullOrDestroyed()) bindNotch.SetActive(false);
+                    if(active != null) active.SetActive(false);
+                    if(broken != null) broken.SetActive(false);
+                    if(bindNotch != null) bindNotch.SetActive(false);
 
                     yield return null;
                 }
@@ -437,10 +433,10 @@ public class BindingsMenu
             if(PlayerDataMod.instance.bindings["Silk Binding"])
             {
                 PlayerData pd = null;
-                while(pd.IsNullOrDestroyed())
+                while(pd == null)
                 {
                     pd = PlayerData.instance;
-                    if(!pd.IsNullOrDestroyed()) break;
+                    if(pd != null) break;
                     yield return null;
                 }
                 while(PlayerDataMod.instance.bindings["Silk Binding"])
@@ -797,6 +793,8 @@ public class BindingsMenu
 
             audioSource.PlayOneShot(mainBindingsSoundFull);
         }
+
+        GodsOfPharloomMod.instance.SaveModData();
     }
 
     public static void InitBindingsMenuFsmHistory()
@@ -1051,7 +1049,7 @@ public class BindingsMenu
         silkHeartsSpool.OnSelected += (_) =>
         {
             var silkSpoolDescSection = menuBindings.transform.Find("Inv/Silk Spool Desc Section(Clone)");
-            if(!silkSpoolDescSection.IsNullOrDestroyed()) silkSpoolDescSection.gameObject.SetActive(true);
+            if(silkSpoolDescSection != null) silkSpoolDescSection.gameObject.SetActive(true);
         };
 
         foreach(Transform child in inv.transform.Find("Inv_Items/Needle Shift/Spool Group/Radial Layout"))
@@ -1275,12 +1273,12 @@ public class BindingsMenu
                     else child.gameObject.SetActive(false);
                 }
                 var silkSpoolDescSection = menuBindings.transform.Find("Inv/Silk Spool Desc Section(Clone)");
-                if (!silkSpoolDescSection.IsNullOrDestroyed())
+                if (silkSpoolDescSection != null)
                 {
                     silkSpoolDescSection.Find("Silk Hearts").gameObject.SetActive(true);
                 }
                 var hearts = silkHeartsSpool.transform.Find("Heart");
-                var hearts2 = (!silkSpoolDescSection.IsNullOrDestroyed()) ? silkSpoolDescSection.Find("Silk Hearts/Counter") : null;
+                var hearts2 = (silkSpoolDescSection != null) ? silkSpoolDescSection.Find("Silk Hearts/Counter") : null;
                 foreach(Transform child in hearts) child.gameObject.SetActive(false);
                 if(hearts2 != null)
                 {

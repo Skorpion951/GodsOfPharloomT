@@ -13,8 +13,6 @@ using System.Drawing;
 using GenericVariableExtension;
 using InControl.NativeDeviceProfiles;
 using System.Collections;
-using UniverseLib.Utility;
-using UniverseLib;
 
 namespace Gods_Of_Pharloom;
 
@@ -655,7 +653,7 @@ public class PatchedFsm
         ((CreateObject)init.Actions[2]).gameObject = Preload.preloads["Deep Memory Pre Enter Effect"];
 
         var deepMemoryAppear = fsm.GameObject.transform.parent.Find("Deep_Memory_appear");
-        if (!deepMemoryAppear.IsNullOrDestroyed())
+        if (deepMemoryAppear != null)
         {
             var ifTrue = deepMemoryAppear.GetComponent<DeactivateIfPlayerdataFalse>();
             var ifFalse = deepMemoryAppear.GetComponent<DeactivateIfPlayerdataTrue>();
@@ -794,7 +792,7 @@ public class PatchedFsm
             var enemyName = "Moss Mother";
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
-            if(!hp.IsNullOrDestroyed())
+            if(true)
                 fsm.GameObject.GetComponent<HealthManager>().hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
 
             fsm.GetFsmInt("HP").Value = hp;
@@ -818,7 +816,7 @@ public class PatchedFsm
 
         returnReadyState.Actions = InsertInArray(returnReadyState.Actions, customActionCreateTriggerForStart, returnReadyState.Actions.Length);
 
-        ((StartRoarEmitter)roarState.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)roarState.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -890,7 +888,7 @@ public class PatchedFsm
             var enemyName = "Moss Mother";
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
-            if(!hp.IsNullOrDestroyed())
+            if(true)
                 fsm.GameObject.GetComponent<HealthManager>().hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
 
             fsm.GetFsmInt("HP").Value = hp;
@@ -908,7 +906,7 @@ public class PatchedFsm
         
         SetTransitionToState(init, returnReady2, 0);
 
-        ((StartRoarEmitter)roarState.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)roarState.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -938,7 +936,7 @@ public class PatchedFsm
             var enemyName = "Moss Mother";
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
-            if(!hp.IsNullOrDestroyed())
+            if(true)
                 fsm.GameObject.GetComponent<HealthManager>().hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
 
             fsm.GetFsmInt("HP").Value = hp;
@@ -1094,7 +1092,7 @@ public class PatchedFsm
             var enemyName = "Bell Beast";
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
-            if(!hp.IsNullOrDestroyed())
+            if(true)
                 fsm.GameObject.GetComponent<HealthManager>().hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
 
             hp -= phases[0].hp;
@@ -1204,7 +1202,7 @@ public class PatchedFsm
         SetTransitionToState(remeetRoar, roarNoClamp, 0);
         SetTransitionToState(deathAnim, explode, 0);
 
-        ((StartRoarEmitter)roarNoClamp.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)roarNoClamp.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -1221,7 +1219,7 @@ public class PatchedFsm
             var enemyName = "Fourth Chorus";
             var currentDif = BossSequence.currentDifficultMode;
             int hp = EnemyHp.enemies[enemyName].hpFullDict[currentDif];
-            if(!hp.IsNullOrDestroyed())
+            if(true)
                 fsm.GameObject.GetComponent<HealthManager>().hp = EnemyHp.enemies[enemyName].hpFullDict[currentDif];
 
             var phases = EnemyHp.enemies[enemyName].phases;
@@ -1373,7 +1371,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GetFsmGameObject("Driller A").Value.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
 
@@ -1414,7 +1412,7 @@ public class PatchedFsm
         SetTransitionToState(dormant, introG2, 0);
         SetTransitionToState(dormant, introR2, 1);
 
-        ((StartRoarEmitter)roarG.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)roarG.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -1502,7 +1500,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
 
@@ -1569,7 +1567,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
 
@@ -1584,7 +1582,7 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
-        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -1662,7 +1660,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
 
@@ -1683,7 +1681,7 @@ public class PatchedFsm
 
         boxCol1.size = new Vector2(1, 100);
 
-        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -1799,7 +1797,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
 
@@ -1927,7 +1925,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
                 typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
@@ -1943,7 +1941,7 @@ public class PatchedFsm
                 {
                     var summonHPManager = summon.GetComponent<HealthManager>();
                     
-                    if (healthManager.IsNullOrDestroyed()) continue;
+                    if (healthManager == null) continue;
 
                     if(summon.name.StartsWith("Bone Crawler Smn"))
                     {
@@ -1968,7 +1966,7 @@ public class PatchedFsm
         };
         setHP.Actions = InsertInArray(setHP.Actions, initHp, setHP.Actions.Length);
 
-        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -2038,7 +2036,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
 
@@ -2053,7 +2051,7 @@ public class PatchedFsm
                 {
                     var summonHPManager = summon.GetComponent<HealthManager>();
                     
-                    if (healthManager.IsNullOrDestroyed()) continue;
+                    if (healthManager == null) continue;
 
                     if(summon.name.StartsWith("Stick Insect Flyer"))
                     {
@@ -2066,7 +2064,7 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
-        ((StartRoarEmitter)roar4.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)roar4.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -2227,7 +2225,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             }
@@ -2242,7 +2240,7 @@ public class PatchedFsm
         blackSprite.transform.localScale = new Vector3(25.2948f, 31.931f, 1);
         blackSprite.GetComponent<MeshRenderer>().enabled = false;
 
-        ((StartRoarEmitter)wakeRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)wakeRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -2321,7 +2319,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
 
@@ -2335,8 +2333,8 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
-        ((StartRoarEmitter)introScream.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
-        ((StartRoarEmitter)rageScream2.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)introScream.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
+        ((StartRoarEmitter)rageScream2.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -2379,7 +2377,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
 
@@ -2389,7 +2387,7 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
-        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -2536,7 +2534,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 // healthManager.hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
 
@@ -2613,7 +2611,7 @@ public class PatchedFsm
         deathSteam.Actions = RemoveFromArray(deathSteam.Actions, 3);
         deathSteam.Actions = RemoveFromArray(deathSteam.Actions, 2);
 
-        ((StartRoarEmitter)doRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)doRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -2689,7 +2687,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
 
@@ -2716,6 +2714,7 @@ public class PatchedFsm
         };
 
         blow.Actions[3].Enabled = false; //disable death music
+        splashIn.Actions[2].Enabled = false; //disable death music
 
         SetTransitionToState(stagger, blow, 0);
 
@@ -2793,7 +2792,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 // healthManager.hp = hp;
 
@@ -2818,7 +2817,7 @@ public class PatchedFsm
         };
         setHp.Actions = InsertInArray(setHp.Actions, initHp, 9);
 
-        ((StartRoarEmitter)intro.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)intro.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -2856,7 +2855,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
 
@@ -2871,7 +2870,7 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, 13);
 
-        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -3045,7 +3044,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
 
@@ -3064,7 +3063,7 @@ public class PatchedFsm
                 {
                     var summonHPManager = summon.GetComponent<HealthManager>();
                     
-                    if (healthManager.IsNullOrDestroyed()) continue;
+                    if (healthManager == null) continue;
 
                     if(summon.name.StartsWith("Dock Flyer"))
                     {
@@ -3083,7 +3082,7 @@ public class PatchedFsm
                 {
                     var summonHPManager = summon.GetComponent<HealthManager>();
                     
-                    if (healthManager.IsNullOrDestroyed()) continue;
+                    if (healthManager == null) continue;
 
                     if(summon.name.StartsWith("Dock Flyer"))
                     {
@@ -3102,7 +3101,7 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
-        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -3139,7 +3138,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
             }
@@ -3184,11 +3183,15 @@ public class PatchedFsm
                 fsm.FsmComponent.SendEvent("BATTLE START");
             };
         };
-
+        
+        bool isBossDeadEventSent = false;
+        
         var customActionSendEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
         customActionSendEvent.action += (Fsm fsm) =>
         {
+            if(isBossDeadEventSent) return;
             PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+            isBossDeadEventSent = true;
         };
 
         citNPC.Actions = InsertInArray(citNPC.Actions, customAction, citNPC.Actions.Length - 1);
@@ -3204,7 +3207,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
                 typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
@@ -3435,7 +3438,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
                 typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
@@ -3577,7 +3580,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
 
@@ -3587,7 +3590,7 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
-        ((StartRoarEmitter)entryRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)entryRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -3647,7 +3650,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
 
@@ -3759,7 +3762,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
 
@@ -3769,7 +3772,7 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
-        // ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        // ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -3787,6 +3790,7 @@ public class PatchedFsm
         };
 
         blow.Actions[9].Enabled = false; //disable death music
+        land.Actions[5].Enabled = false; //disable death music
 
         SetTransitionToState(stagger, blow, 0);
 
@@ -3826,7 +3830,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
 
@@ -3841,7 +3845,7 @@ public class PatchedFsm
                 {
                     var summonHPManager = summon.GetComponent<HealthManager>();
                     
-                    if (healthManager.IsNullOrDestroyed()) continue;
+                    if (healthManager == null) continue;
 
                     if(summon.name.StartsWith("Bone Spitter"))
                     {
@@ -3896,7 +3900,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
 
@@ -4034,7 +4038,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
                 typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
@@ -4150,7 +4154,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
                 typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
@@ -4164,7 +4168,7 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length - 1);
 
-        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -4240,7 +4244,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
                 typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
@@ -4312,7 +4316,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
 
@@ -4325,7 +4329,7 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
-        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -4399,7 +4403,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 var head = fsm.GetFsmGameObject("Head").Value;
                 var butt = fsm.GetFsmGameObject("Butt").Value;
@@ -4427,7 +4431,7 @@ public class PatchedFsm
         };
         setHp.Actions = InsertInArray(setHp.Actions, initHp, setHp.Actions.Length);
 
-        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -4466,7 +4470,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 var HPManager1 = fsm.GetFsmGameObject("Dancer A").Value.GetComponent<HealthManager>();
                 var HPManager2 = fsm.GetFsmGameObject("Dancer B").Value.GetComponent<HealthManager>();
@@ -4500,7 +4504,7 @@ public class PatchedFsm
         ((Wait)cRoar.Actions[2]).time = ((Wait)cRoar.Actions[2]).time.Value / 5f;
         ((Wait)cRoar2.Actions[4]).time = ((Wait)cRoar2.Actions[4]).time.Value / 5f;
 
-        // ((StartRoarEmitter)cRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        // ((StartRoarEmitter)cRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -4579,7 +4583,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
                 typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
@@ -4595,7 +4599,7 @@ public class PatchedFsm
                 foreach(Transform pinWielder in pinWielders)
                 {
                     var HPManager = pinWielder.gameObject.GetComponent<HealthManager>();
-                    if (!HPManager.IsNullOrDestroyed())
+                    if (HPManager != null)
                     {
                         HPManager.hp = pinWielderHP;
                         typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(HPManager, pinWielderHP);
@@ -4606,7 +4610,7 @@ public class PatchedFsm
                 foreach(Transform dagger in daggers)
                 {
                     var HPManager = dagger.gameObject.GetComponent<HealthManager>();
-                    if (!HPManager.IsNullOrDestroyed())
+                    if (HPManager != null)
                     {
                         HPManager.hp = daggerHP;
                         typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(HPManager, daggerHP);
@@ -4617,7 +4621,7 @@ public class PatchedFsm
                 foreach(Transform tinie in tinies)
                 {
                     var HPManager = tinie.gameObject.GetComponent<HealthManager>();
-                    if (!HPManager.IsNullOrDestroyed())
+                    if (HPManager != null)
                     {
                         HPManager.hp = tinieHP;
                         typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(HPManager, tinieHP);
@@ -4627,7 +4631,7 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
-        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -4752,7 +4756,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
                 typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
@@ -4768,7 +4772,7 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
-        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -4848,7 +4852,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
                 typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
@@ -4864,7 +4868,7 @@ public class PatchedFsm
         };
         setHPs.Actions = InsertInArray(setHPs.Actions, initHp, setHPs.Actions.Length);
 
-        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -4938,7 +4942,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
                 typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
@@ -4946,7 +4950,7 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
-        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)introRoar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -5070,7 +5074,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
                 typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
@@ -5103,7 +5107,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
                 typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
@@ -5191,7 +5195,7 @@ public class PatchedFsm
 
         init.Actions = InsertInArray(init.Actions, customActionDisableTerrainIntro, 5);
 
-        ((StartRoarEmitter)scream.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)scream.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -5206,7 +5210,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
                 typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
@@ -5259,7 +5263,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
                 typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
@@ -5270,7 +5274,7 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
-        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -5329,7 +5333,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
                 typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
@@ -5366,7 +5370,7 @@ public class PatchedFsm
         damageHero1.hazardType = HazardType.SPIKES;
         damageHero1.OnDamagedHero = new UnityEvent();
 
-        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -5453,7 +5457,7 @@ public class PatchedFsm
 
         boxCol1.size = new Vector2(1, 100);
 
-        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -5468,7 +5472,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
                 typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
@@ -5524,7 +5528,7 @@ public class PatchedFsm
 
         boxCol1.size = new Vector2(1, 100);
 
-        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -5539,7 +5543,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
                 typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
@@ -5598,7 +5602,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
                 typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
@@ -5612,7 +5616,7 @@ public class PatchedFsm
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
-        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }
@@ -5691,7 +5695,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
                 typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
@@ -5794,7 +5798,7 @@ public class PatchedFsm
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             var healthManager = fsm.GameObject.GetComponent<HealthManager>();
-            if(!hp.IsNullOrDestroyed())
+            if(true)
             {
                 healthManager.hp = hp;
                 typeof(HealthManager).GetField("initHp", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(healthManager, hp);
@@ -5816,7 +5820,7 @@ public class PatchedFsm
 
         boxCol1.size = new Vector2(1, 100);
 
-        ((StartRoarEmitter)wakeRoar2.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetActualType())).roarBurst = true;
+        ((StartRoarEmitter)wakeRoar2.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
         return true;
     }

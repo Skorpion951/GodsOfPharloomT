@@ -6,9 +6,8 @@ using System.Reflection;
 using UnityEngine.AddressableAssets;
 using HarmonyLib;
 using System.Collections;
-using UnityExplorer.CacheObject;
-using UnityExplorer.CacheObject.Views;
 using HutongGames.PlayMaker;
+using GlobalSettings;
 
 namespace Gods_Of_Pharloom
 {
@@ -162,9 +161,11 @@ namespace Gods_Of_Pharloom
         //if is in sequence - multiply self damage
         [HarmonyPrefix]
         [HarmonyPatch(typeof(PlayerData), "TakeHealth")]
-        private static bool TakeDamagePatch_Prefix(PlayerData __instance, ref int amount)
+        private static bool TakeDamagePatch_Prefix(PlayerData __instance, ref int amount, ref bool hasBlueHealth, ref bool allowFracturedMaskBreak)
         {
             if(!BossSequence.isInSequence) return true;
+
+            BossSequence.hitCounter++;
 
             if(BossSequence.currentDifficultMode == "Ascended")
             {
@@ -175,6 +176,16 @@ namespace Gods_Of_Pharloom
             {
                 amount = int.MaxValue;
                 return true;
+            }
+
+            ToolItem fracturedMaskTool = Gameplay.FracturedMaskTool;
+            if(amount >= (__instance.health + __instance.healthBlue) &&
+               !fracturedMaskTool.IsEquipped || (fracturedMaskTool.SavedData.AmountLeft < 1)
+            )
+            {
+                BossSequence.isHeroDead = true;
+
+                GodsOfPharloomMod.Log.LogInfo("HERO DEAD YOOOOO");
             }
 
             return true;
@@ -736,38 +747,38 @@ namespace Gods_Of_Pharloom
 
             return true;
         }
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(CacheObjectBase), "SetValueState")]
-        public static bool blehhh(CacheObjectBase __instance, CacheObjectCell cell, CacheObjectBase.ValueStateArgs args)
-        {
-            if (cell is not CacheListEntryCell listEntry)
-                return true;
+        // [HarmonyPrefix] //for unity explorer
+        // [HarmonyPatch(typeof(CacheObjectBase), "SetValueState")]
+        // public static bool blehhh(CacheObjectBase __instance, CacheObjectCell cell, CacheObjectBase.ValueStateArgs args)
+        // {
+        //     if (cell is not CacheListEntryCell listEntry)
+        //         return true;
 
 
-            void Convert(string name)
-            {
-                AccessTools.Property(typeof(CacheObjectBase), "ValueLabelText")
-                    .SetValue(
-                        __instance, 
-                        UniverseLib.Utility.ToStringUtility.ToStringWithType(
-                            __instance.Value, 
-                            __instance.FallbackType, 
-                            true
-                            )
-                        + $" - <i><color=#b0edff>{name}</color></i>"
-                    );
-            }
+        //     void Convert(string name)
+        //     {
+        //         AccessTools.Property(typeof(CacheObjectBase), "ValueLabelText")
+        //             .SetValue(
+        //                 __instance, 
+        //                 UniverseLib.Utility.ToStringUtility.ToStringWithType(
+        //                     __instance.Value, 
+        //                     __instance.FallbackType, 
+        //                     true
+        //                     )
+        //                 + $" - <i><color=#b0edff>{name}</color></i>"
+        //             );
+        //     }
 
-            switch (__instance.Value)
-            {
-                case FsmState fsm: Convert(fsm.Name); break;
-                case FsmEvent fsm: Convert(fsm.Name); break;
-                case FsmStateAction fsm: Convert(fsm.Name); break;
-                case FsmVar fsm: Convert(fsm.NamedVar.Name); break;
-                // add additional type handling if u want
-            }
+        //     switch (__instance.Value)
+        //     {
+        //         case FsmState fsm: Convert(fsm.Name); break;
+        //         case FsmEvent fsm: Convert(fsm.Name); break;
+        //         case FsmStateAction fsm: Convert(fsm.Name); break;
+        //         case FsmVar fsm: Convert(fsm.NamedVar.Name); break;
+        //         // add additional type handling if u want
+        //     }
 
-            return true;
-        }
+        //     return true;
+        // }
     }
 }

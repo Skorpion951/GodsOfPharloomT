@@ -49,6 +49,8 @@ namespace Gods_Of_Pharloom
             else if(scene.isSkongScene) sceneTypeTo = 1;
             else sceneTypeTo = 2;
 
+            if(scene != null) scene.BeforeSceneLoaded?.Invoke();
+
             bool wasPreloaded = false;
 
             UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle

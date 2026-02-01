@@ -12,7 +12,6 @@ using System.Collections;
 using HutongGames.PlayMaker.Actions;
 using GenericVariableExtension;
 using HutongGames.PlayMaker;
-using UniverseLib.Utility;
 using Unity.Burst.Intrinsics;
 
 namespace Gods_Of_Pharloom
@@ -104,8 +103,6 @@ namespace Gods_Of_Pharloom
             afterSceneLoaded += CustomMenu.Reset;
             InitCustomScenes();
 
-            SceneManager.activeSceneChanged += OnSceneChanged;
-
             foreach(string name in assetBundleNames)
             {
                 var bundle = LoadBundle(name);
@@ -123,15 +120,13 @@ namespace Gods_Of_Pharloom
 
             TransitionSequence.Init();
 
+            afterSceneLoaded += () => BossSequence.isHeroDead = false;
+
             Logger.LogInfo($"Plugin is loaded!");
         }
 
         void Update()
         {
-            if (Keyboard.current.backquoteKey.wasPressedThisFrame)
-            {
-                FastTeleport.Start();
-            }
             if (Keyboard.current.bKey.wasPressedThisFrame)
             {
                 if(BindingsMenu.menuBindingsFsm != null && BindingsMenu.menuBindingsFsm.ActiveStateName == "Opened") BindingsMenu.menuBindingsFsm.FsmComponent.SendEvent("CLOSE");
@@ -151,45 +146,6 @@ namespace Gods_Of_Pharloom
             }
         }
 
-        void OnSceneChanged(Scene from, Scene to)
-        {
-            if(to.name == "Ant_17")
-            {
-                TransitionPoint.TransitionPoints[0].targetScene = "GG_Pharloom_Hall_Of_Gods";
-                TransitionPoint.TransitionPoints[0].entryPoint = "door1";
-            }
-            if(to.name == "Belltown")
-            {
-                foreach(var item in AssetBundle.GetAllLoadedAssetBundles().ToArray())
-                {
-                    Log.LogInfo(item.name);
-                }
-                var allObjects = to.GetRootGameObjects();
-                TransitionPoint tp1;
-
-                foreach(GameObject obj in allObjects)
-                {
-                    if(obj.name == "right2") {
-                        tp1 = obj.GetComponent<TransitionPoint>();
-                        Logger.LogInfo("left1 is here");
-                        obj.name = "door1";
-                        obj.gameObject.GetComponent<Transform>().position = new Vector3(obj.gameObject.GetComponent<Transform>().position.x - 10, obj.gameObject.GetComponent<Transform>().position.y, obj.gameObject.GetComponent<Transform>().position.z);
-                        obj.gameObject.GetComponent<BoxCollider2D>().size = new Vector2(4, 0.1f);
-                        obj.gameObject.GetComponent<BoxCollider2D>().offset = new Vector2(0, -1.95f);
-                        tp1.SetTargetScene("GG_Pharloom_Atrium");
-                        tp1.entryPoint = "door1";
-                        tp1.InteractLabel = InteractableBase.PromptLabels.Enter;
-                        tp1.isADoor = true;
-                        tp1.GetType().GetField("AudioTransitionTime", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).SetValue(tp1, 2.5f);
-                        tp1.OnDoorEnter = new UnityEngine.Events.UnityEvent();
-                        //tp1.GetType().GetField("skipSceneMapCheck", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).SetValue(tp1, true);
-                        tp1.Activate();
-                        return;
-                    }
-                }
-            }
-        }
-
         public static void SetHeroState(ActorStates state)
         {
             Func<MethodInfo, object[], object> InvokeMethod = (method, obj) => method.Invoke(HeroController.instance, obj);
@@ -199,8 +155,8 @@ namespace Gods_Of_Pharloom
         void InitCustomScenes()
         {
             var GG_Pharloom_Atrium = new CustomScene("GG_Pharloom_Atrium", isFastSuperJump: true, isSkongScene: false);
-            GG_Pharloom_Atrium.AddTransitionPoint(new TransitionPointInfo("door1", new Vector3(131.08f, 73.9f, 0), "Belltown", "door1", isADoor: true, noInputOnStart: false));
-            GG_Pharloom_Atrium.AddTransitionPoint(new TransitionPointInfo("door2", new Vector3(108.9f, 54f, 0), BossStatueInfo.hog_sceneName, "door1", isADoor: true, noInputOnStart: false));
+            // GG_Pharloom_Atrium.AddTransitionPoint(new TransitionPointInfo("door1", new Vector3(131.08f, 73.9f, 0), "Belltown", "door1", isADoor: true, noInputOnStart: false));
+            GG_Pharloom_Atrium.AddTransitionPoint(new TransitionPointInfo("door2", new Vector3(156.4901f, 36.18f, 0), BossStatueInfo.hog_sceneName, "door1", isADoor: true, noInputOnStart: false));
             GG_Pharloom_Atrium.AfterSceneLoaded += (Scene scene) => {
                 var audioManager = GameManager.instance.AudioManager;
                 audioManager.StopAndClearAtmos();
@@ -227,9 +183,72 @@ namespace Gods_Of_Pharloom
                 var size = bench.GetComponent<BoxCollider2D>().size;
                 bench.GetComponent<BoxCollider2D>().size = new Vector2(size.x, 1);
                 /////////////
+                
+                //add camera lock
+                var cameraLock1 = CustomScene.CreateCameraLock(scene);
+                var go1 = cameraLock1.gameObject;
+                go1.transform.position = new Vector3(105.2262f, 60.9892f, 0f); 
+                cameraLock1.cameraYMin = 50f;
+                cameraLock1.cameraYMax = 65f;
+                cameraLock1.cameraXMin = 0f;
+                cameraLock1.cameraXMax = 1000f;
+                cameraLock1.preventLookDown = true;
+                // cameraLock1.preventLookUp = true;
+                // cameraLock1.lookYMax = 0;
+                go1.GetComponent<BoxCollider2D>().size = new Vector2(300f, 18f);
+                go1.AddComponent<ActiveCameraLockOnEnter>();
+                cameraLock1.enabled = false;
+                var cameraLock1_1 = ((GameObject)Instantiate(go1, scene : scene)).GetComponent<BoxCollider2D>();
+                cameraLock1_1.transform.position = new Vector3(58.8772f, 42.7895f, 0f);
+                cameraLock1_1.size = new Vector2(80, 18);
+                var cameraLock1_2 = ((GameObject)Instantiate(go1, scene : scene)).GetComponent<BoxCollider2D>();
+                cameraLock1_2.transform.position = new Vector3(379.4977f, 42.5895f, 0f);
 
+                var cameraLock2 = CustomScene.CreateCameraLock(scene);
+                var go2 = cameraLock2.gameObject;
+                go2.transform.position = new Vector3(156.5713f, 40.4745f, 0f);
+                cameraLock2.cameraYMin = 40f;
+                cameraLock2.cameraYMax = 50f;
+                cameraLock2.cameraXMin = 157f;
+                cameraLock2.cameraXMax = 157f;
+                cameraLock2.preventLookDown = true;
+                // cameraLock2.preventLookUp = true;
+                // cameraLock2.lookYMax = 0;
+                go2.GetComponent<BoxCollider2D>().size = new Vector2(12f, 20f);
+                go2.AddComponent<ActiveCameraLockOnEnter>();
+                cameraLock2.enabled = false;
+
+                var cameraLock3 = CustomScene.CreateCameraLock(scene);
+                var go3 = cameraLock3.gameObject;
+                go3.transform.position = new Vector3(156.7058f, 76.6994f, 0f);
+                cameraLock3.cameraYMin = 79f;
+                cameraLock3.cameraYMax = 500f;
+                cameraLock3.cameraXMin = 0f;
+                cameraLock3.cameraXMax = 1000f;
+                // cameraLock3.preventLookDown = true;
+                // cameraLock3.preventLookUp = true;
+                // cameraLock3.lookYMax = 0;
+                go3.GetComponent<BoxCollider2D>().size = new Vector2(300f, 8f);
+                go3.AddComponent<ActiveCameraLockOnEnter>();
+                cameraLock3.enabled = false;
+
+                var cameraLock4 = CustomScene.CreateCameraLock(scene);
+                var go4 = cameraLock4.gameObject;
+                go4.transform.position = new Vector3(156.7058f, 86.9f, 0f);
+                cameraLock4.cameraYMin = 88f;
+                cameraLock4.cameraYMax = 500f;
+                cameraLock4.cameraXMin = 156.4254f;
+                cameraLock4.cameraXMax = 156.4254f;
+                cameraLock4.preventLookDown = true;
+                cameraLock4.preventLookUp = true;
+                cameraLock4.lookYMax = 0;
+                go4.GetComponent<BoxCollider2D>().size = new Vector2(11f, 12f);
+                go4.AddComponent<ActiveCameraLockOnEnter>();
+                cameraLock4.enabled = false;
+                /////////////
+                
                 // //add memory entry
-                var wakeInMemory = (GameObject)Instantiate(Preload.preloads["door_wakeInMemory_AntQueen"], scene: scene); /////////fix for fast pantheon death anim
+                var wakeInMemory = (GameObject)Instantiate(Preload.preloads["door_wakeInMemory_AntQueen"], scene: scene);
                 wakeInMemory.transform.position = new Vector3(14f, 54f, 0);
                 var wakeInMemoryFSM = wakeInMemory.GetComponent<PlayMakerFSM>().Fsm;
                 var pause = wakeInMemoryFSM.GetState("Pause");
@@ -269,6 +288,7 @@ namespace Gods_Of_Pharloom
                 var pantheon1 = Preload.FindObjectByPath(rootObjects, "Half1/Pantheon1");
                 pComp = pantheon1.AddComponent<Pantheon>();
                 pComp.pantheonName = "Pantheon 1";
+                pComp.pantheonDisplayName = "Pantheon of the Devoted";
                 pComp.sequence = new BossScene[]{
                     bosses["Moss Mother"],
                     bosses["Bell Beast"],
@@ -276,10 +296,10 @@ namespace Gods_Of_Pharloom
                     bosses["Fourth Chorus"],
                     bosses["Lace in Deep Docks"],
                     bosses["RestScene"],
-                    bosses["Savage Beastfly in Chapel of The Beast"],
                     bosses["Moorwing"],
                     bosses["Sister Splinter"],
                     bosses["Great Conchflies"],
+                    bosses["Savage Beastfly in Chapel of The Beast"],
                     bosses["Widow"],
                 };
                 pComp.Init();
@@ -287,21 +307,117 @@ namespace Gods_Of_Pharloom
                 var pantheon2 = Preload.FindObjectByPath(rootObjects, "Half1/Pantheon2");
                 pComp = pantheon2.AddComponent<Pantheon>();
                 pComp.pantheonName = "Pantheon 2";
+                pComp.pantheonDisplayName = "Pantheon of the Failed Child";
+                pComp.sequence = new BossScene[]{
+                    bosses["Garmond & Zaza"],
+                    bosses["Disgraced Chef Lugoli"],
+                    bosses["Father of the Flame"],
+                    bosses["Raging Conchfly"],
+                    bosses["Forebrothers Signis & Gron"],
+                    bosses["RestScene"],
+                    bosses["Shakra"],
+                    bosses["Voltvyrm"],
+                    bosses["Cogwork Dancers"],
+                    bosses["The Last Judge"],
+                    bosses["Phantom"],
+                };
                 pComp.Init();
 
                 var pantheon3 = Preload.FindObjectByPath(rootObjects, "Half2/Pantheon3");
                 pComp = pantheon3.AddComponent<Pantheon>();
                 pComp.pantheonName = "Pantheon 3";
+                pComp.pantheonDisplayName = "Pantheon of the First Sinner";
+                pComp.sequence = new BossScene[]{
+                    bosses["Broodmother"],
+                    bosses["Savage Beastfly in Far Fields"],
+                    bosses["Trobbio"],
+                    bosses["Second Sentiel"],
+                    bosses["Lace in the Cradle"],
+                    bosses["RestScene"],
+                    bosses["The Unravelled"],
+                    bosses["Palestag"],
+                    bosses["Plasmified Zango"],
+                    bosses["Groal the Great"],
+                    bosses["First Sinner"],
+                };
                 pComp.Init();
 
                 var pantheon4 = Preload.FindObjectByPath(rootObjects, "Half2/Pantheon4");
                 pComp = pantheon4.AddComponent<Pantheon>();
                 pComp.pantheonName = "Pantheon 4";
+                pComp.pantheonDisplayName = "Pantheon of the Lost Child";
+                pComp.sequence = new BossScene[]{
+                    bosses["Clover Dancers"],
+                    bosses["Gurr the Outcast"],
+                    bosses["Lost Garmond"],
+                    bosses["Tormented Trobbio"],
+                    bosses["Crawfather"],
+                    bosses["RestScene"],
+                    bosses["Crust King Khann"],
+                    bosses["Pinstress"],
+                    bosses["Nyleth"],
+                    bosses["Skarrsinger Karmelita"],
+                    bosses["Lost Lace"],
+                };
                 pComp.Init();
 
                 var pantheon5 = Preload.FindObjectByPath(rootObjects, "Pantheon5");
                 pComp = pantheon5.AddComponent<Pantheon>();
                 pComp.pantheonName = "Pantheon 5";
+                pComp.pantheonDisplayName = "Pantheon Of Pharloom";
+                pComp.sequence = new BossScene[]{
+                    bosses["Moss Mother"].ascendedVersion, //pantheon 1
+                    bosses["Bell Beast"],
+                    bosses["Skull Tyrant"],
+                    bosses["Fourth Chorus"],
+                    bosses["Lace in Deep Docks"],
+                    bosses["RestScene"], //////
+                    bosses["Moorwing"],
+                    bosses["Sister Splinter"],
+                    bosses["Great Conchflies"],
+                    bosses["Garmond & Zaza"],
+                    bosses["Widow"],
+                    bosses["RestScene"], //////
+                    bosses["Shakra"], //pantheon 2
+                    bosses["Disgraced Chef Lugoli"],
+                    bosses["Father of the Flame"],
+                    bosses["Raging Conchfly"],
+                    bosses["Forebrothers Signis & Gron"],
+                    bosses["RestScene"], //////
+                    bosses["The Unravelled"],
+                    bosses["Voltvyrm"],
+                    bosses["Cogwork Dancers"],
+                    bosses["The Last Judge"],
+                    bosses["Phantom"],
+                    bosses["RestScene"], //////
+                    bosses["Broodmother"], //pantheon 3
+                    bosses["Savage Beastfly in Far Fields"],
+                    bosses["Trobbio"],
+                    bosses["Second Sentiel"],
+                    bosses["Lace in the Cradle"],
+                    bosses["RestScene"], //////
+                    bosses["Pinstress"],
+                    bosses["Palestag"],
+                    bosses["Plasmified Zango"],
+                    bosses["Groal the Great"],
+                    bosses["First Sinner"],
+                    bosses["RestScene"], //////
+                    bosses["Clover Dancers"], //pantheon 4
+                    bosses["Gurr the Outcast"],
+                    bosses["Bell Eater"],
+                    bosses["Tormented Trobbio"],
+                    bosses["Crawfather"],
+                    bosses["RestScene"], //////
+                    bosses["Crust King Khann"],
+                    bosses["Lost Garmond"],
+                    bosses["Shrine Guardian Seth"],
+                    bosses["Nyleth"],
+                    bosses["Skarrsinger Karmelita"],
+                    bosses["RestScene"], //////
+                    bosses["Watcher at the Edge"], //last pantheon
+                    bosses["Lost Lace"],
+                    bosses["Grand Mother Silk"],
+                };
                 pComp.Init();
 
                 HeroController.instance.MaxHealth();
@@ -323,6 +439,8 @@ namespace Gods_Of_Pharloom
                 /////////////////////
 
                 BossSequence.Reset();
+
+                ToolItemManager.TryReplenishTools(true, ToolItemManager.ReplenishMethod.BenchSilent);
 
                 GG_Pharloom_Atrium.isSceneActive = true;
             };
@@ -399,6 +517,8 @@ namespace Gods_Of_Pharloom
                 /////////////////////
 
                 BossSequence.Reset();
+
+                ToolItemManager.TryReplenishTools(true, ToolItemManager.ReplenishMethod.BenchSilent);
 
                 GG_Pharloom_HoG.isSceneActive = true;
             };
@@ -488,12 +608,6 @@ namespace Gods_Of_Pharloom
                     water.GetType().GetField("heroSurfaceY", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SetValue(water, 52f);
                 }
                 this.StartCoroutine(enumerator());
-
-                if (nextSequenceScene.IsNullOrDestroyed())
-                {
-                    PlayMakerFSM.BroadcastEvent("REST SCENE MOD");
-                    return;
-                }
                 
                 var transition = Preload.FindObjectByPath(rootObjects, "right1").GetComponent<TransitionPoint>();
                 transition.targetScene = nextSequenceScene.sceneName;
@@ -506,28 +620,45 @@ namespace Gods_Of_Pharloom
 
                 transitionPointInfo2.noInputOnStart = transitionPointInfo1.noInputOnStart;
 
-                Action<Scene> tmpAction = null;
+                Action tmpAction1 = null;
+                Action tmpAction2 = null;
+                Action<Scene> tmpAction3 = null;
 
-                tmpAction = (Scene scene) =>
+                tmpAction1 = () =>
                 {
-                    if(nextSequenceScene.sceneType == BossScene.SceneType.Rest) TransitionSequence.SetVisible(false);
-                    else TransitionSequence.SetVisible(true);
-
                     BossSequence.currentSequenceSceneIndex++;
 
                     BossSequence.currentSequenceScene = BossSequence.bossSequence[BossSequence.currentSequenceSceneIndex];
                     if(BossSequence.currentSequenceSceneIndex + 1 < BossSequence.bossSequence.Length) nextSequenceScene = BossSequence.bossSequence[BossSequence.currentSequenceSceneIndex + 1];
                     else nextSequenceScene = null;
 
-                    var endAudio = TransitionSequence.transitionEndAudio;
-                    if(!endAudio.IsNullOrDestroyed()) endAudio.Play();
-
                     Log.LogInfo(nextSequenceScene.sceneName);
 
-                    customScene1.AfterSceneActivated -= tmpAction;
+                    customScene1.BeforeSceneLoaded -= tmpAction1;
                 };
 
-                customScene1.AfterSceneActivated += tmpAction;
+                tmpAction2 = () =>
+                {
+                    if(nextSequenceScene.sceneType == BossScene.SceneType.Rest) TransitionSequence.SetVisible(false);
+                    else TransitionSequence.SetVisible(true);
+
+                    var endAudio = TransitionSequence.transitionEndAudio;
+                    if(endAudio != null) endAudio.Play();
+
+                    customScene1.AfterHeroEnteredScene -= tmpAction2;
+                };
+
+                tmpAction3 = (_) =>
+                {
+                    if(nextSequenceScene.sceneType == BossScene.SceneType.Rest) TransitionSequence.SetVisible(false);
+                    else TransitionSequence.SetVisible(true);
+
+                    customScene1.AfterSceneActivated -= tmpAction3;
+                };
+
+                customScene1.BeforeSceneLoaded += tmpAction1;
+                customScene1.AfterHeroEnteredScene += tmpAction2;
+                customScene1.AfterSceneActivated += tmpAction3;
 
                 Log.LogInfo(customScene1.sceneName);
 

@@ -496,12 +496,6 @@
     <Reference Include="zlib.net">
       <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\zlib.net.dll</HintPath>
     </Reference>
-    <Reference Include="zlib.net">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\BepInEx\plugins\sinai-dev-UnityExplorer\UnityExplorer.BIE5.Mono.dll</HintPath>
-    </Reference>
-    <Reference Include="zlib.net">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\BepInEx\plugins\sinai-dev-UnityExplorer\UniverseLib.Mono.dll</HintPath>
-    </Reference>
     <EmbeddedResource Include="Bundles/Scenes/gg_pharloom_atrium" />
     <EmbeddedResource Include="Bundles/Scenes/gg_pharloom_hall_of_gods" />
     <EmbeddedResource Include="Bundles/Scenes/gg_rest_scene" />

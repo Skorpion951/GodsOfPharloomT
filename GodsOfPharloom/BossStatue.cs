@@ -9,7 +9,6 @@ using HutongGames.PlayMaker;
 using UnityEngine.UI;
 using HutongGames.PlayMaker.Actions;
 using System.Windows.Forms;
-using UniverseLib.Utility;
 using System.Collections;
 
 namespace Gods_Of_Pharloom
@@ -95,7 +94,7 @@ namespace Gods_Of_Pharloom
 
         IEnumerator Init()
         {
-            if(BossStatueInfo.difficultyModeCanvas.IsNullOrDestroyed())
+            if(BossStatueInfo.difficultyModeCanvas == null)
             {
                 var rootObjects = this.gameObject.scene.GetRootGameObjects();
                 foreach(var obj in rootObjects)
@@ -109,7 +108,7 @@ namespace Gods_Of_Pharloom
                         while (true)
                         {
                             textTemplate = GameObject.Find("_GameCameras/HudCamera/In-game/Inventory/Inv/Description Pane/Text Name");
-                            if(!textTemplate.IsNullOrDestroyed()) break;
+                            if(textTemplate != null) break;
                             yield return null;
                         }
 
@@ -204,13 +203,14 @@ namespace Gods_Of_Pharloom
             var pos = go.transform.position;
             bool isOnLeft = pos.x < 44.5f;
 
-            var go_backEntry = new GameObject($"back_entry{instance.statueIndex}");
-            SceneManager.MoveGameObjectToScene(go_backEntry, this.gameObject.scene);
-            go_backEntry.transform.position = new Vector3(pos.x, pos.y, pos.z);
             var inputHandler = InputHandler.Instance.inputActions;
 
             var tp = CustomScene.CreateTransitionPoint(new TransitionPointInfo($"back_entry{instance.statueIndex}", new Vector3(), "", "", 
-                                                        dontWalkOutOfDoor: true, isADoor: true, noInputOnStart: false), go_backEntry, BossStatueInfo.hog_sceneName);
+                                                        dontWalkOutOfDoor: true, isADoor: true, noInputOnStart: false), BossStatueInfo.hog_sceneName);
+            var go_backEntry = tp.gameObject;
+            go_backEntry.name = $"back_entry{instance.statueIndex}";
+            SceneManager.MoveGameObjectToScene(go_backEntry, this.gameObject.scene);
+            go_backEntry.transform.position = new Vector3(pos.x, pos.y, pos.z);
 
             var interactComponent = go.AddComponent<PlayMakerNPC>();
             var fsmComponent = go.AddComponent<PlayMakerFSM>();

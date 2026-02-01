@@ -9,8 +9,6 @@ using HutongGames.PlayMaker;
 using UnityEngine.UI;
 using HutongGames.PlayMaker.Actions;
 using System.Windows.Forms;
-using UniverseLib.Utility;
-using UniverseLib;
 using System.Collections;
 
 namespace Gods_Of_Pharloom;
@@ -51,7 +49,7 @@ public class PantheonMenu : MonoBehaviour
         while (true)
         {
             textTemplate = GameObject.Find("_GameCameras/HudCamera/In-game/Inventory/Inv/Description Pane/Text Name");
-            if(!textTemplate.IsNullOrDestroyed()) break;
+            if(textTemplate != null) break;
             yield return null;
         }
 
@@ -266,5 +264,7 @@ public class PantheonMenu : MonoBehaviour
         //to update hud
         GameCameras.instance.HUDOut();
         GameCameras.instance.HUDIn();
+
+        GodsOfPharloomMod.instance.SaveModData();
     }
 }

@@ -7,7 +7,7 @@ using Steamworks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
-using UniverseLib.Utility;
+using HarmonyLib;
 
 namespace Gods_Of_Pharloom;
 
@@ -24,12 +24,12 @@ public class TransitionSequence
     }
     static IEnumerator IInit()
     {
-        if(!transitionParticles.IsNullOrDestroyed()) GameObject.Destroy(transitionParticles);
+        if(transitionParticles != null) GameObject.Destroy(transitionParticles);
 
         GameCameras instance = null;
         while (true){
             instance = GameCameras.instance;
-            if(!instance.IsNullOrDestroyed()) break;
+            if(instance != null) break;
             else yield return null;
         }
 
@@ -76,7 +76,7 @@ public class TransitionSequence
 
     public static void Play()
     {
-        if (transitionParticles.IsNullOrDestroyed())
+        if (transitionParticles == null)
         {
             Init();
             return;
@@ -86,7 +86,7 @@ public class TransitionSequence
     }
     public static void Pause()
     {
-        if (transitionParticles.IsNullOrDestroyed())
+        if (transitionParticles == null)
         {
             Init();
             return;
@@ -96,7 +96,7 @@ public class TransitionSequence
     }
     public static void Stop(bool stopWithClear = false)
     {
-        if (transitionParticles.IsNullOrDestroyed())
+        if (transitionParticles == null)
         {
             Init();
             return;
@@ -107,7 +107,7 @@ public class TransitionSequence
     }
     public static void SetVisible(bool val)
     {
-        if (transitionParticles.IsNullOrDestroyed())
+        if (transitionParticles == null)
         {
             Init();
             return;

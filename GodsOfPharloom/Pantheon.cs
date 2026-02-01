@@ -12,9 +12,6 @@ using System.Collections;
 using HutongGames.PlayMaker.Actions;
 using HutongGames.PlayMaker;
 using GenericVariableExtension;
-using UniverseLib;
-using UnityExplorer.CacheObject;
-using UnityExplorer.CacheObject.Views;
 using TeamCherry.NestedFadeGroup;
 using Mono.Posix;
 
@@ -108,13 +105,14 @@ public class Pantheon : MonoBehaviour
         var go = this.gameObject;
         var pos = go.transform.position;
 
-        var go_backEntry = new GameObject($"back_entry{pantheonIndex}");
-        SceneManager.MoveGameObjectToScene(go_backEntry, this.gameObject.scene);
-        go_backEntry.transform.position = new Vector3(pos.x, pos.y, pos.z);
         var inputHandler = InputHandler.Instance.inputActions;
 
         var tp = CustomScene.CreateTransitionPoint(new TransitionPointInfo($"back_entry{pantheonIndex}", new Vector3(), "", "", 
-                                                    dontWalkOutOfDoor: true, isADoor: true, noInputOnStart: false), go_backEntry, this.gameObject.scene.name);
+                                                    dontWalkOutOfDoor: true, isADoor: true, noInputOnStart: false), this.gameObject.scene.name);
+        var go_backEntry = tp.gameObject;
+        go_backEntry.name = $"back_entry{pantheonIndex}";
+        SceneManager.MoveGameObjectToScene(go_backEntry, this.gameObject.scene);
+        go_backEntry.transform.position = new Vector3(pos.x, pos.y, pos.z);
 
         var interactComponent = go.AddComponent<PlayMakerNPC>();
         var fsmComponent = go.AddComponent<PlayMakerFSM>();
@@ -242,7 +240,7 @@ public class Pantheon : MonoBehaviour
         var startPantheonSequence = new PatchedFsm.CustomLogicFsm(fsm);
         startPantheonSequence.action += (Fsm fsm) =>
         {
-            BossSequence.SetSequence(sequence, $"back_entry{pantheonIndex}", this.gameObject.scene.name, BossSequence.SequenceType.Pantheon);
+            BossSequence.SetSequence(sequence, $"back_entry{pantheonIndex}", this.gameObject.scene.name, BossSequence.SequenceType.Pantheon, pantheonName: pantheonName);
         };
 
 
