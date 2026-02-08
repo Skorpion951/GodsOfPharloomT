@@ -116,7 +116,8 @@ public class Preload
 
         foreach(var preloadInfo in preloadsInfo)
         {
-            GodsOfPharloomMod.instance.StartCoroutine(PreloadObjects(preloadInfo));
+            var coroutine = GodsOfPharloomMod.instance.StartCoroutine(PreloadObjects(preloadInfo));
+            yield return coroutine;
         }
         
         while(!(preloadedCount >= preloadsInfo.Length)) yield return null;
