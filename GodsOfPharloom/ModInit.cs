@@ -16,7 +16,7 @@ using Unity.Burst.Intrinsics;
 
 namespace Gods_Of_Pharloom
 {
-    [BepInPlugin("bepinex.plugin.test", "GodsOfPharloom", "0.0.1.0")]
+    [BepInPlugin("bepinex.plugin.test", "GodsOfPharloom", "0.0.1.1")]
     public partial class GodsOfPharloomMod : BaseUnityPlugin
     {
         public static GodsOfPharloomMod instance;
@@ -291,15 +291,15 @@ namespace Gods_Of_Pharloom
                 pComp.pantheonDisplayName = "Pantheon of the Devoted";
                 pComp.sequence = new BossScene[]{
                     bosses["Moss Mother"],
-                    bosses["Bell Beast"],
                     bosses["Skull Tyrant"],
-                    bosses["Fourth Chorus"],
+                    bosses["Bell Beast"],
+                    bosses["Savage Beastfly in Chapel of The Beast"],
                     bosses["Lace in Deep Docks"],
                     bosses["RestScene"],
+                    bosses["Fourth Chorus"],
                     bosses["Moorwing"],
-                    bosses["Sister Splinter"],
                     bosses["Great Conchflies"],
-                    bosses["Savage Beastfly in Chapel of The Beast"],
+                    bosses["Sister Splinter"],
                     bosses["Widow"],
                 };
                 pComp.Init();
@@ -307,19 +307,19 @@ namespace Gods_Of_Pharloom
                 var pantheon2 = Preload.FindObjectByPath(rootObjects, "Half1/Pantheon2");
                 pComp = pantheon2.AddComponent<Pantheon>();
                 pComp.pantheonName = "Pantheon 2";
-                pComp.pantheonDisplayName = "Pantheon of the Failed Child";
+                pComp.pantheonDisplayName = "Pantheon of the Shaman";
                 pComp.sequence = new BossScene[]{
-                    bosses["Garmond & Zaza"],
-                    bosses["Disgraced Chef Lugoli"],
-                    bosses["Father of the Flame"],
-                    bosses["Raging Conchfly"],
-                    bosses["Forebrothers Signis & Gron"],
-                    bosses["RestScene"],
-                    bosses["Shakra"],
-                    bosses["Voltvyrm"],
-                    bosses["Cogwork Dancers"],
                     bosses["The Last Judge"],
-                    bosses["Phantom"],
+                    bosses["Broodmother"],
+                    bosses["Nyleth"],
+                    bosses["Voltvyrm"],
+                    bosses["Trobbio"],
+                    bosses["RestScene"],
+                    bosses["Garmond & Zaza"],
+                    bosses["Cogwork Dancers"],
+                    bosses["Disgraced Chef Lugoli"],
+                    bosses["Raging Conchfly"],
+                    bosses["Groal the Great"],
                 };
                 pComp.Init();
 
@@ -328,16 +328,16 @@ namespace Gods_Of_Pharloom
                 pComp.pantheonName = "Pantheon 3";
                 pComp.pantheonDisplayName = "Pantheon of the First Sinner";
                 pComp.sequence = new BossScene[]{
-                    bosses["Broodmother"],
-                    bosses["Savage Beastfly in Far Fields"],
-                    bosses["Trobbio"],
+                    bosses["Crust King Khann"],
+                    bosses["Phantom"],
+                    bosses["Crawfather"],
+                    bosses["Forebrothers Signis & Gron"],
                     bosses["Second Sentiel"],
-                    bosses["Lace in the Cradle"],
                     bosses["RestScene"],
-                    bosses["The Unravelled"],
-                    bosses["Palestag"],
+                    bosses["Lace in the Cradle"],
                     bosses["Plasmified Zango"],
-                    bosses["Groal the Great"],
+                    bosses["Watcher at the Edge"],
+                    bosses["The Unravelled"],
                     bosses["First Sinner"],
                 };
                 pComp.Init();
@@ -345,78 +345,77 @@ namespace Gods_Of_Pharloom
                 var pantheon4 = Preload.FindObjectByPath(rootObjects, "Half2/Pantheon4");
                 pComp = pantheon4.AddComponent<Pantheon>();
                 pComp.pantheonName = "Pantheon 4";
-                pComp.pantheonDisplayName = "Pantheon of the Lost Child";
+                pComp.pantheonDisplayName = "Pantheon of the Singer";
                 pComp.sequence = new BossScene[]{
+                    bosses["Bell Eater"],
+                    bosses["Father of the Flame"],
                     bosses["Clover Dancers"],
                     bosses["Gurr the Outcast"],
-                    bosses["Lost Garmond"],
                     bosses["Tormented Trobbio"],
-                    bosses["Crawfather"],
                     bosses["RestScene"],
-                    bosses["Crust King Khann"],
+                    bosses["Shrine Guardian Seth"],
+                    bosses["Savage Beastfly in Far Fields"],
+                    bosses["Shakra"],
                     bosses["Pinstress"],
-                    bosses["Nyleth"],
                     bosses["Skarrsinger Karmelita"],
-                    bosses["Lost Lace"],
                 };
                 pComp.Init();
 
                 var pantheon5 = Preload.FindObjectByPath(rootObjects, "Pantheon5");
                 pComp = pantheon5.AddComponent<Pantheon>();
                 pComp.pantheonName = "Pantheon 5";
-                pComp.pantheonDisplayName = "Pantheon Of Pharloom";
+                pComp.pantheonDisplayName = "Pantheon of Pharloom";
                 pComp.sequence = new BossScene[]{
                     bosses["Moss Mother"].ascendedVersion, //pantheon 1
-                    bosses["Bell Beast"],
                     bosses["Skull Tyrant"],
-                    bosses["Fourth Chorus"],
+                    bosses["Bell Beast"],
+                    bosses["Savage Beastfly in Chapel of The Beast"],
                     bosses["Lace in Deep Docks"],
                     bosses["RestScene"], //////
+                    bosses["Fourth Chorus"],
                     bosses["Moorwing"],
-                    bosses["Sister Splinter"],
                     bosses["Great Conchflies"],
-                    bosses["Garmond & Zaza"],
+                    bosses["Sister Splinter"],
                     bosses["Widow"],
                     bosses["RestScene"], //////
-                    bosses["Shakra"], //pantheon 2
-                    bosses["Disgraced Chef Lugoli"],
-                    bosses["Father of the Flame"],
-                    bosses["Raging Conchfly"],
-                    bosses["Forebrothers Signis & Gron"],
-                    bosses["RestScene"], //////
-                    bosses["The Unravelled"],
+                    bosses["The Last Judge"], //pantheon 2
+                    bosses["Broodmother"],
+                    bosses["Nyleth"],
                     bosses["Voltvyrm"],
-                    bosses["Cogwork Dancers"],
-                    bosses["The Last Judge"],
-                    bosses["Phantom"],
-                    bosses["RestScene"], //////
-                    bosses["Broodmother"], //pantheon 3
-                    bosses["Savage Beastfly in Far Fields"],
                     bosses["Trobbio"],
-                    bosses["Second Sentiel"],
-                    bosses["Lace in the Cradle"],
                     bosses["RestScene"], //////
-                    bosses["Pinstress"],
-                    bosses["Palestag"],
-                    bosses["Plasmified Zango"],
+                    bosses["Lost Garmond"],
+                    bosses["Clover Dancers"],
+                    bosses["Disgraced Chef Lugoli"],
+                    bosses["Raging Conchfly"],
                     bosses["Groal the Great"],
+                    bosses["RestScene"], //////
+                    bosses["Crust King Khann"], //pantheon 3
+                    bosses["Phantom"],
+                    bosses["Crawfather"],
+                    bosses["Forebrothers Signis & Gron"],
+                    bosses["Second Sentiel"],
+                    bosses["RestScene"], //////
+                    bosses["Lace in the Cradle"],
+                    bosses["Plasmified Zango"],
+                    bosses["Watcher at the Edge"],
+                    bosses["The Unravelled"],
                     bosses["First Sinner"],
                     bosses["RestScene"], //////
-                    bosses["Clover Dancers"], //pantheon 4
+                    bosses["Bell Eater"], //pantheon 4
+                    bosses["Father of the Flame"],
+                    bosses["Palestag"],
                     bosses["Gurr the Outcast"],
-                    bosses["Bell Eater"],
                     bosses["Tormented Trobbio"],
-                    bosses["Crawfather"],
                     bosses["RestScene"], //////
-                    bosses["Crust King Khann"],
-                    bosses["Lost Garmond"],
                     bosses["Shrine Guardian Seth"],
-                    bosses["Nyleth"],
+                    bosses["Savage Beastfly in Far Fields"],
+                    bosses["Shakra"],
+                    bosses["Pinstress"],
                     bosses["Skarrsinger Karmelita"],
                     bosses["RestScene"], //////
-                    bosses["Watcher at the Edge"], //last pantheon
-                    bosses["Lost Lace"],
                     bosses["Grand Mother Silk"],
+                    bosses["Lost Lace"],
                 };
                 pComp.Init();
 
@@ -626,34 +625,31 @@ namespace Gods_Of_Pharloom
 
                 tmpAction1 = () =>
                 {
-                    BossSequence.currentSequenceSceneIndex++;
+                    customScene1.BeforeSceneLoaded -= tmpAction1;
 
-                    BossSequence.currentSequenceScene = BossSequence.bossSequence[BossSequence.currentSequenceSceneIndex];
-                    if(BossSequence.currentSequenceSceneIndex + 1 < BossSequence.bossSequence.Length) nextSequenceScene = BossSequence.bossSequence[BossSequence.currentSequenceSceneIndex + 1];
-                    else nextSequenceScene = null;
+                    BossSequence.currentSequenceSceneIndex++;
+                    PlayerData.instance.blackThreadWorld = BossSequence.currentSequenceScene.is3ActBoss;
 
                     Log.LogInfo(nextSequenceScene.sceneName);
-
-                    customScene1.BeforeSceneLoaded -= tmpAction1;
                 };
 
                 tmpAction2 = () =>
                 {
+                    customScene1.AfterHeroEnteredScene -= tmpAction2;
+
                     if(nextSequenceScene.sceneType == BossScene.SceneType.Rest) TransitionSequence.SetVisible(false);
                     else TransitionSequence.SetVisible(true);
 
                     var endAudio = TransitionSequence.transitionEndAudio;
                     if(endAudio != null) endAudio.Play();
-
-                    customScene1.AfterHeroEnteredScene -= tmpAction2;
                 };
 
                 tmpAction3 = (_) =>
                 {
+                    customScene1.AfterSceneActivated -= tmpAction3;
+                    
                     if(nextSequenceScene.sceneType == BossScene.SceneType.Rest) TransitionSequence.SetVisible(false);
                     else TransitionSequence.SetVisible(true);
-
-                    customScene1.AfterSceneActivated -= tmpAction3;
                 };
 
                 customScene1.BeforeSceneLoaded += tmpAction1;
@@ -950,15 +946,39 @@ namespace Gods_Of_Pharloom
             Memory_Coral_Tower.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(54.93f, 550.7f, 0), "", "", isADoor: true, 
             isOneTimeTransition: true, dontWalkOutOfDoor : true, afterTransition: () =>
             {
-                GameObject.Find("Temp plat").SetActive(false);
+                var tempPlat = GameObject.Find("Temp plat");
+                if(tempPlat != null) tempPlat.SetActive(false);
+            }));
+            Memory_Coral_Tower.AddTransitionPoint(new TransitionPointInfo("start_battle_entry2", new Vector3(54.62f, 256.6f, 0), "", "", isADoor: true, 
+            isOneTimeTransition: true, dontWalkOutOfDoor : true, afterTransition: () =>
+            {
+                var battleScene1 = GameObject.Find("Battle Scene Chamber 1").GetComponent<BattleScene>();
+                if(battleScene1 != null)
+                {
+                    // var gates = battleScene1.transform.Find("Gates");
+                    // if(gates != null)
+                    // {
+                    //     foreach(Transform child in gates)
+                    //     {
+                    //         var fsm = child.gameObject.LocateMyFSM("BG Control");
+                    //         if(fsm != null) fsm.Fsm.SetState("Quick Close");
+                    //     }
+                    // }
+
+                    battleScene1.LockInBattle();
+                    battleScene1.StartBattle();
+                }
             }));
             Memory_Coral_Tower.isSkongScene = true;
             Memory_Coral_Tower.AfterSceneLoaded += (Scene scene) => {
-                var go = new GameObject("Temp plat");
-                SceneManager.MoveGameObjectToScene(go, scene);
-                go.AddComponent<BoxCollider2D>();
-                go.layer = 8;
-                go.transform.position = new Vector3(54.93f, 548.7f, 0);
+                if(BossSequence.currentSequenceScene != BossScene.bosses["Coral Tower Battle"])
+                {
+                    var go = new GameObject("Temp plat");
+                    SceneManager.MoveGameObjectToScene(go, scene);
+                    go.AddComponent<BoxCollider2D>();
+                    go.layer = 8;
+                    go.transform.position = new Vector3(54.93f, 548.7f, 0);
+                }
 
                 Memory_Coral_Tower.isSceneActive = true;
                 };
@@ -1033,6 +1053,13 @@ namespace Gods_Of_Pharloom
             Coral_39.isSkongScene = true;
             Coral_39.AfterSceneLoaded += (Scene scene) => {Coral_39.isSceneActive = true;};
             customScenes.Add(Coral_39);
+
+            var Hang_04 = new CustomScene("Hang_04");
+            Hang_04.AddTransitionPoint(new TransitionPointInfo("start_battle_entry", new Vector3(30.67f, 5f, 0), "", "", isADoor: true, 
+            isOneTimeTransition: true, dontWalkOutOfDoor : true));
+            Hang_04.isSkongScene = true;
+            Hang_04.AfterSceneLoaded += (Scene scene) => {Hang_04.isSceneActive = true;};
+            customScenes.Add(Hang_04);
         }
     }
 }

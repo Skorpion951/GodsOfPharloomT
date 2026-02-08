@@ -195,6 +195,25 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(SceneAdditiveLoadConditional), "OnEnable")]
         private static bool SceneAdditiveLoadPatch_Prefix(SceneAdditiveLoadConditional __instance)
         {
+            if(BossSequence.isInSequence && __instance.gameObject.name.Contains("Boss Loader"))
+            {
+                FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo tests = __instance.GetType().GetField("tests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo doorBlackList = __instance.GetType().GetField("doorBlackList", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo otherLoaderBlacklist = __instance.GetType().GetField("otherLoaderBlacklist", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo loadAlt = __instance.GetType().GetField("loadAlt", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _additiveSceneLoads = __instance.GetType().GetField("_additiveSceneLoads", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+
+                var playerDataTest = new PlayerDataTest();
+
+                questTests.SetValue(__instance, new QuestTest[0]);
+                tests.SetValue(__instance, playerDataTest);
+                doorBlackList.SetValue(__instance, new string[0]);
+                otherLoaderBlacklist.SetValue(__instance, new SceneAdditiveLoadConditional[0]);
+                loadAlt.SetValue(__instance, false);
+
+                return true;
+            }
             if(BossSequence.currentSequenceScene == BossScene.bosses["Fourth Chorus"] && __instance.gameObject.name.Contains("Boss Golem Loader"))
             {
                 FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -444,6 +463,12 @@ namespace Gods_Of_Pharloom
                 GameObject.Destroy(__instance);
                 return false;
             }
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Forum Battle"] && __instance.gameObject.name == "Battle Scene" || __instance.gameObject.name == "Start Range" ||
+               __instance.gameObject.name.Contains("Song Handmaiden"))
+            {
+                GameObject.Destroy(__instance);
+                return false;
+            }
             return true;
         }
         [HarmonyPrefix]
@@ -513,6 +538,12 @@ namespace Gods_Of_Pharloom
                 __instance.gameObject.name == "Zap Core Enemy")
             {
                 Destroy(__instance);
+                return false;
+            }
+            if(BossSequence.currentSequenceScene == BossScene.bosses["Voltvyrm"] &&
+                __instance.gameObject.name == "Hunter Fan Outside")
+            {
+                Destroy(__instance.gameObject);
                 return false;
             }
             if(BossSequence.currentSequenceScene == BossScene.bosses["Palestag"] &&

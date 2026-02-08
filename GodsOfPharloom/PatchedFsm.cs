@@ -417,7 +417,15 @@ public class PatchedFsm
             new FsmPatch("Coral Warrior Grey", "Battle Music", PatchFsm_WatcherAtTheEdgeBattleMusic),
             new FsmPatch("Corpse Coral Warrior Grey(Clone)", "Control", PatchFsm_WatcherAtTheEdgeCorpseControl),
         }),
-
+        new PatchedFsm("Hang_04", new FsmPatch[]
+        {
+            new FsmPatch("Hang Battle Drop Lamp", "Drop Control", PatchFsm_ForumDropLampControl),
+        }),
+        new PatchedFsm("Hang_04_boss", new FsmPatch[]
+        {
+            new FsmPatch("Start Range", "Control", PatchFsm_ForumStartRange),
+            new FsmPatch("Song Handmaiden", "Control", PatchFsm_ForumHandmaidenControl),
+        }),
     };
 
     public static string[] bossesSceneName = new string[]
@@ -885,7 +893,7 @@ public class PatchedFsm
         var initHp = new CustomLogicFsm(fsm);
         initHp.action += (_) =>
         {
-            var enemyName = "Moss Mother";
+            var enemyName = "Moss Mother Double 1";
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             if(true)
@@ -933,7 +941,7 @@ public class PatchedFsm
         var initHp = new CustomLogicFsm(fsm);
         initHp.action += (_) =>
         {
-            var enemyName = "Moss Mother";
+            var enemyName = "Moss Mother Double 2";
             var hp = EnemyHp.enemies[enemyName].hpFullDict[BossSequence.currentDifficultMode];
             var phases = EnemyHp.enemies[enemyName].phases;
             if(true)
@@ -4309,6 +4317,15 @@ public class PatchedFsm
             }
         };
 
+        var ActivateTendrils = new CustomLogicFsm(fsm);
+        ActivateTendrils.action += (_) =>
+        {
+            var bossScene = fsm.GameObject.transform.parent;
+            var tendrils = bossScene.transform.Find("Tendrils").gameObject;
+            GameObject.Destroy(tendrils.GetComponent<DeactivateIfPlayerdataTrue>());
+            tendrils.SetActive(true);
+        };
+
         var initHp = new CustomLogicFsm(fsm);
         initHp.action += (_) =>
         {
@@ -4328,6 +4345,7 @@ public class PatchedFsm
             }
         };
         init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+        init.Actions = InsertInArray(init.Actions, ActivateTendrils, init.Actions.Length);
 
         ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
@@ -4802,6 +4820,19 @@ public class PatchedFsm
 
         SetTransitionToState(enter, throneRumble, 0);
         SetTransitionToState(enter, throneRumble, 1);
+
+        //create colliders to prevent leave boss arena
+        var col1 = new GameObject("Collider1", new []{typeof(BoxCollider2D)});
+
+        SceneManager.MoveGameObjectToScene(col1, fsm.GameObject.scene);
+
+        col1.transform.position = new Vector3(21f, 253f, -0.1f);
+
+        var boxCol1 = col1.GetComponent<BoxCollider2D>();
+
+        boxCol1.size = new Vector2(100, 1);
+
+        col1.layer = 8;
 
         return true;
     }
@@ -5351,6 +5382,7 @@ public class PatchedFsm
 
         SceneManager.MoveGameObjectToScene(col1, fsm.GameObject.scene);
         SceneManager.MoveGameObjectToScene(col2, fsm.GameObject.scene);
+        SceneManager.MoveGameObjectToScene(damageCol1, fsm.GameObject.scene);
 
         col1.transform.position = new Vector3(35.2f, 103f, -0.1f);
         col2.transform.position = new Vector3(59f, 95f, -0.1f);
@@ -5861,6 +5893,78 @@ public class PatchedFsm
         eaten.Actions = InsertInArray(eaten.Actions, customActionSendBossDeadEvent, 0);
 
         crustPause.Actions = RemoveFromArray(crustPause.Actions, 0);
+
+        return true;
+    }
+    public static bool PatchFsm_ForumDropLampControl(Fsm fsm)
+    {
+        var idle = fsm.GetState("Idle");
+        var wait1 = fsm.GetState("Wait 1");
+
+        idle.Actions[0].Enabled = false;
+        idle.Actions[1].Enabled = false;
+
+        SetTransitionToState(idle, wait1, 0);
+
+        return true;
+    }
+    public static bool PatchFsm_ForumHandmaidenControl(Fsm fsm)
+    {
+        var burned = fsm.GetState("Burned?");
+        var wake = fsm.GetState("Wake");
+
+        SetTransitionToState(burned, wake, 1);
+
+        return true;
+    }
+    public static bool PatchFsm_ForumStartRange(Fsm fsm)
+    {
+        var pause = fsm.GetState("Pause");
+        var tension = fsm.GetState("Tension?");
+        var idle = fsm.GetState("Idle");
+        var state = fsm.GetState("State");
+        var woken = fsm.GetState("Woken");
+
+        tension.Actions[1].Enabled = false;
+        tension.Actions[2].Enabled = false;
+        tension.Actions[3].Enabled = false;
+
+        var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
+        customActionSendBossDeadEvent.action += (Fsm fsm) =>
+        {
+            PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+        };
+
+        var bossScene = fsm.GameObject.transform.parent.GetComponent<BattleScene>();
+        bossScene.setPDBoolOnEnd = "";
+        bossScene.battleStartPause = 0f;
+        bossScene.battleEndPause = 5f;
+        IEnumerator WaitForEndBattle()
+        {
+            var started = bossScene.GetType().GetField("started", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            var completed = bossScene.GetType().GetField("completed", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            while (true)
+            {
+                if((bool)completed.GetValue(bossScene))
+                {
+                    yield return new WaitForSeconds(2.5f);
+                    PlayMakerFSM.BroadcastEvent(bossDeadEvent);
+                    break;
+                }
+
+                yield return null;
+            }
+        }
+        fsm.FsmComponent.StartCoroutine(WaitForEndBattle());
+
+        var shakra = bossScene.transform.Find("Shakra Fighter");
+        var garmond = bossScene.transform.Find("Garmond Fighter");
+        if(shakra != null) shakra.gameObject.SetActive(false);
+        if(garmond != null) garmond.gameObject.SetActive(false);
+
+        SetTransitionToState(state, woken, 1);
+
+        idle.Transitions[0].FsmEvent = FsmEvent.GetFsmEvent(TransitionPointInfo.eventName);
 
         return true;
     }

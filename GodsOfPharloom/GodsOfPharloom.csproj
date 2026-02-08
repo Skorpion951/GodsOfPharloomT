@@ -8,493 +8,493 @@
 
   <ItemGroup>
     <Reference Include="0Harmony20">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\BepInEx\core\0Harmony20.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong\BepInEx\core\0Harmony20.dll</HintPath>
     </Reference>
     <Reference Include="Accessibility">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Accessibility.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Accessibility.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\BepInEx\core\BepInEx.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx.Harmony">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\BepInEx\core\BepInEx.Harmony.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong\BepInEx\core\BepInEx.Harmony.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx.Preloader">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\BepInEx\core\BepInEx.Preloader.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong\BepInEx\core\BepInEx.Preloader.dll</HintPath>
     </Reference>
     <Reference Include="Coffee.SoftMaskForUGUI">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Coffee.SoftMaskForUGUI.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Coffee.SoftMaskForUGUI.dll</HintPath>
     </Reference>
     <Reference Include="com.rlabrecque.steamworks.net">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\com.rlabrecque.steamworks.net.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\com.rlabrecque.steamworks.net.dll</HintPath>
     </Reference>
     <Reference Include="ConditionalExpression">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\ConditionalExpression.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\ConditionalExpression.dll</HintPath>
     </Reference>
     <Reference Include="GalaxyCSharp">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\GalaxyCSharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\GalaxyCSharp.dll</HintPath>
     </Reference>
     <Reference Include="HarmonyXInterop">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\BepInEx\core\HarmonyXInterop.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong\BepInEx\core\HarmonyXInterop.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\BepInEx\core\Mono.Cecil.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong\BepInEx\core\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil.Mdb">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\BepInEx\core\Mono.Cecil.Mdb.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong\BepInEx\core\Mono.Cecil.Mdb.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil.Pdb">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\BepInEx\core\Mono.Cecil.Pdb.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong\BepInEx\core\Mono.Cecil.Pdb.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil.Rocks">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\BepInEx\core\Mono.Cecil.Rocks.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong\BepInEx\core\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Posix">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Mono.Posix.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Mono.Posix.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Security">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Mono.Security.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Mono.Security.dll</HintPath>
     </Reference>
     <Reference Include="Mono.WebBrowser">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Mono.WebBrowser.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Mono.WebBrowser.dll</HintPath>
     </Reference>
     <Reference Include="MonoMod.RuntimeDetour">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\BepInEx\core\MonoMod.RuntimeDetour.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong\BepInEx\core\MonoMod.RuntimeDetour.dll</HintPath>
     </Reference>
     <Reference Include="MonoMod.Utils">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\BepInEx\core\MonoMod.Utils.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong\BepInEx\core\MonoMod.Utils.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\mscorlib.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\mscorlib.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\netstandard.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\netstandard.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json.UnityConverters">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Newtonsoft.Json.UnityConverters.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Newtonsoft.Json.UnityConverters.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json.UnityConverters.Addressables">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Newtonsoft.Json.UnityConverters.Addressables.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Newtonsoft.Json.UnityConverters.Addressables.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json.UnityConverters.Mathematics">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Newtonsoft.Json.UnityConverters.Mathematics.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Newtonsoft.Json.UnityConverters.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="PlayMaker">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\PlayMaker.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\PlayMaker.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\SharpDX.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.DirectInput">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\SharpDX.DirectInput.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\SharpDX.DirectInput.dll</HintPath>
     </Reference>
     <Reference Include="System">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.dll</HintPath>
     </Reference>
     <Reference Include="System.Collections">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Collections.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Collections.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Composition">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.ComponentModel.Composition.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.ComponentModel.Composition.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Configuration.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration.Install">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Configuration.Install.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Configuration.Install.dll</HintPath>
     </Reference>
     <Reference Include="System.Console">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Console.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Console.dll</HintPath>
     </Reference>
     <Reference Include="System.Core">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Core.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Core.dll</HintPath>
     </Reference>
     <Reference Include="System.Data">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Data.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Data.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.DataSetExtensions">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Data.DataSetExtensions.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Data.DataSetExtensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Drawing.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Drawing.dll</HintPath>
     </Reference>
     <Reference Include="System.EnterpriseServices">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.EnterpriseServices.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.EnterpriseServices.dll</HintPath>
     </Reference>
     <Reference Include="System.Globalization">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Globalization.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Globalization.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Compression">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.IO.Compression.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.IO.Compression.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Compression.FileSystem">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.IO.Compression.FileSystem.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.IO.Compression.FileSystem.dll</HintPath>
     </Reference>
     <Reference Include="System.Linq">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Linq.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Net.Http.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Net.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Numerics">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Numerics.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="System.Reflection">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Reflection.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Reflection.dll</HintPath>
     </Reference>
     <Reference Include="System.Reflection.Extensions">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Reflection.Extensions.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Reflection.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Resources.ResourceManager">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Resources.ResourceManager.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Resources.ResourceManager.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Runtime.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Handles">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Runtime.Handles.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Runtime.Handles.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.InteropServices">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Runtime.InteropServices.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Runtime.InteropServices.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Runtime.Serialization.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Runtime.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization.Formatters.Soap">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Runtime.Serialization.Formatters.Soap.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Runtime.Serialization.Formatters.Soap.dll</HintPath>
     </Reference>
     <Reference Include="System.Security">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Security.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Security.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceModel.Internals">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.ServiceModel.Internals.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.ServiceModel.Internals.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceProcess">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.ServiceProcess.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.ServiceProcess.dll</HintPath>
     </Reference>
     <Reference Include="System.Transactions">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Transactions.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Transactions.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Windows.Forms.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Windows.Forms.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Xml.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Xml.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\System.Xml.Linq.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\System.Xml.Linq.dll</HintPath>
     </Reference>
     <Reference Include="TeamCherry.BuildBot">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\TeamCherry.BuildBot.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\TeamCherry.BuildBot.dll</HintPath>
     </Reference>
     <Reference Include="TeamCherry.Cinematics">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\TeamCherry.Cinematics.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\TeamCherry.Cinematics.dll</HintPath>
     </Reference>
     <Reference Include="TeamCherry.Localization">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\TeamCherry.Localization.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\TeamCherry.Localization.dll</HintPath>
     </Reference>
     <Reference Include="TeamCherry.NestedFadeGroup">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\TeamCherry.NestedFadeGroup.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\TeamCherry.NestedFadeGroup.dll</HintPath>
     </Reference>
     <Reference Include="TeamCherry.SharedUtils">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\TeamCherry.SharedUtils.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\TeamCherry.SharedUtils.dll</HintPath>
     </Reference>
     <Reference Include="TeamCherry.Splines">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\TeamCherry.Splines.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\TeamCherry.Splines.dll</HintPath>
     </Reference>
     <Reference Include="TeamCherry.TK2D">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\TeamCherry.TK2D.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\TeamCherry.TK2D.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Addressables">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Unity.Addressables.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Unity.Addressables.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Burst">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Unity.Burst.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Unity.Burst.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Burst.Unsafe">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Unity.Burst.Unsafe.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Unity.Burst.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Collections">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Unity.Collections.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Unity.Collections.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Collections.LowLevel.ILSupport">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Unity.Collections.LowLevel.ILSupport.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Unity.Collections.LowLevel.ILSupport.dll</HintPath>
     </Reference>
     <Reference Include="Unity.InputSystem">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Unity.InputSystem.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Unity.InputSystem.dll</HintPath>
     </Reference>
     <Reference Include="Unity.InputSystem.ForUI">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Unity.InputSystem.ForUI.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Unity.InputSystem.ForUI.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Mathematics">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Unity.Mathematics.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Unity.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="Unity.MemoryProfiler">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Unity.MemoryProfiler.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Unity.MemoryProfiler.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Profiling.Core">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Unity.Profiling.Core.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Unity.Profiling.Core.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Recorder">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Unity.Recorder.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Unity.Recorder.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Recorder.Base">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Unity.Recorder.Base.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Unity.Recorder.Base.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ResourceManager">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Unity.ResourceManager.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Unity.ResourceManager.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ScriptableBuildPipeline">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Unity.ScriptableBuildPipeline.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Unity.ScriptableBuildPipeline.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\Unity.Timeline.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\Unity.Timeline.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AccessibilityModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.AccessibilityModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.AccessibilityModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.AIModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.AIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AMDModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.AMDModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.AMDModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AndroidJNIModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.AndroidJNIModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.AndroidJNIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AnimationModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ARModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.ARModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.ARModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AudioModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ClothModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.ClothModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.ClothModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ClusterInputModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.ClusterInputModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.ClusterInputModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ClusterRendererModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.ClusterRendererModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.ClusterRendererModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ContentLoadModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.ContentLoadModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.ContentLoadModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CrashReportingModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.CrashReportingModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.CrashReportingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.DirectorModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.DirectorModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.DirectorModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.DSPGraphModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.DSPGraphModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.DSPGraphModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.GameCenterModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.GameCenterModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.GameCenterModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.GIModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.GIModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.GIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.GraphicsStateCollectionSerializerModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.GraphicsStateCollectionSerializerModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.GraphicsStateCollectionSerializerModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.GridModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.GridModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.GridModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.HierarchyCoreModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.HierarchyCoreModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.HierarchyCoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.HotReloadModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.HotReloadModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.HotReloadModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ImageConversionModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.InputForUIModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.InputForUIModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.InputForUIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.InputModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.InputModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.InputModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.JSONSerializeModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.JSONSerializeModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.JSONSerializeModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.LocalizationModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.LocalizationModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.LocalizationModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.MarshallingModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.MarshallingModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.MarshallingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.MultiplayerModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.MultiplayerModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.MultiplayerModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.NVIDIAModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.NVIDIAModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.NVIDIAModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PerformanceReportingModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.PerformanceReportingModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.PerformanceReportingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Physics2DModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.Physics2DModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.Physics2DModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PropertiesModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.PropertiesModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.PropertiesModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ScreenCaptureModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.ScreenCaptureModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.ScreenCaptureModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ShaderVariantAnalyticsModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.ShaderVariantAnalyticsModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.ShaderVariantAnalyticsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.SharedInternalsModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.SharedInternalsModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.SharedInternalsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.SpriteMaskModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.SpriteMaskModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.SpriteMaskModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.SpriteShapeModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.SpriteShapeModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.SpriteShapeModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.StreamingModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.StreamingModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.StreamingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.SubstanceModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.SubstanceModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.SubstanceModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.SubsystemsModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.SubsystemsModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.SubsystemsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TerrainModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.TerrainModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.TerrainModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TerrainPhysicsModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.TerrainPhysicsModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.TerrainPhysicsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextCoreFontEngineModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.TextCoreFontEngineModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.TextCoreFontEngineModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextCoreTextEngineModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.TextCoreTextEngineModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.TextCoreTextEngineModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TilemapModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.TilemapModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.TilemapModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TLSModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.TLSModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.TLSModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIElementsModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.UIElementsModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.UIElementsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.UIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UmbraModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.UmbraModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.UmbraModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityAnalyticsCommonModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.UnityAnalyticsCommonModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.UnityAnalyticsCommonModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityAnalyticsModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.UnityAnalyticsModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.UnityAnalyticsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityConnectModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.UnityConnectModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.UnityConnectModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityCurlModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.UnityCurlModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.UnityCurlModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityTestProtocolModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.UnityTestProtocolModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.UnityTestProtocolModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestAudioModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestTextureModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestWWWModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.VehiclesModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.VehiclesModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.VehiclesModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.VFXModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.VFXModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.VFXModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.VideoModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.VideoModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.VideoModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.VirtualTexturingModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.VirtualTexturingModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.VirtualTexturingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.VRModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.VRModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.VRModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.WindModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.WindModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.WindModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.XRModule">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\UnityEngine.XRModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\UnityEngine.XRModule.dll</HintPath>
     </Reference>
     <Reference Include="XblPCSandbox">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\XblPCSandbox.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\XblPCSandbox.dll</HintPath>
     </Reference>
     <Reference Include="XGamingRuntime">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\XGamingRuntime.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\XGamingRuntime.dll</HintPath>
     </Reference>
     <Reference Include="zlib.net">
-      <HintPath>..\..\..\..\..\..\home\reinzer\.steam\steam\steamapps\common\Hollow Knight Silksong\Hollow Knight Silksong_Data\Managed\zlib.net.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mnt\data2\SteamLibrary\steamapps\common\Hollow Knight Silksong/Hollow Knight Silksong_Data\Managed\zlib.net.dll</HintPath>
     </Reference>
     <EmbeddedResource Include="Bundles/Scenes/gg_pharloom_atrium" />
     <EmbeddedResource Include="Bundles/Scenes/gg_pharloom_hall_of_gods" />
@@ -503,7 +503,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="Build">
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="/home/reinzer/.steam/steam/steamapps/common/Hollow Knight Silksong/BepInEx/plugins/Test/" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="/mnt/data2/SteamLibrary/steamapps/common/Hollow Knight Silksong/BepInEx/plugins/Test/" />
   </Target>
 
 </Project>

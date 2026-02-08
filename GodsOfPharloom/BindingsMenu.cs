@@ -379,28 +379,26 @@ public class BindingsMenu
 
                 var prefab = (GameObject)Preload.bundleResources["CustomBrokenSilkSpool"];
                 customBrokenSpool = GameObject.Instantiate(prefab, parent: spoolParent);
-                customBrokenSpool.transform.localScale = prefab.transform.localScale;
-                customBrokenSpool.transform.position = prefab.transform.position;
+                customBrokenSpool.transform.position = new Vector3(-13.17f, 5.6676f, -2.9985f);
 
                 customBrokenSpool.SetActive(false);
 
                 Material brokenSpoolMaterial = customBrokenSpool.GetComponent<MeshRenderer>().material;
 
-                IEnumerator UpdateBrokenSpoolMaterial()
+                IEnumerator UpdateBrokenSpoolMaterialAndTransform()
                 {
-                    // float alpha;
                     while (true)
                     {
-                        // alpha = (pd.silkMax <= silkAmountStart) ? (1 - ScreenFaderState.Alpha) : 0;
-
-                        // brokenSpoolMaterial.SetFloat("_Alpha", alpha);
                         brokenSpoolMaterial.SetInt("_SilkSpoolSegAmount", pd.silkMax);
+
+                        // customBrokenSpool.transform.position = new Vector3(-13.17f, 5.6676f, -2.9985f);
+                        // customBrokenSpool.transform.localScale = new Vector3(2.05f, 0.76f, 1f);
 
                         yield return null;
                     }
                 }
 
-                if(silkUpdater == null) silkUpdater = GodsOfPharloomMod.instance.StartCoroutine(UpdateBrokenSpoolMaterial());
+                if(silkUpdater == null) silkUpdater = GodsOfPharloomMod.instance.StartCoroutine(UpdateBrokenSpoolMaterialAndTransform());
             }
 
             if(pd.silkMax <= silkAmountStart)

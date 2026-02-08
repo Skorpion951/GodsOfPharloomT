@@ -111,6 +111,8 @@ public class PantheonMenu : MonoBehaviour
 
         currentButton = buttons[currentButtonIndex];
 
+        pantheonMenu.transform.position = new Vector3(-0.0494f, 0.3478f, -0.7229f);
+
         Reset();
     }
 
