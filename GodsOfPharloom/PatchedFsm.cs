@@ -2344,6 +2344,8 @@ public class PatchedFsm
         ((StartRoarEmitter)introScream.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
         ((StartRoarEmitter)rageScream2.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
+        ((ClearHeroEffects)hornetConnect.Actions.FirstOrDefault(i => typeof(ClearHeroEffects) == i.GetType())).Enabled = false;
+
         return true;
     }
     public static bool PatchFsm_WidowBossScene(Fsm fsm)
@@ -2393,7 +2395,7 @@ public class PatchedFsm
                 fsm.GetFsmInt("P2 HP").Value = hp;
             }
         };
-        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+        // init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
 
         ((StartRoarEmitter)roar.Actions.FirstOrDefault(i => typeof(StartRoarEmitter) == i.GetType())).roarBurst = true;
 
@@ -3669,7 +3671,7 @@ public class PatchedFsm
                 fsm.GetFsmInt("P3 HP").Value = hp;
             }
         };
-        init.Actions = InsertInArray(init.Actions, initHp, init.Actions.Length);
+        init.Actions = InsertInArray(init.Actions, initHp, 8);
 
         return true;
     }

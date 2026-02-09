@@ -16,7 +16,7 @@ using Unity.Burst.Intrinsics;
 
 namespace Gods_Of_Pharloom
 {
-    [BepInPlugin("bepinex.plugin.test", "GodsOfPharloom", "0.0.1.1")]
+    [BepInPlugin("bepinex.plugin.test", "GodsOfPharloom", "0.0.1.2")]
     public partial class GodsOfPharloomMod : BaseUnityPlugin
     {
         public static GodsOfPharloomMod instance;
@@ -447,6 +447,8 @@ namespace Gods_Of_Pharloom
             {
                 HeroController.instance.MaxHealth();
                 HeroController.instance.MaxRegenSilkInstant();
+                HeroController.instance.SetIsMaggoted(false);
+                HeroController.instance.ExitUpdraft();
             };
             customScenes.Add(GG_Pharloom_Atrium);
 
@@ -519,12 +521,25 @@ namespace Gods_Of_Pharloom
 
                 ToolItemManager.TryReplenishTools(true, ToolItemManager.ReplenishMethod.BenchSilent);
 
+                IEnumerator UpdateUpdraftState()
+                {
+                    while (true)
+                    {
+                        if(!BossSequence.isInSequence)
+                            HeroController.instance.EnterUpdraft(60f);
+                        yield return null;
+                    }
+                }
+                sceneManagerComp.StartCoroutine(UpdateUpdraftState());
+
                 GG_Pharloom_HoG.isSceneActive = true;
             };
             GG_Pharloom_HoG.AfterSceneActivated += (Scene scene) =>
             {
                 HeroController.instance.MaxHealth();
                 HeroController.instance.MaxRegenSilkInstant();
+                HeroController.instance.SetIsMaggoted(false);
+                
             };
             customScenes.Add(GG_Pharloom_HoG);
 
@@ -728,6 +743,14 @@ namespace Gods_Of_Pharloom
             isOneTimeTransition: true, dontWalkOutOfDoor : true, noInputOnStart: false));
             Bone_05.isSkongScene = true;
             Bone_05.AfterSceneLoaded += (Scene scene) => {Bone_05.isSceneActive = true;};
+            Bone_05.AfterSceneActivated += (Scene scene) =>
+            {
+                var rootObjects = scene.GetRootGameObjects();
+                foreach(var obj in rootObjects)
+                {
+                    if(obj.name.Contains("Bellbeast Child")) GameObject.Destroy(obj);
+                }
+            };
             customScenes.Add(Bone_05);
 
             var Bone_East_08 = new CustomScene("Bone_East_08");

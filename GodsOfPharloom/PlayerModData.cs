@@ -39,6 +39,7 @@ namespace Gods_Of_Pharloom
         };
 
         public int previousHealthCount = 10;
+        public int previousSilkSpoolCount = 18;
 
         public PlayerDataMod()
         {

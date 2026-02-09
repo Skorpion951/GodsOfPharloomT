@@ -153,7 +153,6 @@ namespace Gods_Of_Pharloom
         }
         public static void Start()
         {
-            isInSequence = true;
             sequenceController.SendEvent("START SEQUENCE");
         }
 
@@ -376,6 +375,23 @@ namespace Gods_Of_Pharloom
             HeroController.instance.TakeSilk(1000);
             HeroController.instance.ClearEffectsInstant();
             HeroController.instance.ResetTauntEffects();
+
+            isInSequence = true;
+            
+            IEnumerator ExitUpdraft()
+            {
+                var waitFramesCount = 10;
+                var currentFrame = 0;
+
+                while(currentFrame < waitFramesCount)
+                {
+                    currentFrame++;
+                    yield return null;
+                }
+
+                HeroController.instance.ExitUpdraft();
+            }
+            sequenceController.StartCoroutine(ExitUpdraft());
 
             if (currentSequenceScene.is3ActBoss)
             {

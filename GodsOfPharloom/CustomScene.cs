@@ -24,7 +24,7 @@ public class CustomScene
     public bool isPreloading = false;
     public bool isSkongScene = true;
     public bool isFastSuperJump = false;
-    public static float customSuperJumpSpeed = 48f;
+    public static float customSuperJumpSpeed = 60f;
     public static float customWaitForSuperJump = 0.01f;
 
     public CustomScene(string sceneName, bool isSkongScene = true, bool isFastSuperJump = false)

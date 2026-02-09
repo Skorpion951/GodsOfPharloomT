@@ -137,10 +137,10 @@ public class EnemyHp
         })},
         {"Cogwork Dancers", new EnemyHp(new PhaseHp[]
         {
-            new PhaseHp(250, 250, 250),
-            new PhaseHp(250, 250, 250),
-            new PhaseHp(250, 250, 250),
-            new PhaseHp(100, 100, 100),
+            new PhaseHp(450, 450, 450),
+            new PhaseHp(450, 450, 450),
+            new PhaseHp(450, 450, 450),
+            new PhaseHp(150, 150, 150),
         })},
         {"Disgraced Chef Lugoli", new EnemyHp(new PhaseHp[]
         {
@@ -167,7 +167,7 @@ public class EnemyHp
             new PhaseHp(100, 100, 100),
             new PhaseHp(300, 300, 300),
             new PhaseHp(300, 300, 300),
-            new PhaseHp(200, 200, 200),
+            new PhaseHp(300, 300, 300),
         })},
         {"Forebrothers_Gron", new EnemyHp(new PhaseHp[]
         {
@@ -307,9 +307,9 @@ public class EnemyHp
         })},
         {"Shrine Guardian Seth", new EnemyHp(new PhaseHp[]
         {
-            new PhaseHp(200, 350, 350),
-            new PhaseHp(700, 850, 850),
-            new PhaseHp(650, 700, 700),
+            new PhaseHp(200, 200, 200),
+            new PhaseHp(550, 550, 550),
+            new PhaseHp(500, 500, 500),
         })},
         {"Skarrsinger Karmelita", new EnemyHp(new PhaseHp[]
         {

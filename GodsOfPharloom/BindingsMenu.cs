@@ -428,15 +428,19 @@ public class BindingsMenu
     {
         while (true)
         {
+            PlayerData.instance.IsSilkSpoolBroken = false;
+
             if(PlayerDataMod.instance.bindings["Silk Binding"])
             {
                 PlayerData pd = null;
+                var pdm = PlayerDataMod.instance;
                 while(pd == null)
                 {
                     pd = PlayerData.instance;
                     if(pd != null) break;
                     yield return null;
                 }
+                pdm.previousSilkSpoolCount = pd.silkMax;
                 while(PlayerDataMod.instance.bindings["Silk Binding"])
                 {
                     if(pd.silkMax > 9)
@@ -446,9 +450,9 @@ public class BindingsMenu
                     }
                     yield return null;
                 }
+                pd.silkMax = pdm.previousSilkSpoolCount;
+                UpdateMenuBindingsDisplay();
             }
-
-            PlayerData.instance.IsSilkSpoolBroken = false;
 
             yield return null;
         }

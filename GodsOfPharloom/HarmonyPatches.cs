@@ -78,6 +78,16 @@ namespace Gods_Of_Pharloom
             if(!Preload.isInitialized) Preload.Init();
         }
 
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(HeroController), "ResetAllCrestState")]
+        public static bool HeroControllerClearEffects_Prefix()
+        {
+            GodsOfPharloomMod.Log.LogInfo("ResetAllCrestState");
+            if(BossSequence.isInSequence && !PlayerData.instance.atBench) return false;
+            GodsOfPharloomMod.Log.LogInfo("DoResetAllCrestState");
+            return true;
+        }
+
         // remove enemies armor
         [HarmonyPrefix]
         [HarmonyPatch(typeof(HealthManager), "ApplyDamageScaling")]
@@ -195,6 +205,12 @@ namespace Gods_Of_Pharloom
         [HarmonyPatch(typeof(SceneAdditiveLoadConditional), "OnEnable")]
         private static bool SceneAdditiveLoadPatch_Prefix(SceneAdditiveLoadConditional __instance)
         {
+            if(BossSequence.isInSequence && __instance.gameObject.name.Contains("Bellway Additive Loader") ||
+               __instance.gameObject.name.Contains("Bell Centipede Loader"))
+            {
+                Destroy(__instance.gameObject);
+                return false;
+            }
             if(BossSequence.isInSequence && __instance.gameObject.name.Contains("Boss Loader"))
             {
                 FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -334,11 +350,18 @@ namespace Gods_Of_Pharloom
             {
                 FieldInfo questTests = __instance.GetType().GetField("questTests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo tests = __instance.GetType().GetField("tests", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo doorBlackList = __instance.GetType().GetField("doorBlackList", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo otherLoaderBlacklist = __instance.GetType().GetField("otherLoaderBlacklist", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo loadAlt = __instance.GetType().GetField("loadAlt", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _additiveSceneLoads = __instance.GetType().GetField("_additiveSceneLoads", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
 
                 var playerDataTest = new PlayerDataTest();
 
                 questTests.SetValue(__instance, new QuestTest[0]);
                 tests.SetValue(__instance, playerDataTest);
+                doorBlackList.SetValue(__instance, new string[0]);
+                otherLoaderBlacklist.SetValue(__instance, new SceneAdditiveLoadConditional[0]);
+                loadAlt.SetValue(__instance, false);
 
                 return true;
             }
@@ -464,7 +487,7 @@ namespace Gods_Of_Pharloom
                 return false;
             }
             if(BossSequence.currentSequenceScene == BossScene.bosses["Forum Battle"] && __instance.gameObject.name == "Battle Scene" || __instance.gameObject.name == "Start Range" ||
-               __instance.gameObject.name.Contains("Song Handmaiden"))
+               __instance.gameObject.name.Contains("Song Handmaiden") || __instance.gameObject.name.Contains("City Merchant Scavenge Generic"))
             {
                 GameObject.Destroy(__instance);
                 return false;
