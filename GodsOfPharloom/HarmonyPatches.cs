@@ -80,11 +80,65 @@ namespace Gods_Of_Pharloom
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(HeroController), "ResetAllCrestState")]
-        public static bool HeroControllerClearEffects_Prefix()
+        public static bool HeroControllerResetAllCrestState_Prefix()
         {
             GodsOfPharloomMod.Log.LogInfo("ResetAllCrestState");
             if(BossSequence.isInSequence && !PlayerData.instance.atBench) return false;
             GodsOfPharloomMod.Log.LogInfo("DoResetAllCrestState");
+            return true;
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(HeroController), "ClearEffects")]
+        public static bool HeroControllerClearEffects_Prefix()
+        {
+            GodsOfPharloomMod.Log.LogInfo("ClearEffects");
+            if(BossSequence.isInSequence && !PlayerData.instance.atBench) return false;
+            GodsOfPharloomMod.Log.LogInfo("DoClearEffects");
+            return true;
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(HeroController), "ClearEffectsInstant")]
+        public static bool HeroControllerClearEffectsInstant_Prefix()
+        {
+            GodsOfPharloomMod.Log.LogInfo("ClearEffectsInstant");
+            if(BossSequence.isInSequence && !PlayerData.instance.atBench) return false;
+            GodsOfPharloomMod.Log.LogInfo("DoClearEffectsInstant");
+            return true;
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(HeroController), "ClearEffectsLite")]
+        public static bool HeroControllerClearEffectsLite_Prefix()
+        {
+            GodsOfPharloomMod.Log.LogInfo("ClearEffectsLite");
+            if(BossSequence.isInSequence && !PlayerData.instance.atBench) return false;
+            GodsOfPharloomMod.Log.LogInfo("DoClearEffectsLite");
+            return true;
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(HeroController), "MaxHealth")]
+        public static bool HeroControllerMaxHealth_Prefix()
+        {
+            GodsOfPharloomMod.Log.LogInfo("MaxHealth");
+            if(BossSequence.isInSequence && !PlayerData.instance.atBench) return false;
+            GodsOfPharloomMod.Log.LogInfo("DoMaxHealth");
+            return true;
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(HeroController), "RefillHealthToMax")]
+        public static bool HeroControllerRefillHealthToMax_Prefix()
+        {
+            GodsOfPharloomMod.Log.LogInfo("RefillHealthToMax");
+            if(BossSequence.isInSequence && !PlayerData.instance.atBench) return false;
+            GodsOfPharloomMod.Log.LogInfo("DoRefillHealthToMax");
+            return true;
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(PlayerData), "MaxHealth")]
+        public static bool PlayerDataMaxHealth_Prefix()
+        {
+            GodsOfPharloomMod.Log.LogInfo("MaxHealth");
+            if(BossSequence.isInSequence && !PlayerData.instance.atBench) return false;
+            GodsOfPharloomMod.Log.LogInfo("DoMaxHealth");
             return true;
         }
 

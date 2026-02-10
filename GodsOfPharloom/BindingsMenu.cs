@@ -328,6 +328,7 @@ public class BindingsMenu
     {
         GameCameras gc = GameCameras.instance;
         Transform spoolParent = null;
+        Transform origSpool = null;
         PlayerData pd = null;
         Coroutine silkUpdater = null;
         int silkAmountStart = 9;
@@ -372,14 +373,28 @@ public class BindingsMenu
                 }
                 else break;
             }
+            while(true)
+            {
+                if(origSpool != null) break;
 
-            if(customBrokenSpool == null || customBrokenSpool.transform.parent != spoolParent)
+                origSpool = spoolParent.Find("Broken");
+
+                if(origSpool == null){
+                    yield return null;
+                    continue;
+                }
+                else break;
+            }
+
+            if(customBrokenSpool == null || customBrokenSpool.transform.parent != origSpool)
             {
                 if(customBrokenSpool != null) GameObject.Destroy(customBrokenSpool);
 
+                origSpool.GetComponent<MeshRenderer>().forceRenderingOff = true;
+
                 var prefab = (GameObject)Preload.bundleResources["CustomBrokenSilkSpool"];
-                customBrokenSpool = GameObject.Instantiate(prefab, parent: spoolParent);
-                customBrokenSpool.transform.position = new Vector3(-13.17f, 5.6676f, -2.9985f);
+                customBrokenSpool = GameObject.Instantiate(prefab, parent: origSpool.transform);
+                customBrokenSpool.transform.localPosition = new Vector3(-0.05f, 0f, 0f);
 
                 customBrokenSpool.SetActive(false);
 
@@ -407,13 +422,13 @@ public class BindingsMenu
                 {
                     customBrokenSpool.SetActive(true);
 
-                    var active = spoolParent.Find("Active").gameObject;
-                    var broken = spoolParent.Find("Broken").gameObject;
-                    var bindNotch = spoolParent.Find("Bind Notch").gameObject;
+                    var active = spoolParent.Find("Active");
+                    var broken = spoolParent.Find("Broken");
+                    var bindNotch = spoolParent.Find("Bind Notch");
 
-                    if(active != null) active.SetActive(false);
-                    if(broken != null) broken.SetActive(false);
-                    if(bindNotch != null) bindNotch.SetActive(false);
+                    if(active != null) active.gameObject.SetActive(false);
+                    if(broken != null) broken.gameObject.SetActive(true);
+                    if(bindNotch != null) bindNotch.gameObject.SetActive(false);
 
                     yield return null;
                 }
