@@ -16,7 +16,7 @@ using Unity.Burst.Intrinsics;
 
 namespace Gods_Of_Pharloom
 {
-    [BepInPlugin("bepinex.plugin.test", "GodsOfPharloom", "0.0.1.2")]
+    [BepInPlugin("bepinex.plugin.test", "GodsOfPharloom", "0.0.1.3")]
     public partial class GodsOfPharloomMod : BaseUnityPlugin
     {
         public static GodsOfPharloomMod instance;
@@ -81,6 +81,7 @@ namespace Gods_Of_Pharloom
             instance = this;
             Log = this.Logger;
 
+            var harmony = new Harmony("com.godsofpharloom");
             Harmony.CreateAndPatchAll(typeof(GodsOfPharloomMod));
 
             try{

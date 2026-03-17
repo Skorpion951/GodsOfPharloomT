@@ -79,7 +79,7 @@ namespace Gods_Of_Pharloom
         }
 
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(HeroController), "ResetAllCrestState")]
+        [HarmonyPatch(typeof(HeroController), "ResetAllCrestState", new Type[0] {})]
         public static bool HeroControllerResetAllCrestState_Prefix()
         {
             GodsOfPharloomMod.Log.LogInfo("ResetAllCrestState");
