@@ -5342,7 +5342,7 @@ public class PatchedFsm
         var recoverEnd = fsm.GetState("Recover End");
         var groundTeleReturn = fsm.GetState("Ground Tele Return");
 
-        ((Wait)roar.Actions[3]).time = 0.1f;
+        ((Wait)roar.Actions[4]).time = 0.1f;
         ((Wait)recover.Actions[1]).time = 0f;
 
         var customActionSendBossDeadEvent = new CustomLogicFsm(fsm, BossScene.waitForBossDeathAnim, true);
