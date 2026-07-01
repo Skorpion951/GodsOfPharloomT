@@ -45,10 +45,10 @@ public class EnemyHp
         })},
         {"Moss Mother Double 1", new EnemyHp(new PhaseHp[]
         {
-            new PhaseHp(100, 100, 100),
-            new PhaseHp(150, 150, 150),
-            new PhaseHp(200, 200, 200),
-            new PhaseHp(100, 100, 100),
+            new PhaseHp(0, 0, 0),
+            new PhaseHp(0, 0, 0),
+            new PhaseHp(250, 250, 250),
+            new PhaseHp(300, 300, 300),
         })},
         {"Moss Mother Double 2", new EnemyHp(new PhaseHp[]
         {
